@@ -7,7 +7,11 @@ import { freeSet } from '@coreui/icons';
 @Component({
   // tslint:disable-next-line
   selector: 'body',
-  template: '<router-outlet></router-outlet>',
+  template: `
+    <router-outlet></router-outlet>
+    <ng-snotify></ng-snotify>
+    <ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="#fff" type="ball-scale-multiple"></ngx-spinner>
+  `,
   providers: [IconSetService],
 })
 export class AppComponent implements OnInit {

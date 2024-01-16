@@ -1,1 +1,149 @@
 // Here you can add other styles
+*:hover,
+*:focus,
+*:active {
+    outline: none;
+    box-shadow: none !important;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+app-header {
+    background-color: #364150 !important;
+    color: #fff;
+
+    .app-title {
+        font-weight: unset;
+        margin-bottom: unset;
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+
+    .navbar-nav .nav-link {
+        color: #fff;
+    }
+}
+
+app-sidebar-nav {
+    app-sidebar-nav-items {
+        background-color: #364150 !important;
+    }
+}
+
+.sidebar .nav-link:hover {
+    background: #000;
+}
+
+.pt-30 {
+    padding-top: 30px !important;
+}
+
+h6.username {
+    display: inline-block;
+    text-decoration: none;
+    cursor: pointer;
+    color: #fff;
+}
+
+.menu-margin a {
+  padding-left: 23px !important;
+}
+
+table {
+
+    // min-width: 1600px;
+    &.table {
+        thead {
+            background-color: $primary;
+            color: $white;
+            height: 50px;
+        }
+    }
+}
+
+.ng-select-disabled .ng-select-container {
+    background-color: #e4e7ea !important;
+}
+
+.cs-page {
+    padding-top: 8px;
+    margin-left: 10px !important;
+}
+
+.border-shadow {
+    box-shadow: 0 0.1rem 1rem #00000026 !important;
+    padding: 1rem;
+    border-radius: 0.3rem !important;
+    margin: 0px 0px 20px 0px;
+}
+
+// style col-xxl
+@media (min-width: 1400px) {
+    .col-xxl-1 {
+        flex: 0 0 auto;
+        width: 8.33333333%;
+    }
+
+    .col-xxl-2 {
+        flex: 0 0 auto;
+        width: 16.66666667%;
+    }
+
+    .col-xxl-3 {
+        flex: 0 0 auto;
+        width: 25%;
+    }
+
+    .col-xxl-4 {
+        flex: 0 0 auto;
+        width: 33.33333333%;
+    }
+
+    .col-xxl-5 {
+        flex: 0 0 auto;
+        width: 41.66666667%;
+    }
+
+    .col-xxl-6 {
+        flex: 0 0 auto;
+        width: 50%;
+    }
+
+    .col-xxl-7 {
+        flex: 0 0 auto;
+        width: 58.33333333%;
+    }
+
+    .col-xxl-8 {
+        flex: 0 0 auto;
+        width: 66.66666667%;
+    }
+
+    .col-xxl-9 {
+        flex: 0 0 auto;
+        width: 75%;
+    }
+
+    .col-xxl-10 {
+        flex: 0 0 auto;
+        width: 83.33333333%;
+    }
+
+    .col-xxl-11 {
+        flex: 0 0 auto;
+        width: 91.66666667%;
+    }
+
+    .col-xxl-12 {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+}
+
+.checkAll .custom-control-input:checked~.custom-control-label::before {
+    border-color: #fff;
+}
+
+.dropdown-item {
+    cursor: pointer;
+}

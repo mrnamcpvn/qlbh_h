@@ -2,21 +2,61 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "importHelpers": true,
+    "baseUrl": "./",
+    "paths": {
+      "@services/*": [
+        "src/app/_core/services/*"
+      ],
+      "@models/*": [
+        "src/app/_core/models/*"
+      ],
+      "@constants/*": [
+        "src/app/_core/constants/*"
+      ],
+      "@utilities/*": [
+        "src/app/_core/utilities/*"
+      ],
+      "@guards/*": [
+        "src/app/_core/guards/*"
+      ],
+      "@resolvers/*": [
+        "src/app/_core/resolvers/*"
+      ],
+      "@pipes/*": [
+        "src/app/_core/pipe/*"
+      ],
+      "@env/*": [
+        "src/environments/*"
+      ]
+    },
     "outDir": "./dist/out-tsc",
+    "forceConsistentCasingInFileNames": true,
+    "strict": false,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
+    "downlevelIteration": true,
     "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2017",
     "module": "es2020",
-    "target": "es2015",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
     "lib": [
-      "esnext",
+      "es2018",
       "dom"
     ]
-  }
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": false,
+    "strictInputAccessModifiers": false,
+    "strictTemplates": false
+  },
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.spec.json" },
+  ]
 }

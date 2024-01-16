@@ -1,0 +1,53 @@
+<div bsModal #modalAdd="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-child-name1">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content ">
+            <!-- Header -->
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title" id="modal-basic-title">Thêm / Sửa người dùng</h5>
+                <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalAdd.hide()">
+                    <span aria-hidden="true" class="visually-hidden">&times;</span>
+                </button>
+            </div>
+            <!-- Body -->
+            <div class="modal-body ">
+                <form class="form-horizontal " #AddForm="ngForm" autocomplete="off">
+
+                    <div class="form-group row p-2">
+                        <label for="name" class="col-sm-3 col-form-label  lb form-group required control-label">
+                            Họ tên
+                        </label>
+                        <div class="col-sm-9">
+                            <input type="text" [(ngModel)]="data.hoTen" name="name" class="form-control" id="name"
+                                required />
+                        </div>
+                    </div>
+                    <div class="form-group row p-2">
+                        <label for="taiKhoan" class="col-sm-3 col-form-label  lb form-group required control-label">
+                            Tài Khoản
+                        </label>
+                        <div class="col-sm-9">
+                            <input type="text" [(ngModel)]="data.taiKhoan" name="taiKhoan" class="form-control"
+                                id="taiKhoan" required />
+                        </div>
+                    </div>
+                    <div class="form-group row p-2">
+                        <label for="matKhau" class="col-sm-3 col-form-label  lb form-group required control-label">
+                            Mật Khẩu
+                        </label>
+                        <div class="col-sm-9">
+                            <input type="text" [(ngModel)]="data.matKhau" name="matKhau" class="form-control" id="matKhau"
+                                required />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger text-white" (click)="cancel()"><i class="fa fa-ban"></i>
+                    Hủy</button>
+                <button type="button" class="btn btn-success text-white" (click)="save()" [disabled]="!AddForm.valid"><i
+                        class="fa fa-check"></i> Lưu lại</button>
+            </div>
+        </div>
+    </div>
+</div>

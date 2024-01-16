@@ -1,0 +1,121 @@
+<div class="animated fadeIn">
+  <div class="row pt-4">
+    <div class="col-lg-12">
+      <div class="card">
+        <form class="form-horizontal" autocomplete="off">
+          <div class="card-header">
+            <!-- Title -->
+            <div class="row border-title">
+              <div class="col-md-12">
+                <strong class="title-card-cs">
+                  <h5>Báo cáo</h5>
+                </strong>
+              </div>
+            </div>
+            <form class="form-group row" autocomplete="off">
+              <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+                <label class="badge badge-warning">
+                  Người lao động:
+                </label>
+                <div class="full-width">
+                  <ng-select name="nld" [items]="nlds" bindLabel="name" bindValue="id"
+                    [(ngModel)]="param.id_NLD" placeholder="Chọn người lao động" [clearable]="param.id_NLD != 0"
+                    (clear)="param.id_NLD = 0">
+                  </ng-select>
+                </div>
+              </div>
+
+              <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                <label class="badge badge-warning">
+                  Ngày:
+                </label>
+                <div class="full-width">
+                  <div class="container_date">
+                    <div class="input-group mr-1">
+                      <input type="text" placeholder="Từ ngày..." [maxDate]="param.toDate" name="date_start"
+                        [bsConfig]="bsConfig" class="form-control" bsDatepicker [(ngModel)]="param.fromDate">
+                      <div class="input-group-append">
+                        <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
+                      </div>
+                    </div>
+                    <div class="input-group ml-1">
+                      <input type="text" placeholder="Đến ngày..." [minDate]="param.fromDate" name="date_end"
+                        [bsConfig]="bsConfig" class="form-control" bsDatepicker [(ngModel)]="param.toDate">
+                      <div class="input-group-append">
+                        <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Button function-->
+              <div class="col-xl-5 col-lg-6 col-md-6 mt-4 pt-1">
+                <div>
+                  <button type="submit" class="btn btn-primary" (click)="search()" [disabled]="param.id_NLD == 0">
+                    <i class="{{iconButton.SEARCH}}"></i> Tìm kiếm
+                  </button>
+                  <button type="submit" class="btn btn-danger ml-2" (click)="clearSearch()" [disabled]="param.id_NLD == 0">
+                    <i class="{{iconButton.CLEAR}}"></i> Xóa
+                  </button>
+                  <button type="button" class="btn btn-success ml-2" (click)="exportExcel()">
+                    <i class="{{iconButton.EXCEL}}"></i> Xuất dữ liệu
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </form>
+        <div class="card-body">
+          <!-- <h1 class="text-center">{{data?.mH_Name}}</h1> -->
+          <!-- table content -->
+          <div class="row justify-content-md-center">
+            <div class="col-12">
+              <div id="table-order-main" class="table-responsive mb-3">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Ngày</th>
+                      <!-- <th>NLĐ</th> -->
+                      <th>Mã Hàng</th>
+                      <th>Công Đoạn</th>
+                      <th>Số lượng</th>
+                      <th>Tiền công</th>
+                      <th>Thành tiền</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of data">
+                      <td>{{item?.dateView}}</td>
+                      <!-- <td>{{item?.nld}}</td> -->
+                      <td>{{item?.mH_Name}}</td>
+                      <td>{{item?.cD_Name}}</td>
+                      <td class="text-right">{{item?.quantity}}</td>
+                      <td class="text-right">{{item?.money | number}}</td>
+                      <td class="text-right">{{item?.total_Money | number}}</td>
+                    </tr>
+                    <tr *ngIf="!data || data?.length === 0">
+                      <td colspan="100%" class="table-warning text-center font-weight-bold">
+                        Không có dữ liệu!
+                      </td>
+                    </tr>
+                  </tbody>
+
+                </table>
+              </div>
+              <div class="d-flex" *ngIf="data && data?.length > 0">
+                <pagination [totalItems]="pagination.totalCount" [itemsPerPage]="pagination.pageSize" [maxSize]="5"
+                  previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"
+                  [(ngModel)]="pagination.pageNumber" (pageChanged)="pageChanged($event)" [boundaryLinks]="true">
+                </pagination>
+                <span class="cs-page ml-2">
+                  Page - {{pagination.pageNumber}} / {{pagination.totalPage}}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

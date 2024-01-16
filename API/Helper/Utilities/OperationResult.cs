@@ -1,10 +1,9 @@
-namespace Glossary_API.Helpers.Utilities
+namespace SD3_API.Helpers.Utilities
 {
     public class OperationResult
     {
-        public string Caption { set; get; }
-        public string Message { set; get; }
-        public bool Success { set; get; }
+        public string Error { set; get; }
+        public bool IsSuccess { set; get; }
         public object Data { set; get; }
 
         public OperationResult()
@@ -12,34 +11,32 @@ namespace Glossary_API.Helpers.Utilities
 
         }
 
-        public OperationResult(string message)
+        public OperationResult(string error)
         {
-            this.Message = message;
+            this.Error = error;
         }
 
-        public OperationResult(bool success)
+        public OperationResult(bool isSuccess)
         {
-            this.Success = success;
+            this.IsSuccess = isSuccess;
         }
 
-        public OperationResult(bool success, string message)
+        public OperationResult(bool isSuccess, string error)
         {
-            this.Message = message;
-            this.Success = success;
+            this.Error = error;
+            this.IsSuccess = isSuccess;
         }
 
-        public OperationResult(bool success, string message, string caption)
+        public OperationResult(bool isSuccess, object data)
         {
-            this.Caption = caption;
-            this.Message = message;
-            this.Success = success;
+            this.IsSuccess = isSuccess;
+            this.Data = data;
         }
 
-        public OperationResult(bool success, string message, string caption, object data)
+        public OperationResult(bool isSuccess, string error, object data)
         {
-            this.Caption = caption;
-            this.Message = message;
-            this.Success = success;
+            this.Error = error;
+            this.IsSuccess = isSuccess;
             this.Data = data;
         }
     }
