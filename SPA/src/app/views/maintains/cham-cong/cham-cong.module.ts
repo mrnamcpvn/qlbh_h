@@ -9,11 +9,16 @@ import {PaginationModule} from "ngx-bootstrap/pagination";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {BsDatepickerModule} from "ngx-bootstrap/datepicker";
 import { AddOrEditComponent } from './add-or-edit/add-or-edit.component';
+import { ChiTietComponent } from './chi-tiet/chi-tiet.component';
+import { PrintComponent } from './print/print.component';
+import { NgxPrintElementModule } from 'ngx-print-element';
 
 @NgModule({
   declarations: [
     MainComponent,
-    AddOrEditComponent
+    AddOrEditComponent,
+    ChiTietComponent,
+    PrintComponent
   ],
   imports: [
     CommonModule,
@@ -23,6 +28,7 @@ import { AddOrEditComponent } from './add-or-edit/add-or-edit.component';
     NgSelectModule,
     ReactiveFormsModule,
     BsDatepickerModule.forRoot(),
+    NgxPrintElementModule,
     ChamCongRoutingModule
   ]
 })

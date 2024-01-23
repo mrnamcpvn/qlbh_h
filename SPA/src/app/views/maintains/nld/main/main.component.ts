@@ -3,7 +3,7 @@ import { ModalService } from '@services/modal.service';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { NldService } from '@services/nld.service';
 import { Pagination } from '@utilities/pagination-utility';
-import { NguoiLaoDong } from '@models/maintains/nld';
+import { KhachHang } from '@models/maintains/nld';
 import { PageChangedEvent } from "ngx-bootstrap/pagination";
 import { InjectBase } from "@utilities/inject-base-app";
 import { IconButton } from '@constants/common.constants';
@@ -19,8 +19,8 @@ export class MainComponent extends InjectBase implements OnInit {
     pageSize: 10
   };
   name: string = '';
-  data: NguoiLaoDong[] = [];
-  editData: NguoiLaoDong = <NguoiLaoDong>{};
+  data: KhachHang[] = [];
+  editData: KhachHang = <KhachHang>{};
   type: string = 'add';
   modalRef?: BsModalRef;
   iconButton = IconButton;
@@ -32,9 +32,9 @@ export class MainComponent extends InjectBase implements OnInit {
     this.search();
   }
 
-  openModal(id: string, nld?: NguoiLaoDong) {
+  openModal(id: string, nld?: KhachHang) {
     this.type = nld ? 'edit' : 'add';
-    this.editData = nld ? nld : <NguoiLaoDong>{};
+    this.editData = nld ? nld : <KhachHang>{};
     this.modalService.open(id);
   }
 
@@ -63,19 +63,19 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   delete(id: number) {
-    this.snotifyService.confirm('Bạn có chắc chắn muốn xóa người lao động', 'Xóa',
+    this.snotifyService.confirm('Bạn có chắc chắn muốn xóa khách hàng?', 'Xóa',
       () => {
         this.spinnerService.show();
         this.nldService.delete(id).subscribe({
           next: (res) => {
             if (res) {
-              this.snotifyService.success('Xóa Người Lao Động Thành Công', 'Thành Công');
+              this.snotifyService.success('Xóa Khách Hàng Thành Công', 'Thành Công');
               this.data = this.data.filter(x => x.id !== id);
               this.spinnerService.hide();
             }
           },
           error: () => {
-            this.snotifyService.error('Xóa Người Lao Động Thất bại', 'Lỗi');
+            this.snotifyService.error('Xóa Khách Hàng Thất bại', 'Lỗi');
             this.spinnerService.hide();
           }
         })

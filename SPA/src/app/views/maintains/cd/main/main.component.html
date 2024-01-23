@@ -7,7 +7,7 @@
 
             <div class="row">
               <div class="col-md-6 col-sm-12">
-                <h5>Quản lý Công Đoạn</h5>
+                <h5>Quản lý Sản phẩm</h5>
               </div>
               <div class="col-md-6 col-sm-12">
                 <button type="button" class="btn btn-sm btn-primary float-right" (click)="openModal('add-modal')">
@@ -18,7 +18,7 @@
               <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                 <label class="badge badge-warning">Tên:</label>
                 <input type="text" name="ten" class="form-control " [(ngModel)]="name" autocomplete="off"
-                  placeholder="Nhập tên công đoạn" />
+                  placeholder="Nhập tên hoặc mã sản phẩm" />
               </div>
               <div class="col-6">
                 <label class="d-block">&nbsp;</label>
@@ -39,18 +39,20 @@
                     <thead>
                       <tr>
                         <th class="text-center">Stt</th>
-                        <th class="text-center">Mã hàng</th>
-                        <th class="text-center">Tên công đoạn</th>
+                        <th class="text-center">Mã sản phẩm</th>
+                        <th class="text-center">Tên sản phẩm</th>
                         <th class="text-center">Giá</th>
+                        <th class="text-center">Số lượng còn lại</th>
                         <th class=" text-center">Hành động</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr *ngFor="let item of data; let i = index">
                         <td>{{ ((pagination.pageNumber - 1) * pagination.pageSize) + i + 1 }}</td>
-                        <td>{{item.maHang}}</td>
-                        <td>{{item.name}}</td>
-                        <td class="text-right">{{item.money | number}}</td>
+                        <td>{{item.maSP}}</td>
+                        <td>{{item.ten}}</td>
+                        <td class="text-right">{{item.gia | number}}</td>
+                        <td class="text-right">{{item.soLuong | number}}</td>
                         <td style="width: 10rem;">
                           <button type="button" (click)="delete(item.id)" class="btn btn-danger btn-sm">
                             <i class="fa fa-trash-o"></i>&nbsp;Xóa </button>

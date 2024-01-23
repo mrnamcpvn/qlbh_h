@@ -2,27 +2,28 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AddOrEditComponent } from './add-or-edit/add-or-edit.component';
 import {MainComponent} from "./main/main.component";
+import { ChiTietComponent } from "./chi-tiet/chi-tiet.component"
 
 const routes: Routes = [
   {
     path: '',
     component: MainComponent,
     data: {
-      title: 'Chấm công'
+      title: 'Đơn hàng'
     }
   },
   {
     path: 'add',
     component: AddOrEditComponent,
     data: {
-      title: 'Chấm công'
+      title: 'Thêm mới đơn hàng'
     }
   },
   {
-    path: 'edit/:id',
-    component: AddOrEditComponent,
+    path: 'detail/:id',
+    component: ChiTietComponent,
     data: {
-      title: 'Chấm công'
+      title: 'Chi tiết đơn hàng'
     }
   }
 ];

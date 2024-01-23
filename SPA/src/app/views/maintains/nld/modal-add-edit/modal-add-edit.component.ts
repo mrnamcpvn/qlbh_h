@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ModalService } from '@services/modal.service';
 import { ModalDirective } from 'ngx-bootstrap/modal';
-import { NguoiLaoDong } from '@models/maintains/nld';
+import { KhachHang } from '@models/maintains/nld';
 import { NldService } from '@services/nld.service'
 import { InjectBase } from "@utilities/inject-base-app";
 
@@ -15,7 +15,7 @@ export class ModalAddEditComponent extends InjectBase implements OnInit, OnDestr
   @ViewChild('modalAdd', { static: false }) modalAdd?: ModalDirective;
   @Input() id: string = '';
   @Input() type: string = '';
-  @Input() data: NguoiLaoDong = <NguoiLaoDong>{};
+  @Input() data: KhachHang = <KhachHang>{};
   @Output() changeData = new EventEmitter();
   private element: any;
   constructor(
@@ -59,14 +59,14 @@ export class ModalAddEditComponent extends InjectBase implements OnInit, OnDestr
   }
 
   add() {
-    this.nldService.create(this.data.name).subscribe({
+    this.nldService.create(this.data).subscribe({
       next: () => {
-        this.snotifyService.success('Thêm người lao động thành công', 'Thành công');
+        this.snotifyService.success('Thêm khách hàng thành công', 'Thành công');
         this.changeData.emit(true);
         this.modalAdd.hide();
       },
       error: (e) => {
-        this.snotifyService.error('Thêm người lao động thất bại', 'Lỗi');
+        this.snotifyService.error('Thêm khách hàng thất bại', 'Lỗi');
       }
     })
   }
@@ -74,12 +74,12 @@ export class ModalAddEditComponent extends InjectBase implements OnInit, OnDestr
   update() {
     this.nldService.update(this.data).subscribe({
       next: () => {
-        this.snotifyService.success('Sửa người lao động thành công', 'Thành công');
+        this.snotifyService.success('Sửa khách hàng thành công', 'Thành công');
         this.changeData.emit(true);
         this.modalAdd.hide();
       },
       error: (e) => {
-        this.snotifyService.error('Sửa người lao động thất bại', 'Lỗi');
+        this.snotifyService.error('Sửa khách hàng thất bại', 'Lỗi');
       }
     })
   }

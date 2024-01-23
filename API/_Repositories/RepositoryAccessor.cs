@@ -10,18 +10,18 @@ namespace API._Repositories
         public RepositoryAccessor(DBContext dbContext)
         {
             _dbContext = dbContext;
-            NguoiLD = new Repository<NguoiLaoDong>(_dbContext);
-            CongDoan = new Repository<CongDoan>(_dbContext);
-            ChamCong = new Repository<ChamCong>(_dbContext);
-            MaHang = new Repository<MaHang>(_dbContext);
+            KhachHang = new Repository<KhachHang>(_dbContext);
+            SanPham = new Repository<SanPham>(_dbContext);
+            DonHang = new Repository<DonHang>(_dbContext);
             NguoiDung = new Repository<NguoiDung>(_dbContext);
+            ChiTietDonHang = new Repository<ChiTietDonHang>(_dbContext);
         }
 
-        public IRepository<NguoiLaoDong> NguoiLD { get; set; }
-        public IRepository<CongDoan> CongDoan { get; set; }
-        public IRepository<ChamCong> ChamCong { get; set; }
-        public IRepository<MaHang> MaHang { get; set; }
+        public IRepository<KhachHang> KhachHang { get; set; }
+        public IRepository<SanPham> SanPham { get; set; }
+        public IRepository<DonHang> DonHang { get; set; }
         public IRepository<NguoiDung> NguoiDung { get; set; }
+        public IRepository<ChiTietDonHang> ChiTietDonHang { get; set; }
 
         public async Task<bool> Save()
         {

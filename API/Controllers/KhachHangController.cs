@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    public class StepInProcessController : APIController
+    public class KhachHangController : APIController
     {
-        private readonly I_StepInProcess _service;
+        private readonly I_KhachHang _service;
 
-        public StepInProcessController(I_StepInProcess service)
+        public KhachHangController(I_KhachHang service)
         {
             _service = service;
         }
@@ -22,7 +22,7 @@ namespace API.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(CongDoan model)
+        public async Task<IActionResult> Create(KhachHang model)
         {
             var result = await _service.Create(model);
             return Ok(result);
@@ -36,7 +36,7 @@ namespace API.Controllers
         }
 
         [HttpPut("Update")]
-        public async Task<IActionResult> Update(CongDoan model)
+        public async Task<IActionResult> Update(KhachHang model)
         {
             var result = await _service.Update(model);
             return Ok(result);
@@ -46,13 +46,6 @@ namespace API.Controllers
         public async Task<IActionResult> GetAll()
         {
             var result = await _service.GetAll();
-            return Ok(result);
-        }
-
-        [HttpGet("GetAllByCommodityCodeId")]
-        public async Task<IActionResult> GetAllByCommodityCodeId(int id)
-        {
-            var result = await _service.GetAllByCommodityCodeId(id);
             return Ok(result);
         }
     }

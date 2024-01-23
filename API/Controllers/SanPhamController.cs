@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    public class EmployeeController : APIController
+    public class SanPhamController : APIController
     {
-        private readonly I_Employee _service;
+        private readonly I_SanPham _service;
 
-        public EmployeeController(I_Employee service)
+        public SanPhamController(I_SanPham service)
         {
             _service = service;
         }
@@ -22,9 +22,9 @@ namespace API.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<IActionResult> Create(string name)
+        public async Task<IActionResult> Create(SanPham model)
         {
-            var result = await _service.Create(name);
+            var result = await _service.Create(model);
             return Ok(result);
         }
 
@@ -36,7 +36,7 @@ namespace API.Controllers
         }
 
         [HttpPut("Update")]
-        public async Task<IActionResult> Update(NguoiLaoDong model)
+        public async Task<IActionResult> Update(SanPham model)
         {
             var result = await _service.Update(model);
             return Ok(result);
@@ -48,5 +48,12 @@ namespace API.Controllers
             var result = await _service.GetAll();
             return Ok(result);
         }
+
+        // [HttpGet("GetAllByCommodityCodeId")]
+        // public async Task<IActionResult> GetAllByCommodityCodeId(int id)
+        // {
+        //     var result = await _service.GetAllByCommodityCodeId(id);
+        //     return Ok(result);
+        // }
     }
 }

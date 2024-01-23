@@ -14,10 +14,24 @@ role="dialog" aria-labelledby="dialog-child-name1">
  <div class="modal-body ">
    <form class="form-horizontal " #AddForm="ngForm" autocomplete="off">
        <div class="form-group row p-2">
-             <label for="name" class="col-sm-3 col-form-label  lb form-group required control-label">Họ và tên</label>
-             <div class="col-sm-9">
-               <input type="text" [(ngModel)]="data.name"  name="name" class="form-control" id="name" required />
-              </div>
+            <label for="name" class="col-sm-3 col-form-label  lb form-group required control-label">Họ và tên</label>
+            <div class="col-sm-9">
+              <input type="text" [(ngModel)]="data.ten"  name="name" class="form-control" id="name" required />
+            </div>
+
+            <label for="diaChi" class="col-sm-3 col-form-label  lb form-group required control-label">Địa chỉ</label>
+            <div class="col-sm-9">
+              <input type="text" [(ngModel)]="data.diaChi"  name="diaChi" class="form-control" id="diaChi"  />
+            </div>
+            <label for="sdt" class="col-sm-3 col-form-label  lb form-group required control-label">Số điện thoại</label>
+            <div class="col-sm-9">
+              <input type="text" [(ngModel)]="data.sdt"  name="sdt" class="form-control" id="sdt"  />
+            </div>
+            <label for="email" class="col-sm-3 col-form-label  lb form-group required control-label">Email</label>
+            <div class="col-sm-9">
+              <input type="text" [(ngModel)]="data.email"  name="email" class="form-control" id="email" />
+            </div>
+
        </div>
      </form>
  </div>

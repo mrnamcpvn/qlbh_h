@@ -16,10 +16,10 @@ namespace API.Data
         }
         
         
-        public virtual DbSet<NguoiLaoDong> NguoiLaoDong {get;set;}
-        public virtual DbSet<CongDoan> CongDoan {get;set;}
-        public virtual DbSet<ChamCong> ChamCong {get;set;}
-        public virtual DbSet<MaHang> MaHang { get; set; }
+        public virtual DbSet<KhachHang> KhachHang {get;set;}
+        public virtual DbSet<SanPham> SanPham {get;set;}
+        public virtual DbSet<DonHang> DonHang {get;set;}
+        public virtual DbSet<ChiTietDonHang> ChiTietDonHang { get; set; }
         public virtual DbSet<NguoiDung> NguoiDung { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

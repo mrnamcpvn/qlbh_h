@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ModalDirective } from "ngx-bootstrap/modal";
-import { CongDoan } from "@models/maintains/cong-doan";
+import { SanPham } from "@models/maintains/san-pham";
 import { ModalService } from "@services/modal.service";
 import { CdService } from "@services/cd.service";
 import { InjectBase } from "@utilities/inject-base-app";
@@ -15,7 +15,7 @@ export class ModalAddEditComponent extends InjectBase implements OnInit, OnChang
   @ViewChild('modalAdd', { static: false }) modalAdd?: ModalDirective;
   @Input() id: string = '';
   @Input() type: string = '';
-  @Input() data: CongDoan = <CongDoan>{};
+  @Input() data: SanPham = <SanPham>{};
   @Output() changeData = new EventEmitter();
   private element: any;
   maHangs: MaHang[] = [];
@@ -39,7 +39,7 @@ export class ModalAddEditComponent extends InjectBase implements OnInit, OnChang
   }
 
   ngOnChanges(): void {
-    this.getAllMaHang();
+    //this.getAllMaHang();
   }
 
   // open modal
@@ -51,13 +51,6 @@ export class ModalAddEditComponent extends InjectBase implements OnInit, OnChang
     this.modalAdd.hide();
   }
 
-  getAllMaHang() {
-    this.maHangService.getAll().subscribe({
-      next: res => {
-        this.maHangs = res;
-      }
-    })
-  }
 
   save() {
     this.type === 'add' ? this.add() : this.update();
@@ -66,13 +59,13 @@ export class ModalAddEditComponent extends InjectBase implements OnInit, OnChang
   add() {
     this.cdService.create(this.data).subscribe({
       next: () => {
-        this.snotifyService.success('Thêm công đoạn thành công', 'Thành công');
+        this.snotifyService.success('Thêm sản phẩm thành công', 'Thành công');
         this.changeData.emit(true);
         this.modalAdd.hide();
         this.maHangs = [];
       },
       error: (e) => {
-        this.snotifyService.error('Thêm công đoạn thất bại', 'Lỗi');
+        this.snotifyService.error('Thêm sản phẩm thất bại', 'Lỗi');
       }
     })
   }
@@ -80,13 +73,13 @@ export class ModalAddEditComponent extends InjectBase implements OnInit, OnChang
   update() {
     this.cdService.update(this.data).subscribe({
       next: () => {
-        this.snotifyService.success('Sửa công đoạn thành công', 'Thành công');
+        this.snotifyService.success('Sửa sản phẩm thành công', 'Thành công');
         this.changeData.emit(true);
         this.modalAdd.hide();
         this.maHangs = [];
       },
       error: (e) => {
-        this.snotifyService.error('Sửa công đoạn thất bại', 'Lỗi');
+        this.snotifyService.error('Sửa sản phẩm thất bại', 'Lỗi');
       }
     })
   }

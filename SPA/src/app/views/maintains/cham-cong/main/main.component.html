@@ -6,7 +6,7 @@
           <div class="card-header">
             <div class="row">
               <div class="col-md-6 col-sm-12">
-                <h5>Chấm công</h5>
+                <h5>Mua Hàng</h5>
               </div>
               <div class="col-md-6 col-sm-12">
                 <button type="button" class="btn btn-sm btn-primary float-right" (click)="add()">
@@ -57,27 +57,21 @@
                   <thead>
                     <tr>
                       <th class="text-center">Stt</th>
-                      <th class="text-center">Ngày</th>
-                      <th class=" text-center">NLĐ</th>
-                      <th class=" text-center">Mã Hàng</th>
-                      <th class=" text-center">Công Đoạn</th>
-                      <th class=" text-center">Số lượng</th>
+                      <th class="text-center">Ngày lập</th>
+                      <th class=" text-center">Khách hàng</th>
+                      <th class=" text-center">Tổng tiền</th>
                       <th class=" text-center">Hành động</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr *ngFor="let item of data; let i = index">
                       <td>{{ ((pagination.pageNumber - 1) * pagination.pageSize) + i + 1 }}</td>
-                      <td>{{item.date | date: 'dd/MM/YYYY'}}</td>
-                      <td>{{item.nld}}</td>
-                      <td>{{item.mH_Name}}</td>
-                      <td>{{item.cD_Name}}</td>
-                      <td class="text-right">{{item.quantity}}</td>
+                      <td>{{item.date | date: 'dd/MM/YYYY hh:mm:ss'}}</td>
+                      <td>{{item.ten_KH}}</td>
+                      <td>{{item.tongTien | number}} - VNĐ</td>
                       <td style="width: 10rem;">
-                        <button type="button" (click)="delete(item.id)" class="btn btn-danger btn-sm">
-                          <i class="fa fa-trash-o"></i>&nbsp;Xóa </button>
-                        <button type="button" class="btn btn-warning btn-sm ml-2" (click)="edit(item)">
-                          <i class="fa fa-edit"></i>&nbsp;Sửa </button>
+                        <button type="button" class="btn btn-primary btn-sm ml-2" (click)="detail(item)">
+                          <i class="fa fa-edit"></i>&nbsp;Chi tiết </button>
                       </td>
                     </tr>
                     <tr *ngIf="data?.length === 0">

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CongDoan } from "@models/maintains/cong-doan";
+import { SanPham } from "@models/maintains/san-pham";
 import { Pagination } from '@utilities/pagination-utility';
 import { BsModalRef } from "ngx-bootstrap/modal";
 import { ModalService } from "@services/modal.service";
@@ -13,14 +13,14 @@ import { PageChangedEvent } from 'ngx-bootstrap/pagination';
   styleUrls: ['./main.component.scss']
 })
 export class MainComponent extends InjectBase implements OnInit {
-  data: CongDoan[] = [];
+  data: SanPham[] = [];
   pagination: Pagination = <Pagination>{
     pageNumber: 1,
     pageSize: 10
   };
   name: string = '';
 
-  editData: CongDoan = <CongDoan>{};
+  editData: SanPham = <SanPham>{};
   type: string = 'add';
   modalRef?: BsModalRef;
   constructor(private modalService: ModalService, private cdService: CdService) {
@@ -49,9 +49,9 @@ export class MainComponent extends InjectBase implements OnInit {
     this.getData();
   }
 
-  openModal(id: string, cd?: CongDoan) {
+  openModal(id: string, cd?: SanPham) {
     this.type = cd ? 'edit' : 'add';
-    this.editData = cd ? cd : <CongDoan>{};
+    this.editData = cd ? cd : <SanPham>{};
     this.modalService.open(id);
   }
 
@@ -60,19 +60,19 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   delete(id: number) {
-    this.snotifyService.confirm('Bạn có chắc chắn muốn xóa công đoạn', 'Xóa',
+    this.snotifyService.confirm('Bạn có chắc chắn muốn xóa sản phẩm', 'Xóa',
       () => {
         this.spinnerService.show();
         this.cdService.delete(id).subscribe({
           next: (res) => {
             if (res) {
-              this.snotifyService.success('Xóa công đoạn Thành Công', 'Thành công');
+              this.snotifyService.success('Xóa sản phẩm Thành Công', 'Thành công');
               this.data = this.data.filter(x => x.id !== id);
               this.spinnerService.hide();
             }
           },
           error: () => {
-            this.snotifyService.error('Xóa công đoạn thất bại', 'Lỗi');
+            this.snotifyService.error('Xóa sản phẩm thất bại', 'Lỗi');
             this.spinnerService.hide();
           }
         })

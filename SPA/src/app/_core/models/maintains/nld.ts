@@ -1,4 +1,7 @@
-export interface NguoiLaoDong {
+export interface KhachHang {
   id: number;
-  name: string;
+  ten: string;
+  sdt: string;
+  diaChi: string;
+  email: string;
 }

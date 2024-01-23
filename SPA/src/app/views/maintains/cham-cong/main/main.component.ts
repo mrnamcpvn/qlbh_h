@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
-import { ChamCong, ChamCongDTO } from "@models/maintains/cham-cong";
-import { ChamcongService } from "@services/chamcong.service";
+import { DonHang, ChiTietDonHang } from "@models/maintains/don-hang";
+import { DonHangService } from "@services/don-hang.service";
 import { InjectBase } from "@utilities/inject-base-app";
 import { IconButton } from "@constants/common.constants";
 import { Pagination } from '@utilities/pagination-utility';
@@ -25,8 +25,8 @@ export class MainComponent extends InjectBase implements OnInit {
     pageNumber: 1,
     pageSize: 10
   };
-  data: ChamCongDTO[] = [];
-  constructor(private chamcongService: ChamcongService) {
+  data: DonHang[] = [];
+  constructor(private donHangService: DonHangService) {
     super();
   }
 
@@ -36,7 +36,7 @@ export class MainComponent extends InjectBase implements OnInit {
 
   getData() {
     this.spinnerService.show();
-    this.chamcongService.getDataPagination(this.pagination, this.fromDate, this.toDate).subscribe({
+    this.donHangService.getDataPagination_Mua(this.pagination, this.fromDate, this.toDate).subscribe({
       next: (res) => {
         this.data = res.result;
         this.pagination = res.pagination;
@@ -58,15 +58,16 @@ export class MainComponent extends InjectBase implements OnInit {
     this.router.navigate(['/maintain/cham-cong/add']);
   }
 
-  edit(item: ChamCong) {
-    this.router.navigate(['/maintain/cham-cong/edit', item.id]);
+  detail(item: DonHang) {
+    this.donHangService.changeSDonHang(item);
+    this.router.navigate(['/maintain/cham-cong/detail', item.id]);
   }
 
   delete(id: number) {
     this.snotifyService.confirm('Bạn có chắc chắn muốn xóa mã hàng', 'Xóa',
       () => {
         this.spinnerService.show();
-        this.chamcongService.delete(id).subscribe({
+        this.donHangService.delete(id).subscribe({
           next: (res) => {
             if (res) {
               this.snotifyService.success('Xóa Người Lao Động Thành Công', 'Thành Công');

@@ -6,7 +6,7 @@ import { DatePipe } from '@angular/common';
 import { CaptionConstants, MessageConstants } from '@constants/message.enum';
 import { IconButton } from '@constants/common.constants';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
-import { NguoiLaoDong } from '@models/maintains/nld';
+import { KhachHang } from '@models/maintains/nld';
 import { Report, ReportMainParam } from '@models/reports/report-main';
 import { NldService } from '@services/nld.service';
 
@@ -29,7 +29,7 @@ export class MainComponent extends InjectBase implements OnInit {
     dateInputFormat: "DD/MM/YYYY",
     isAnimated: true,
   }
-  nlds: NguoiLaoDong[] = [];
+  nlds: KhachHang[] = [];
   constructor(
     private reportService: ReportService,
     private datePipe: DatePipe,
@@ -39,7 +39,7 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getAllNLD();
+    //this.getAllNLD();
     this.clearSearch();
   }
 
@@ -60,14 +60,14 @@ export class MainComponent extends InjectBase implements OnInit {
     this.pagination.pageNumber == 1 ? this.getData() : this.pagination.pageNumber = 1;
   }
 
-  getAllNLD() {
-    this.nldService.getAll().subscribe({
-      next: (res) => {
-        this.nlds = res;
-        this.nlds.unshift({ id: 0, name: 'Chọn NLĐ...'});
-      }
-    })
-  }
+  // getAllNLD() {
+  //   this.nldService.getAll().subscribe({
+  //     next: (res) => {
+  //       this.nlds = res;
+  //       this.nlds.unshift({ id: 0, name: 'Chọn NLĐ...'});
+  //     }
+  //   })
+  // }
 
   clearSearch() {
     this.param = <ReportMainParam>{

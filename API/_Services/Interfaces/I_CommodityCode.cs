@@ -6,10 +6,10 @@ namespace API._Services.Interfaces
 {
     public interface I_CommodityCode
     {
-        Task<PaginationUtility<MaHang>> GetDataPagination(PaginationParams pagination, string name);
-        Task<bool> Create(string name);
-        Task<bool> Delete(int id);
-        Task<bool> Update(MaHang model);
-        Task<List<MaHang>> GetAll();
+        // Task<PaginationUtility<MaHang>> GetDataPagination(PaginationParams pagination, string name);
+        // Task<bool> Create(string name);
+        // Task<bool> Delete(int id);
+        // Task<bool> Update(MaHang model);
+        // Task<List<MaHang>> GetAll();
     }
 }

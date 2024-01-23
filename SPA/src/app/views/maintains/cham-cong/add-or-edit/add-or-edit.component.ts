@@ -1,12 +1,12 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IconButton } from '@constants/common.constants';
-import { ChamCongDTO } from '@models/maintains/cham-cong';
-import { CongDoan } from '@models/maintains/cong-doan';
+import { DonHangDTO } from '@models/maintains/don-hang';
+import { SanPham } from '@models/maintains/san-pham';
 import { MaHang } from '@models/maintains/ma-hang';
-import { NguoiLaoDong } from '@models/maintains/nld';
+import { KhachHang } from '@models/maintains/nld';
 import { CdService } from '@services/cd.service';
-import { ChamcongService } from '@services/chamcong.service';
+import { DonHangService } from '@services/don-hang.service';
 import { MaHangService } from '@services/mahang.service';
 import { NldService } from '@services/nld.service';
 import { InjectBase } from '@utilities/inject-base-app';
@@ -23,15 +23,15 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
     dateInputFormat: 'DD/MM/YYYY'
   };
   checkDate: boolean = false;
-  data: ChamCongDTO = <ChamCongDTO>{};
-  nguoilaodongs: NguoiLaoDong[] = [];
-  congdoans: CongDoan[] = [];
+  data: DonHangDTO = <DonHangDTO>{};
+  nguoilaodongs: KhachHang[] = [];
+  SanPhams: SanPham[] = [];
   mahangs: MaHang[] = [];
   idMH: number;
   id: number;
   type: string = 'add';
   constructor(
-    private chamcongService: ChamcongService,
+    private donHangService: DonHangService,
     private nldService: NldService,
     private cdService: CdService,
     private mhService: MaHangService,
@@ -54,15 +54,15 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
   }
 
   getDetail() {
-    this.chamcongService.getDetail(this.id)
-      .subscribe({
-        next: res => {
-          this.data = res;
-          this.data.date = new Date(res.date);
-          this.idMH = this.data.idMaHang;
-          this.getAllCD(this.idMH);
-        }
-      })
+    // this.chamcongService.getDetail(this.id)
+    //   .subscribe({
+    //     next: res => {
+    //       this.data = res;
+    //       this.data.date = new Date(res.date);
+    //       this.idMH = this.data.idMaHang;
+    //       this.getAllCD(this.idMH);
+    //     }
+    //   })
   }
 
   getAllNLD() {
@@ -88,37 +88,37 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
   getAllCD(id: number) {
     this.cdService.getAllByCommodityCodeId(id).subscribe({
       next: (res) => {
-        this.congdoans = res;
+        this.SanPhams = res;
       }
     })
   }
 
   create(type: string) {
-    this.data.date = this.functionUtility.getUTCDate(new Date(this.data.date));
-    this.chamcongService.create(this.data).subscribe({
-      next: (res) => {
-        if (res) {
-          this.snotifyService.success('Chấm công thành công', 'Thành công');
-          type == 'SAVE' ? this.back() : this.clear();
-        }
-        else
-          this.snotifyService.success('Chấm công không thành công', 'Lỗi');
-      }
-    })
+    // this.data.date = this.functionUtility.getUTCDate(new Date(this.data.date));
+    // this.chamcongService.create(this.data).subscribe({
+    //   next: (res) => {
+    //     if (res) {
+    //       this.snotifyService.success('Chấm công thành công', 'Thành công');
+    //       type == 'SAVE' ? this.back() : this.clear();
+    //     }
+    //     else
+    //       this.snotifyService.success('Chấm công không thành công', 'Lỗi');
+    //   }
+    // })
   }
 
   update() {
-    this.data.date = this.functionUtility.getUTCDate(new Date(this.data.date));
-    this.chamcongService.update(this.data).subscribe({
-      next: (res) => {
-        if (res) {
-          this.snotifyService.success('Sửa công thành công', 'Thành công');
-          this.back();
-        }
-        else
-          this.snotifyService.success('Sửa công không thành công', 'Lỗi');
-      }
-    })
+    // this.data.date = this.functionUtility.getUTCDate(new Date(this.data.date));
+    // this.chamcongService.update(this.data).subscribe({
+    //   next: (res) => {
+    //     if (res) {
+    //       this.snotifyService.success('Sửa công thành công', 'Thành công');
+    //       this.back();
+    //     }
+    //     else
+    //       this.snotifyService.success('Sửa công không thành công', 'Lỗi');
+    //   }
+    // })
   }
 
   checktime() {
@@ -130,9 +130,9 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
   }
 
   clear() {
-    this.data = <ChamCongDTO>{
-      date: new Date()
-    };
-    this.idMH = null;
+    // this.data = <ChiTietDonHang>{
+    //   date: new Date()
+    // };
+    // this.idMH = null;
   }
 }

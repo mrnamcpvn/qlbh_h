@@ -39,7 +39,7 @@
                                     <i class="i-required">*</i></label>
                                 <div class="col-sm-4">
                                     <ng-select name="nld" required [items]="nguoilaodongs" bindLabel="name"
-                                        bindValue="id" [(ngModel)]="data.iD_NLD" placeholder="Chọn người lao động">
+                                        bindValue="id" [(ngModel)]="data.iD_KH" placeholder="Chọn Khách Hàng">
                                     </ng-select>
                                 </div>
                                 <label for="mahang"
@@ -50,19 +50,19 @@
                                         bindLabel="name" bindValue="id" placeholder="Chọn mã hàng">
                                     </ng-select>
                                 </div>
-                                <label for="congdoan"
+                                <label for="SanPham"
                                     class="col-sm-2 col-form-label lb form-group required control-label">Công đoạn
                                     <i class="i-required">*</i></label>
                                 <div class="col-sm-4">
-                                    <ng-select name="congdoan" required [items]="congdoans" [(ngModel)]="data.iD_CD"
-                                        bindLabel="value" bindValue="key" placeholder="Chọn công đoạn" [disabled]="!idMH">
+                                    <ng-select name="SanPham" required [items]="SanPhams" [(ngModel)]="data.chitiet"
+                                        bindLabel="value" bindValue="key" placeholder="Chọn Sản Phẩm" [disabled]="!idMH">
                                     </ng-select>
                                 </div>
                                 <label for="soluong"
                                     class="col-sm-2 col-form-label lb form-group required control-label">Số lượng
                                     <i class="i-required">*</i></label>
                                 <div class="col-sm-4">
-                                    <input type="number" class="form-control" [(ngModel)]="data.quantity" id="quantity"
+                                    <input type="number" class="form-control" id="quantity"
                                         name="quantity" autocomplete="off" min="0"
                                         onkeypress="return /[0-9]/i.test(event.key)" placeholder="Số lượng" required>
                                 </div>
