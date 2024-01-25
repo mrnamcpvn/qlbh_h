@@ -8,7 +8,7 @@ export const navItems: INavData[] = [
   },
   {
     name: 'Quản lý NLĐ',
-    url: '/maintain/nld',
+    url: '/maintain/khach-hang',
     icon: 'fa fa-users',
   },
   {
@@ -23,7 +23,7 @@ export const navItems: INavData[] = [
   },
   {
     name: 'Chấm công',
-    url: '/maintain/cham-cong',
+    url: '/maintain/mua-hang',
     icon: 'fa fa-calculator',
   },
   {

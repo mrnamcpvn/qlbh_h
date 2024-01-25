@@ -34,7 +34,7 @@ namespace API._Services.Services
 
         //         reports.Add(new Report
         //         {
-        //             NLD = string.Join(", ", report.Select(x => x.NLD).Distinct().ToList()),
+        //             khach-hang = string.Join(", ", report.Select(x => x.khach-hang).Distinct().ToList()),
         //             CD_ID = item.Key.CD_ID,
         //             CD_Name = report.FirstOrDefault().CD_Name,
         //             MH_ID = item.Key.MH_ID,
@@ -51,7 +51,7 @@ namespace API._Services.Services
         // {
         //     var data = await GetDataQuery(param);
 
-        //     var group = data.GroupBy(x => x.ID_NLD).OrderBy(x => x.Key).ToList();
+        //     var group = data.GroupBy(x => x.ID_khach-hang).OrderBy(x => x.Key).ToList();
 
         //     var template = Path.Combine(Directory.GetCurrentDirectory(), "Resources/Template/ReportMain.xlsx");
         //     Workbook workbook = new Workbook(template);
@@ -75,7 +75,7 @@ namespace API._Services.Services
         //         int sheet = workbook.Worksheets.Add();
         //         Worksheet ws = workbook.Worksheets[sheet];
         //         ws.Copy(workbook.Worksheets[0]);
-        //         ws.Name = data.FirstOrDefault(x => x.ID_NLD == item.Key).NLD;
+        //         ws.Name = data.FirstOrDefault(x => x.ID_khach-hang == item.Key).khach-hang;
 
         //         ws.Cells.Merge(index - 1, 0, 1, 5);
 
@@ -89,7 +89,7 @@ namespace API._Services.Services
 
         //         index += 2;
 
-        //         var dataDetails = data.Where(x => x.ID_NLD == item.Key).ToList();
+        //         var dataDetails = data.Where(x => x.ID_khach-hang == item.Key).ToList();
         //         var groupDetails = dataDetails.GroupBy(x => x.MH_ID.Value).ToList();
 
         //         foreach (var gd in groupDetails)
@@ -172,26 +172,26 @@ namespace API._Services.Services
         // private async Task<List<Report>> GetDataQuery(ReportParam param)
         // {
         //     var predicate = PredicateBuilder.New<ChamCong>(x => Convert.ToDateTime(param.FromDate) <= x.Date && x.Date <= Convert.ToDateTime(param.ToDate));
-        //     if (param.ID_NLD > 0)
-        //         predicate.And(x => x.ID_NLD == param.ID_NLD);
+        //     if (param.ID_khach-hang > 0)
+        //         predicate.And(x => x.ID_khach-hang == param.ID_khach-hang);
 
         //     var data = await _repoAccessor.ChamCong.FindAll(predicate)
         //         .Join(_repoAccessor.NguoiLD.FindAll(),
-        //             x => x.ID_NLD,
+        //             x => x.ID_khach-hang,
         //             y => y.ID,
-        //             (x, y) => new { chamCong = x, nld = y }
+        //             (x, y) => new { chamCong = x, khach-hang = y }
         //         ).Join(_repoAccessor.SanPham.FindAll(),
         //             x => x.chamCong.ID_CD,
         //             y => y.ID,
-        //             (x, y) => new { chamCong = x.chamCong, nld = x.nld, SanPham = y }
+        //             (x, y) => new { chamCong = x.chamCong, khach-hang = x.khach-hang, SanPham = y }
         //         ).Join(_repoAccessor.MaHang.FindAll(),
         //             x => x.SanPham.IDMaHang,
         //             y => y.ID,
-        //             (x, y) => new { chamCong = x.chamCong, nld = x.nld, SanPham = x.SanPham, maHang = y }
+        //             (x, y) => new { chamCong = x.chamCong, khach-hang = x.khach-hang, SanPham = x.SanPham, maHang = y }
         //         ).Select(x => new Report
         //         {
-        //             ID_NLD = x.chamCong.ID_NLD,
-        //             NLD = x.nld.Name,
+        //             ID_khach-hang = x.chamCong.ID_khach-hang,
+        //             khach-hang = x.khach-hang.Name,
         //             CD_ID = x.chamCong.ID_CD,
         //             CD_Name = x.SanPham.Name,
         //             MH_ID = x.SanPham.IDMaHang,

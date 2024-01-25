@@ -45,10 +45,10 @@ namespace API._Services.Services
 
         public async Task<bool> Delete(int id)
         {
-            var nld = await _repoAccessor.KhachHang.FindSingle(x => x.ID == id);
-            if (nld != null)
+            var kh = await _repoAccessor.KhachHang.FindSingle(x => x.ID == id);
+            if (kh != null)
             {
-                _repoAccessor.KhachHang.Remove(nld);
+                _repoAccessor.KhachHang.Remove(kh);
                 return await _repoAccessor.Save();
             }
             else

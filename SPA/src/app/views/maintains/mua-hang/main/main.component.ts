@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalService } from '@services/modal.service';
-import { BsModalRef } from 'ngx-bootstrap/modal';
-import { Pagination } from '@utilities/pagination-utility';
-import { MaHang } from '@models/maintains/ma-hang';
-import { PageChangedEvent } from "ngx-bootstrap/pagination";
+import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
+import { DonHang, ChiTietDonHang } from "@models/maintains/don-hang";
+import { DonHangService } from "@services/don-hang.service";
 import { InjectBase } from "@utilities/inject-base-app";
-import { IconButton } from '@constants/common.constants';
-import { MaHangService } from '@services/mahang.service';
+import { IconButton } from "@constants/common.constants";
+import { Pagination } from '@utilities/pagination-utility';
+import { PageChangedEvent } from 'ngx-bootstrap/pagination';
 
 @Component({
   selector: 'app-main',
@@ -14,37 +13,30 @@ import { MaHangService } from '@services/mahang.service';
   styleUrls: ['./main.component.scss']
 })
 export class MainComponent extends InjectBase implements OnInit {
+  iconButton = IconButton;
+  bsConfig: Partial<BsDatepickerConfig> = {
+    dateInputFormat: "DD/MM/YYYY",
+    isAnimated: true,
+  }
+  now: Date = new Date();
+  fromDate: string | Date;
+  toDate: string | Date;
   pagination: Pagination = <Pagination>{
     pageNumber: 1,
     pageSize: 10
   };
-  name: string = '';
-  data: MaHang[] = [];
-  editData: MaHang = <MaHang>{};
-  type: string = 'add';
-  modalRef?: BsModalRef;
-  iconButton = IconButton;
-  constructor(private modalService: ModalService, private maHangService: MaHangService) {
+  data: DonHang[] = [];
+  constructor(private donHangService: DonHangService) {
     super();
   }
 
-  ngOnInit(): void {
-    this.search();
-  }
-
-  openModal(id: string, kh?: MaHang) {
-    this.type = kh ? 'edit' : 'add';
-    this.editData = kh ? kh : <MaHang>{};
-    this.modalService.open(id);
-  }
-
-  changeData($event) {
-    this.search();
+  ngOnInit() {
+    this.clear();
   }
 
   getData() {
     this.spinnerService.show();
-    this.maHangService.getDataPagination(this.pagination, this.name).subscribe({
+    this.donHangService.getDataPagination_Mua(this.pagination, this.fromDate, this.toDate).subscribe({
       next: (res) => {
         this.data = res.result;
         this.pagination = res.pagination;
@@ -62,11 +54,20 @@ export class MainComponent extends InjectBase implements OnInit {
     this.getData();
   }
 
+  add() {
+    this.router.navigate(['/maintain/mua-hang/add']);
+  }
+
+  detail(item: DonHang) {
+    this.donHangService.changeSDonHang(item);
+    this.router.navigate(['/maintain/mua-hang/detail', item.id]);
+  }
+
   delete(id: number) {
     this.snotifyService.confirm('Bạn có chắc chắn muốn xóa mã hàng', 'Xóa',
       () => {
         this.spinnerService.show();
-        this.maHangService.delete(id).subscribe({
+        this.donHangService.delete(id).subscribe({
           next: (res) => {
             if (res) {
               this.snotifyService.success('Xóa Người Lao Động Thành Công', 'Thành Công');
@@ -83,7 +84,10 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   clear() {
-    this.name = '';
+    // First of month
+    this.fromDate = new Date(this.now.getFullYear(), this.now.getMonth(), 1);
+    // Last of month
+    this.toDate = new Date(this.now.getFullYear(), this.now.getMonth() + 1, 0);
     this.search();
   }
 }

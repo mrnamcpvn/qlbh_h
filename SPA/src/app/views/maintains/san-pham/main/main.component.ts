@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalService } from '@services/modal.service';
-import { BsModalRef } from 'ngx-bootstrap/modal';
+import { SanPham } from "@models/maintains/san-pham";
 import { Pagination } from '@utilities/pagination-utility';
-import { MaHang } from '@models/maintains/ma-hang';
-import { PageChangedEvent } from "ngx-bootstrap/pagination";
+import { BsModalRef } from "ngx-bootstrap/modal";
+import { ModalService } from "@services/modal.service";
+import { SanPhamService } from "@services/san-pham.service";
 import { InjectBase } from "@utilities/inject-base-app";
-import { IconButton } from '@constants/common.constants';
-import { MaHangService } from '@services/mahang.service';
+import { PageChangedEvent } from 'ngx-bootstrap/pagination';
 
 @Component({
   selector: 'app-main',
@@ -14,43 +13,31 @@ import { MaHangService } from '@services/mahang.service';
   styleUrls: ['./main.component.scss']
 })
 export class MainComponent extends InjectBase implements OnInit {
+  data: SanPham[] = [];
   pagination: Pagination = <Pagination>{
     pageNumber: 1,
     pageSize: 10
   };
   name: string = '';
-  data: MaHang[] = [];
-  editData: MaHang = <MaHang>{};
+
+  editData: SanPham = <SanPham>{};
   type: string = 'add';
   modalRef?: BsModalRef;
-  iconButton = IconButton;
-  constructor(private modalService: ModalService, private maHangService: MaHangService) {
+  constructor(private modalService: ModalService, private spService: SanPhamService) {
     super();
   }
 
-  ngOnInit(): void {
-    this.search();
-  }
-
-  openModal(id: string, kh?: MaHang) {
-    this.type = kh ? 'edit' : 'add';
-    this.editData = kh ? kh : <MaHang>{};
-    this.modalService.open(id);
-  }
-
-  changeData($event) {
-    this.search();
+  ngOnInit() {
+    this.getData();
   }
 
   getData() {
-    this.spinnerService.show();
-    this.maHangService.getDataPagination(this.pagination, this.name).subscribe({
+    this.spService.getDataPagination(this.pagination, this.name).subscribe({
       next: (res) => {
         this.data = res.result;
         this.pagination = res.pagination;
-        this.spinnerService.hide();
       }
-    });
+    })
   }
 
   search() {
@@ -62,20 +49,30 @@ export class MainComponent extends InjectBase implements OnInit {
     this.getData();
   }
 
+  openModal(id: string, cd?: SanPham) {
+    this.type = cd ? 'edit' : 'add';
+    this.editData = cd ? cd : <SanPham>{};
+    this.modalService.open(id);
+  }
+
+  changeData(e: any) {
+    this.search();
+  }
+
   delete(id: number) {
-    this.snotifyService.confirm('Bạn có chắc chắn muốn xóa mã hàng', 'Xóa',
+    this.snotifyService.confirm('Bạn có chắc chắn muốn xóa sản phẩm', 'Xóa',
       () => {
         this.spinnerService.show();
-        this.maHangService.delete(id).subscribe({
+        this.spService.delete(id).subscribe({
           next: (res) => {
             if (res) {
-              this.snotifyService.success('Xóa Người Lao Động Thành Công', 'Thành Công');
+              this.snotifyService.success('Xóa sản phẩm Thành Công', 'Thành công');
               this.data = this.data.filter(x => x.id !== id);
               this.spinnerService.hide();
             }
           },
           error: () => {
-            this.snotifyService.error('Xóa Người Lao Động Thất bại', 'Lỗi');
+            this.snotifyService.error('Xóa sản phẩm thất bại', 'Lỗi');
             this.spinnerService.hide();
           }
         })

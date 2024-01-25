@@ -112,7 +112,7 @@ export class FunctionUtility {
 
   /**
    * Thêm hoặc xóa class tác động vào id element trên DOM
-   * * @param id 
+   * * @param id
    * * @param className
    * * @param type => Value bằng true thì add class. Value bằng false thì xóa class
    */
@@ -166,7 +166,7 @@ export class FunctionUtility {
   exportExcel(result: Blob, fileName: string, type?: string) {
     if(!type)
       type = 'xlsx';
-    
+
     if (result.size == 0) {
       this.spinnerService.hide();
       return this.snotify.warning('No Data', "Warning")

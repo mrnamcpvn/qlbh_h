@@ -1,0 +1,130 @@
+<div class="animated fadeIn">
+  <div class="row pt-4">
+    <div class="col-lg-12">
+      <div class="card">
+        <form class="form-horizontal" autocomplete="off">
+          <div class="card-header">
+            <div class="row">
+              <div class="col-md-6 col-sm-12">
+                <h5>Chi tiết đơn hàng  <button type="button" class="btn btn-success"  [useExistingCss]="true" printSectionId="printMuaHang" ngxPrint><i class="fa fa-print"></i> In</button></h5>
+              </div>
+              <div class="col-md-6 col-sm-12">
+                <button type="button" class="btn btn-sm btn-primary float-right" (click)="back()">
+                  <i class="fa fa-plus"></i>&nbsp; Quay về</button>
+              </div>
+            </div>
+            <form class="form-group row" autocomplete="off">
+              <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                <p>
+                  Ngày lập: {{donHang.date | date: 'dd/MM/YYYY hh:mm:ss' }}
+                </p>
+                <p>
+                  Tên khách hàng: {{donHang.ten_KH}}
+                </p>
+              </div>
+            </form>
+          </div>
+        </form>
+        <div class="card-body">
+          <div class="row justify-content-md-center">
+            <div class="col-12">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th class="text-center">Stt</th>
+                      <th class="text-center">Tên sản phẩm</th>
+                      <th class="text-center">Đơn vị tính</th>
+                      <th class=" text-center">Số lượng</th>
+                      <th class=" text-center">Giá mua</th>
+                      <th class=" text-center">Thành tiền</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of listChiTiet; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{item.ten_SP}}</td>
+                      <td>Thùng</td>
+                      <td>{{item.soLuong}}</td>
+                      <td>{{item.gia}}</td>
+                      <td>{{item.thanhTien | number}}</td>
+                    </tr>
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td> <b>Tổng tiền: </b> </td>
+                      <td> {{donHang.tongTien | number}}</td>
+                    </tr>
+                    <tr *ngIf="listChiTiet?.length === 0">
+                      <td colspan="100%" class="table-warning text-center font-weight-bold">
+                        Không có dữ liệu!
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="printMuaHang" style="visibility: hidden;">
+  <div class="row">
+    <div class="col-7">
+      <h3>NPP BIA NGK - THANH TÚ - STK: T7878 <br>
+      VIETINBANK</h3>
+      <span>
+        156/3B THUẬN AN - BÌNH DƯƠNG - Điện thoại: 0933290890
+      </span>
+    </div>
+    <div class="col-5">
+      <h3>PHIẾU NHẬP HÀNG</h3>
+      <p>Ngày 23/01/2024 </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <p>Khách Hàng: Anh Nam <br>
+        Địa chỉ:
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <table class="table table-bordered table-print">
+        <thead>
+          <tr>
+            <th class="text-center">Stt</th>
+            <th class="text-center">Tên sản phẩm</th>
+            <th class=" text-center">Đơn vị tính</th>
+            <th class=" text-center">Số lượng</th>
+            <th class=" text-center">Giá mua</th>
+            <th class=" text-center">Thành tiền</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of listChiTiet; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{item.ten_SP}}</td>
+            <td>Thùng</td>
+            <td>{{item.soLuong}}</td>
+            <td>{{item.gia}}</td>
+            <td>{{item.thanhTien | number}}</td>
+          </tr>
+          <tr>
+            <td colspan="5">Tổng tiền phải thanh toán: </td>
+            <td>18000000 </td>
+          </tr>
+        </tbody>
+      </table>
+      <p><b>Bằng chữ: {{tienChu}}</b></p>
+      <i>Lưu ý: Kiểm tra hàng trước khi thanh toán</i>
+    </div>
+
+  </div>
+</div>
+

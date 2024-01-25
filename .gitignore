@@ -4,3 +4,4 @@
 dist
 *.sln
 *.lock
+SPA/yarn.lock

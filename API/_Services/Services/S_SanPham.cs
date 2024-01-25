@@ -82,9 +82,9 @@ namespace API._Services.Services
             return await _repoAccessor.Save();
         }
 
-        public async Task<List<KeyValuePair<int, string>>> GetAll()
+        public async Task<List<SanPham>> GetAll()
         {
-            var data = await _repoAccessor.SanPham.FindAll().Select(x => new KeyValuePair<int, string>(x.ID, x.Ten)).ToListAsync();
+            var data = await _repoAccessor.SanPham.FindAll().ToListAsync();
             return data;
         }
 

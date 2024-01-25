@@ -11,7 +11,7 @@ namespace API._Services.Interfaces
         Task<bool> Create(SanPham model);
         Task<bool> Delete(int id);
         Task<bool> Update(SanPham model);
-        Task<List<KeyValuePair<int, string>>> GetAll();
+        Task<List<SanPham>> GetAll();
        //Task<List<KeyValuePair<int, string>>> GetAllByCommodityCodeId(int id);
     }
 }

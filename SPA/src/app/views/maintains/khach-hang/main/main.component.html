@@ -1,0 +1,95 @@
+<div class="animated fadeIn">
+  <div class="row pt-4">
+    <div class="col-lg-12">
+      <div class="card">
+        <form class="form-horizontal" autocomplete="off">
+          <div class="card-header">
+
+            <div class="row">
+              <div class="col-md-6 col-sm-12">
+                <h5>Quản lý Khách Hàng</h5>
+              </div>
+              <div class="col-md-6 col-sm-12">
+                <button type="button" class="btn btn-sm btn-primary float-right" (click)="openModal('add-modal')">
+                  <i class="fa fa-plus"></i>&nbsp; Thêm mới</button>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                <label for="ten" class="badge badge-warning">Tên:</label>
+                <input type="text" name="ten" [(ngModel)]="ten" class="form-control" autocomplete="off" placeholder="Nhập họ tên" />
+              </div>
+              <div class="col">
+                <label class="d-block">&nbsp;</label>
+                <button type="submit" (click)="search()" class="btn btn-primary">
+                  <i class="{{iconButton.SEARCH}}"></i> Tìm kiếm
+                </button>
+                <button type="button" (click)="clear()" class="btn btn-danger ml-1">
+                  <i class="{{iconButton.CLEAR}}"></i> Xóa
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="card-body">
+          <div class="row justify-content-md-center">
+            <div class="col-xl-8 col-lg-10 col-md-12">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th class="text-center">Stt</th>
+                      <th class="text-center">Họ và tên</th>
+                      <th class="text-center">Địa chỉ</th>
+                      <th class="text-center">Số điện thoại</th>
+                      <th class="text-center">Email</th>
+
+                      <th class=" text-center">Hành động</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of data; let i = index">
+                      <td>{{ ((pagination.pageNumber - 1) * pagination.pageSize) + i + 1 }}</td>
+                      <td>{{item.ten}}</td>
+                      <td>{{item.diaChi}}</td>
+                      <td>{{item.sdt}}</td>
+                      <td>{{item.email}}</td>
+
+                      <td style="width: 10rem;">
+                        <button type="button" (click)="delete(item.id)" class="btn btn-danger btn-sm">
+                          <i class="fa fa-trash-o"></i>&nbsp;Xóa </button>
+                        <button type="button" class="btn btn-warning btn-sm ml-2"
+                          (click)="openModal('add-modal', item)">
+                          <i class="fa fa-edit"></i>&nbsp;Sửa </button>
+                      </td>
+                    </tr>
+                    <tr *ngIf="data?.length === 0">
+                      <td colspan="100%" class="table-warning text-center font-weight-bold">
+                        Không có dữ liệu!
+                      </td>
+                    </tr>
+                  </tbody>
+
+                </table>
+              </div>
+              <div class="d-flex">
+                <pagination *ngIf="data.length > 0" [boundaryLinks]="true" [totalItems]="pagination.totalCount"
+                  [itemsPerPage]="pagination.pageSize" (pageChanged)="pageChanged($event)"
+                  [(ngModel)]="pagination.pageNumber" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
+                  lastText="&raquo;">
+                </pagination>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================================================================ -->
+<!-- ============================================================================================================ -->
+<app-modal-add-edit id="add-modal" [data]="editData" type={{type}} (changeData)="changeData($event)">
+
+</app-modal-add-edit>

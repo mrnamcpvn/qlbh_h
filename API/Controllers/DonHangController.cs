@@ -1,4 +1,5 @@
 using API._Services.Interfaces;
+using API.DTOs.Maintain;
 using API.Helpers.Params;
 using API.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -21,12 +22,12 @@ namespace API.Controllers
             return Ok(result);
         }
 
-       // [HttpPost("Create")]
-        // public async Task<IActionResult> Create(ChamCong model)
-        // {
-        //     var result = await _service.Create(model);
-        //     return Ok(result);
-        // }
+       [HttpPost("Create")]
+        public async Task<IActionResult> Create(DonHangDTO model)
+        {
+            var result = await _service.Create(model);
+            return Ok(result);
+        }
 
         // [HttpDelete("Delete")]
         // public async Task<IActionResult> Delete(int id)

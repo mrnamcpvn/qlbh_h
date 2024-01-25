@@ -1,0 +1,11 @@
+.table-print {
+
+  // min-width: 1600px;
+  &.table {
+      thead {
+          background-color: #fff;
+          color: #000;
+          height: 10px !important;
+      }
+  }
+}

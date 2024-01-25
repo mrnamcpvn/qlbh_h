@@ -2,8 +2,8 @@ namespace API.DTOs.Report
 {
     public class Report
     {
-        public int ID_NLD { get; set; }
-        public string NLD { get; set; }
+        public int ID_KH { get; set; }
+        public string Ten_KH { get; set; }
         public DateTime Date { get; set; }
         public string DateView { get; set; }
         public int? MH_ID { get; set; }
@@ -20,6 +20,6 @@ namespace API.DTOs.Report
     {
         public string FromDate { get; set; }
         public string ToDate { get; set; }
-        public int  ID_NLD { get; set; }
+        public int  ID_KH { get; set; }
     }
 }

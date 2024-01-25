@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalService } from '@services/modal.service';
 import { BsModalRef } from 'ngx-bootstrap/modal';
+import { KhachHangService } from '@services/khach-hang.service';
 import { Pagination } from '@utilities/pagination-utility';
-import { MaHang } from '@models/maintains/ma-hang';
+import { KhachHang } from '@models/maintains/khach-hang';
 import { PageChangedEvent } from "ngx-bootstrap/pagination";
 import { InjectBase } from "@utilities/inject-base-app";
 import { IconButton } from '@constants/common.constants';
-import { MaHangService } from '@services/mahang.service';
 
 @Component({
   selector: 'app-main',
@@ -18,13 +18,13 @@ export class MainComponent extends InjectBase implements OnInit {
     pageNumber: 1,
     pageSize: 10
   };
-  name: string = '';
-  data: MaHang[] = [];
-  editData: MaHang = <MaHang>{};
+  ten: string = '';
+  data: KhachHang[] = [];
+  editData: KhachHang = <KhachHang>{};
   type: string = 'add';
   modalRef?: BsModalRef;
   iconButton = IconButton;
-  constructor(private modalService: ModalService, private maHangService: MaHangService) {
+  constructor(private modalService: ModalService, private khService: KhachHangService) {
     super();
   }
 
@@ -32,9 +32,9 @@ export class MainComponent extends InjectBase implements OnInit {
     this.search();
   }
 
-  openModal(id: string, kh?: MaHang) {
+  openModal(id: string, kh?: KhachHang) {
     this.type = kh ? 'edit' : 'add';
-    this.editData = kh ? kh : <MaHang>{};
+    this.editData = kh ? kh : <KhachHang>{};
     this.modalService.open(id);
   }
 
@@ -44,7 +44,7 @@ export class MainComponent extends InjectBase implements OnInit {
 
   getData() {
     this.spinnerService.show();
-    this.maHangService.getDataPagination(this.pagination, this.name).subscribe({
+    this.khService.getDataPagination(this.pagination, this.ten).subscribe({
       next: (res) => {
         this.data = res.result;
         this.pagination = res.pagination;
@@ -63,19 +63,19 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   delete(id: number) {
-    this.snotifyService.confirm('Bạn có chắc chắn muốn xóa mã hàng', 'Xóa',
+    this.snotifyService.confirm('Bạn có chắc chắn muốn xóa khách hàng?', 'Xóa',
       () => {
         this.spinnerService.show();
-        this.maHangService.delete(id).subscribe({
+        this.khService.delete(id).subscribe({
           next: (res) => {
             if (res) {
-              this.snotifyService.success('Xóa Người Lao Động Thành Công', 'Thành Công');
+              this.snotifyService.success('Xóa Khách Hàng Thành Công', 'Thành Công');
               this.data = this.data.filter(x => x.id !== id);
               this.spinnerService.hide();
             }
           },
           error: () => {
-            this.snotifyService.error('Xóa Người Lao Động Thất bại', 'Lỗi');
+            this.snotifyService.error('Xóa Khách Hàng Thất bại', 'Lỗi');
             this.spinnerService.hide();
           }
         })
@@ -83,7 +83,8 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   clear() {
-    this.name = '';
+    this.ten = '';
     this.search();
   }
+
 }

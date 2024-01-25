@@ -22,7 +22,7 @@ export class DonHangService {
     return this.http.get<PaginationResult<DonHang>>(`${this.apiUrl}/GetMuaHangPagination`, { params });
   }
 
-  create(model: DonHang) {
+  create(model: DonHangDTO) {
     return this.http.post<boolean>(`${this.apiUrl}/Create`, model);
   }
 

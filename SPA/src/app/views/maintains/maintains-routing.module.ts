@@ -7,16 +7,16 @@ const routes: Routes = [
     loadChildren: () => import('./tai-khoan/tai-khoan.module').then(m => m.TaiKhoanModule)
   },
   {
-    path: 'nld',
-    loadChildren: () => import('./nld/nld.module').then(m => m.NldModule)
+    path: 'khach-hang',
+    loadChildren: () => import('./khach-hang/kh.module').then(m => m.KhachHangModule)
   },
   {
     path: 'cd',
-    loadChildren: () => import('./cd/cd.module').then(m => m.CdModule)
+    loadChildren: () => import('./san-pham/sp.module').then(m => m.SanPhamModule)
   },
   {
-    path: 'cham-cong',
-    loadChildren: () => import('./cham-cong/cham-cong.module').then(m => m.ChamCongModule)
+    path: 'mua-hang',
+    loadChildren: () => import('./mua-hang/cham-cong.module').then(m => m.ChamCongModule)
   },
   {
     path: 'ma-hang',

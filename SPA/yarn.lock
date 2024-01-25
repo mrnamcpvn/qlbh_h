@@ -5487,12 +5487,12 @@ ngx-perfect-scrollbar@^10.1.1:
     resize-observer-polyfill "^1.5.0"
     tslib "^2.0.0"
 
-ngx-print-element@^2.1.0:
-  version "2.1.6"
-  resolved "https://registry.yarnpkg.com/ngx-print-element/-/ngx-print-element-2.1.6.tgz#40119772e5b08028c77cfa4ed69ccbbdf7523157"
-  integrity sha512-L2gX541xhZuSi65hSU+h2chRnyzW8tQddjs1Y/X4OurjMamqGpNQ29rKANkhDXb4ZBkLFrEhmLn5/BCDUYQ77Q==
+ngx-print@1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/ngx-print/-/ngx-print-1.2.1.tgz#0a96def696dfedde9dca6470ecc686f5e0c065d1"
+  integrity sha512-+xz5wbVO9N5vAT/W6dgTzbE1RBB1jUeBOSF04Gs66QqTrb46paRAjHgqMr4TvE8CUiTp5aMmkL54QEKat9gj6w==
   dependencies:
-    tslib "^2.3.0"
+    tslib "^1.9.3"
 
 ngx-spinner@^14.0.0:
   version "14.0.0"
@@ -7597,7 +7597,7 @@ tslib@2.4.0:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.0.tgz#7cecaa7f073ce680a05847aa77be941098f36dc3"
   integrity sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==
 
-tslib@^1.10.0, tslib@^1.14.1, tslib@^1.9.0:
+tslib@^1.10.0, tslib@^1.14.1, tslib@^1.9.0, tslib@^1.9.3:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==

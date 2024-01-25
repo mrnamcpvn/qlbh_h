@@ -6,9 +6,9 @@ import { DatePipe } from '@angular/common';
 import { CaptionConstants, MessageConstants } from '@constants/message.enum';
 import { IconButton } from '@constants/common.constants';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
-import { KhachHang } from '@models/maintains/nld';
+import { KhachHang } from '@models/maintains/khach-hang';
 import { Report, ReportMainParam } from '@models/reports/report-main';
-import { NldService } from '@services/nld.service';
+import { KhachHangService } from '@services/khach-hang.service';
 
 @Component({
   selector: 'app-main',
@@ -29,42 +29,42 @@ export class MainComponent extends InjectBase implements OnInit {
     dateInputFormat: "DD/MM/YYYY",
     isAnimated: true,
   }
-  nlds: KhachHang[] = [];
+  khs: KhachHang[] = [];
   constructor(
     private reportService: ReportService,
     private datePipe: DatePipe,
-    private nldService: NldService
+    private khService: KhachHangService
   ) {
     super();
   }
 
   ngOnInit(): void {
-    //this.getAllNLD();
+    //this.getAllkhach-hang();
     this.clearSearch();
   }
 
   getData() {
     this.spinnerService.show();
-    this.reportService.getDatapagination(this.pagination, this.param)
-      .subscribe({
-        next: (res) => {
-          this.pagination = res.pagination;
-          this.data = res.result;
-        },
-        error: () => this.snotifyService.error(MessageConstants.UN_KNOWN_ERROR, CaptionConstants.ERROR),
-        complete: () => this.spinnerService.hide()
-      });
+    // this.reportService.getDatapagination(this.pagination, this.param)
+    //   .subscribe({
+    //     next: (res) => {
+    //       this.pagination = res.pagination;
+    //       this.data = res.result;
+    //     },
+    //     error: () => this.snotifyService.error(MessageConstants.UN_KNOWN_ERROR, CaptionConstants.ERROR),
+    //     complete: () => this.spinnerService.hide()
+    //   });
   }
 
   search() {
     this.pagination.pageNumber == 1 ? this.getData() : this.pagination.pageNumber = 1;
   }
 
-  // getAllNLD() {
-  //   this.nldService.getAll().subscribe({
+  // getAllkhach-hang() {
+  //   this.khach-hangService.getAll().subscribe({
   //     next: (res) => {
-  //       this.nlds = res;
-  //       this.nlds.unshift({ id: 0, name: 'Chọn NLĐ...'});
+  //       this.khach-hangs = res;
+  //       this.khach-hangs.unshift({ id: 0, name: 'Chọn NLĐ...'});
   //     }
   //   })
   // }
@@ -73,7 +73,7 @@ export class MainComponent extends InjectBase implements OnInit {
     this.param = <ReportMainParam>{
       fromDate: new Date(this.now.getFullYear(), this.now.getMonth(), 1),
       toDate: new Date(this.now.getFullYear(), this.now.getMonth() + 1, 0),
-      id_NLD: 0
+      id_kh: 0
     };
     this.data = [];
   }
@@ -84,15 +84,15 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   exportExcel() {
-    this.spinnerService.show();
-    this.reportService.exportExcel(this.pagination, this.param)
-      .subscribe({
-        next: (result: Blob) => {
-          const fileName = `Bao_cao_${this.datePipe.transform(new Date(), 'yyyyMMdd_HHmmss')}`;
-          this.functionUtility.exportExcel(result, fileName);
-        },
-        error: () => this.snotifyService.error(MessageConstants.UN_KNOWN_ERROR, CaptionConstants.ERROR),
-        complete: () => this.spinnerService.hide()
-      });
+    // this.spinnerService.show();
+    // this.reportService.exportExcel(this.pagination, this.param)
+    //   .subscribe({
+    //     next: (result: Blob) => {
+    //       const fileName = `Bao_cao_${this.datePipe.transform(new Date(), 'yyyyMMdd_HHmmss')}`;
+    //       this.functionUtility.exportExcel(result, fileName);
+    //     },
+    //     error: () => this.snotifyService.error(MessageConstants.UN_KNOWN_ERROR, CaptionConstants.ERROR),
+    //     complete: () => this.spinnerService.hide()
+    //   });
   }
 }

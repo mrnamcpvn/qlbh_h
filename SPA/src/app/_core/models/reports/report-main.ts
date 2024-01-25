@@ -25,5 +25,5 @@ export interface ReportExportDetail {
 export interface ReportMainParam {
   fromDate: string | Date | null;
   toDate: string | Date | null;
-  id_NLD: number;
+  id_kh: number;
 }

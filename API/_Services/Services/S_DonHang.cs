@@ -39,7 +39,7 @@ namespace API._Services.Services
             return result;
         }
 
-        public async Task<bool> Create(DonHang model)
+        public async Task<bool> Create(DonHangDTO model)
         {
             _repoAccessor.DonHang.Add(model);
             return await _repoAccessor.Save();

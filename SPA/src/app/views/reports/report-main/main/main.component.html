@@ -18,9 +18,9 @@
                   Người lao động:
                 </label>
                 <div class="full-width">
-                  <ng-select name="nld" [items]="nlds" bindLabel="name" bindValue="id"
-                    [(ngModel)]="param.id_NLD" placeholder="Chọn người lao động" [clearable]="param.id_NLD != 0"
-                    (clear)="param.id_NLD = 0">
+                  <ng-select name="khach-hang" [items]="khs" bindLabel="name" bindValue="id"
+                    [(ngModel)]="param.id_kh" placeholder="Chọn người lao động" [clearable]="param.id_kh != 0"
+                    (clear)="param.id_kh = 0">
                   </ng-select>
                 </div>
               </div>
@@ -52,10 +52,10 @@
               <!-- Button function-->
               <div class="col-xl-5 col-lg-6 col-md-6 mt-4 pt-1">
                 <div>
-                  <button type="submit" class="btn btn-primary" (click)="search()" [disabled]="param.id_NLD == 0">
+                  <button type="submit" class="btn btn-primary" (click)="search()" [disabled]="param.id_kh == 0">
                     <i class="{{iconButton.SEARCH}}"></i> Tìm kiếm
                   </button>
-                  <button type="submit" class="btn btn-danger ml-2" (click)="clearSearch()" [disabled]="param.id_NLD == 0">
+                  <button type="submit" class="btn btn-danger ml-2" (click)="clearSearch()" [disabled]="param.id_kh == 0">
                     <i class="{{iconButton.CLEAR}}"></i> Xóa
                   </button>
                   <button type="button" class="btn btn-success ml-2" (click)="exportExcel()">
@@ -87,7 +87,7 @@
                   <tbody>
                     <tr *ngFor="let item of data">
                       <td>{{item?.dateView}}</td>
-                      <!-- <td>{{item?.nld}}</td> -->
+                      <!-- <td>{{item?.khach-hang}}</td> -->
                       <td>{{item?.mH_Name}}</td>
                       <td>{{item?.cD_Name}}</td>
                       <td class="text-right">{{item?.quantity}}</td>
