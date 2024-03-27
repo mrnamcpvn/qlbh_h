@@ -1,0 +1,4 @@
+- Số lượng tồn của sản phẩm = Số lượng tồn ban đầu + Số lượng nhập - Số lượng xuất
+- Doanh thu = Tổng tiền xuất - Tổng tiền nhập + ( Số lượng tồn đầu * Giá nhập gần nhất )
+
+Pass sqlserver: 123456789

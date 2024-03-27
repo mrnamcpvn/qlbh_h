@@ -1,0 +1,131 @@
+<div class="animated fadeIn">
+    <div class="row pt-4">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col-6">
+                            <strong class="title-card-cs">
+                                Nhập hàng
+                            </strong>
+                        </div>
+                        <div class="col-6">
+                            <button type="button" class="btn btn-primary btn-sm float-right" (click)="back()">
+                                <i class="{{iconButton.BACK}}"></i>
+                                Trờ về
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row justify-content-center">
+                        <div class="col-xl-10 col-lg-12">
+                            <form class="form-group row p-2" autocomplete="off" #AddMHForm="ngForm">
+                                <label for="khach-hang"
+                                    class="col-sm-2 col-form-label lb form-group required control-label">Khách hàng
+                                    <i class="i-required">*</i></label>
+                                <div class="col-sm-4">
+                                    <ng-select name="khach-hang" required [items]="khachHangs" bindLabel="ten"
+                                        bindValue="id" [(ngModel)]="data.iD_KH" placeholder="Chọn Khách Hàng">
+                                    </ng-select>
+                                </div>
+                                <div class="col-sm-6"></div>
+                                <hr>
+                                <label for="mahang"
+                                    class="col-sm-2 col-form-label lb form-group required control-label">Mã sản phẩm
+                                    <i class="i-required">*</i></label>
+                                <div class="col-sm-4">
+                                    <ng-select name="sanpham" required [items]="sanPhams" [(ngModel)]="idSP" (ngModelChange)="mhChanges(idSP)"
+                                        bindLabel="maSP" bindValue="id" placeholder="Chọn sản phẩm">
+                                    </ng-select>
+                                </div>
+                                <label for="SanPham"
+                                    class="col-sm-2 col-form-label lb form-group required control-label">Tên sản phẩm
+                                    <i class="i-required">*</i></label>
+                                <div class="col-sm-4">
+                                    <input class="form-control" name="tenSP" type="text" disabled [(ngModel)]="tenSP">
+                                </div>
+                                <label for="soluong"
+                                    class="col-sm-2 col-form-label lb form-group required control-label">Số lượng
+                                    <i class="i-required">*</i></label>
+                                <div class="col-sm-4">
+                                    <input type="number" class="form-control" id="quantity" [(ngModel)]="chiTiet.soLuong"
+                                        name="quantity" autocomplete="off" min="0"
+                                        onkeypress="return /[0-9]/i.test(event.key)" placeholder="Số lượng" required>
+                                </div>
+                                <label for="gia"
+                                    class="col-sm-2 col-form-label lb form-group required control-label">Giá bán
+                                    <i class="i-required">*</i></label>
+                                <div class="col-sm-4">
+                                    <input type="number" class="form-control" id="gia" [(ngModel)]="giaSP"
+                                        name="gia" autocomplete="off" min="0"
+                                        onkeypress="return /[0-9]/i.test(event.key)" placeholder="Giá sản phẩm" required>
+                                </div>
+                                <div class="col-sm-12">
+                                  <div class="add-sp">
+                                    <button type="button" class="btn btn-success" (click)="add()"
+                                  [disabled]="!AddMHForm.valid">
+                                  <i class="{{iconButton.ADD}}"></i>
+                                  Thêm
+                                  </button>
+                                  </div>
+                                </div>
+
+
+                            </form>
+                            <div class="table-responsive">
+                              <table class="table table-bordered">
+                                <thead>
+                                  <tr>
+                                    <th class="text-center">Stt</th>
+                                    <th class="text-center">Tên sản phẩm</th>
+                                    <th class="text-center">Đơn vị tính</th>
+                                    <th class=" text-center">Số lượng</th>
+                                    <th class=" text-center">Giá mua</th>
+                                    <th class=" text-center">Thành tiền</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr *ngFor="let item of listChiTiet; let i = index">
+                                    <td>{{ i + 1 }}</td>
+                                    <td>{{item.ten_SP}}</td>
+                                    <td>{{item.dvt}}</td>
+                                    <td>{{item.soLuong}}</td>
+                                    <td>{{item.gia}}</td>
+                                    <td>{{item.thanhTien | number}}</td>
+                                  </tr>
+                                  <tr>
+
+                                    <td colspan="5"> <b>Tổng tiền: </b> </td>
+                                    <td>{{tongTien | number}}</td>
+                                  </tr>
+
+                                </tbody>
+                              </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-md-12" *ngIf="type == 'add'">
+                            <button type="button" class="btn btn-success mr-2" (click)="create('SAVE')"
+                                [disabled]="!data.iD_KH || listChiTiet.length < 1">
+                                <i class="{{iconButton.SAVE}}"></i>
+                                Lưu
+                            </button>
+
+                        </div>
+                        <div class="col-md-12" *ngIf="type == 'edit'">
+                            <button type="button" class="btn btn-success mr-2" (click)="update()"
+                                [disabled]="!data.iD_khach-hang || !data.quantity || !data.iD_CD || !data.date || checkDate">
+                                <i class="{{iconButton.SAVE}}"></i>
+                                Lưu
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

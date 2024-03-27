@@ -1,12 +1,14 @@
 export interface Report {
-  date: string;
-  mH_ID: number | null;
-  mH_Name: string;
-  cD_ID: number;
-  cD_Name: string;
-  quantity: number;
-  money: number;
-  total_Money: number;
+  iD_SP: number;
+  ten_SP: string;
+  soLuongNhap: number;
+  soLuongXuat: number;
+  soLuongTonDau: number;
+  soLuongTonCuoi: number;
+  tongTienNhap: number;
+  giaTon: number;
+  tongTienXuat: number;
+  doanhThu: number;
 }
 
 export interface ReportExport {
@@ -15,15 +17,20 @@ export interface ReportExport {
 }
 
 export interface ReportExportDetail {
-  sTT: number;
-  cD_Name: string;
-  quantity: number;
-  money: number;
-  total_Money: number;
+  iD_SP: number;
+  ten_SP: string;
+  soLuongNhap: number;
+  soLuongXuat: number;
+  soLuongTonDau: number;
+  soLuongTonCuoi: number;
+  tongTienNhap: number;
+  giaTon: number;
+  tongTienXuat: number;
+  doanhThu: number;
 }
 
 export interface ReportMainParam {
   fromDate: string | Date | null;
   toDate: string | Date | null;
-  id_kh: number;
+  id_sp: number;
 }

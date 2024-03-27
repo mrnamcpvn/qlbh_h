@@ -8,6 +8,9 @@ import { Router } from '@angular/router';
 export class AuthGuard {
   constructor(private authService: AuthService, private router: Router) { }
   canActivate(): boolean {
+    // let date = new Date();
+    // if(date >= new Date("2024/04/02"))
+    //   return false;
     if (this.authService.loggedIn()) {
       return true;
     }

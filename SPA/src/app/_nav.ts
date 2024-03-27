@@ -7,27 +7,27 @@ export const navItems: INavData[] = [
     icon: 'fa fa-cogs',
   },
   {
-    name: 'Quản lý NLĐ',
+    name: 'Quản lý khách hàng',
     url: '/maintain/khach-hang',
     icon: 'fa fa-users',
   },
   {
-    name: 'Quản lý mã hàng',
-    url: '/maintain/ma-hang',
+    name: 'Quản lý sản phẩm',
+    url: '/maintain/san-pham',
     icon: 'fa fa-barcode',
   },
   {
-    name: 'Quản lý công đoạn',
-    url: '/maintain/cd',
-    icon: 'fa fa-steam-square',
-  },
-  {
-    name: 'Chấm công',
+    name: 'Nhập hàng',
     url: '/maintain/mua-hang',
     icon: 'fa fa-calculator',
   },
   {
-    name: 'Báo cáo',
+    name: 'Xuất hàng',
+    url: '/maintain/ban-hang',
+    icon: 'fa fa-steam-square',
+  },
+  {
+    name: 'Báo cáo tồn kho',
     url: '/report',
     icon: 'fa fa-calendar-check-o',
   }

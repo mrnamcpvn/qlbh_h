@@ -36,7 +36,7 @@ export class MainComponent extends InjectBase implements OnInit {
 
   getData() {
     this.spinnerService.show();
-    this.donHangService.getDataPagination(this.pagination, this.fromDate, this.toDate, 1).subscribe({
+    this.donHangService.getDataPagination(this.pagination, this.fromDate, this.toDate, 2).subscribe({
       next: (res) => {
         this.data = res.result;
         this.pagination = res.pagination;
@@ -55,12 +55,12 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   add() {
-    this.router.navigate(['/maintain/mua-hang/add']);
+    this.router.navigate(['/maintain/ban-hang/add']);
   }
 
   detail(item: DonHang) {
     this.donHangService.changeSDonHang(item);
-    this.router.navigate(['/maintain/mua-hang/detail', item.id]);
+    this.router.navigate(['/maintain/ban-hang/detail', item.id]);
   }
 
   delete(id: number) {

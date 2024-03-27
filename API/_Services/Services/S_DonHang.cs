@@ -39,25 +39,113 @@ namespace API._Services.Services
             return result;
         }
 
-        public async Task<bool> Create(DonHangDTO model)
+        public async Task<DonHang> Create(DonHangDTO model)
         {
-            _repoAccessor.DonHang.Add(model);
-            return await _repoAccessor.Save();
+            DonHang dh = new DonHang();
+            dh.Date = model.Date;
+            dh.ID_KH = model.ID_KH;
+            dh.Ten_KH = model.Ten_KH;
+            dh.TongTien = model.TongTien;
+            dh.Loai = model.Loai;
+            dh.Date = DateTime.Now;
+            _repoAccessor.DonHang.Add(dh);
+            await _repoAccessor.Save();
+            var idDH = _repoAccessor.DonHang.FindAll().DefaultIfEmpty().Max(r => r == null ? 0 : r.ID);
+            foreach(var item in model.ChiTiet)
+            {
+                var sp = await _repoAccessor.SanPham.FindById(item.ID_SP);
+                item.SL_Ton_Dau = sp.SoLuong;
+                if(model.Loai == 1)
+                    sp.SoLuong = sp.SoLuong== null? 0: sp.SoLuong + item.SoLuong;
+                else sp.SoLuong = sp.SoLuong== null? 0: sp.SoLuong - item.SoLuong;
+                item.ID_DH = idDH;
+                item.SL_Ton_Cuoi = sp.SoLuong;
+                item.Dvt = sp.Dvt;
+                item.Updated_Time = DateTime.Now;
+                _repoAccessor.ChiTietDonHang.Add(item);
+                _repoAccessor.SanPham.Update(sp);
+            }
+
+            try 
+            {
+                await _repoAccessor.Save();
+                return dh;
+            }
+            catch
+            {
+                _repoAccessor.DonHang.Remove(idDH);
+                await _repoAccessor.Save();
+                return new DonHang();
+            }
+            
         }
 
-        public async Task<bool> Update(DonHang model)
+        public async Task<DonHang> Update(DonHangDTO model)
         {
-            _repoAccessor.DonHang.Update(model);
-            return await _repoAccessor.Save();
+            var dh = await _repoAccessor.DonHang.FindById(model.ID);
+            dh.ID_KH = model.ID_KH;
+            dh.Ten_KH = model.Ten_KH;
+            dh.TongTien = model.TongTien;
+            _repoAccessor.DonHang.Update(dh);
+            foreach(var item in model.ChiTiet)
+            {
+                var sp = await _repoAccessor.SanPham.FindById(item.ID_SP);
+                var chiTiet = await _repoAccessor.ChiTietDonHang.FindById(item.ID);
+
+                if(chiTiet != null) {
+                    if(model.Loai == 1)
+                        sp.SoLuong =  sp.SoLuong== null? 0: sp.SoLuong + (item.SoLuong - chiTiet.SoLuong);
+                    else sp.SoLuong = sp.SoLuong== null? 0: sp.SoLuong - (item.SoLuong - chiTiet.SoLuong);
+                    chiTiet.SL_Ton_Cuoi = sp.SoLuong;
+                    chiTiet.Updated_Time = DateTime.Now;
+                    chiTiet.SoLuong = item.SoLuong;
+                    chiTiet.ThanhTien = item.ThanhTien;
+                    chiTiet.Gia = item.Gia;
+                    _repoAccessor.ChiTietDonHang.Update(chiTiet);
+                }else {
+                    item.SL_Ton_Dau = sp.SoLuong== null? 0: sp.SoLuong;
+                    if(model.Loai == 1)
+                        sp.SoLuong = sp.SoLuong== null? 0: sp.SoLuong + item.SoLuong;
+                    else sp.SoLuong = sp.SoLuong== null? 0: sp.SoLuong - item.SoLuong;
+                    item.ID_DH = model.ID;
+                    item.SL_Ton_Cuoi = sp.SoLuong;
+                    item.Dvt = sp.Dvt;
+                    item.Updated_Time = DateTime.Now;
+                    _repoAccessor.ChiTietDonHang.Add(item);
+                }
+                _repoAccessor.SanPham.Update(sp);
+            }
+            try 
+            {
+                await _repoAccessor.Save();
+                return dh;
+            }
+            catch
+            {
+                return new DonHang();
+            }
         }
 
         public async Task<bool> Delete(int id)
         {
-            var cong = await _repoAccessor.DonHang.FindSingle(x => x.ID == id);
-            if (cong != null)
+            var dh = await _repoAccessor.DonHang.FindSingle(x => x.ID == id);
+            var listChitiet = await _repoAccessor.ChiTietDonHang.FindAll(x=> x.ID_DH == id).ToListAsync();
+            
+            if (dh != null)
             {
-                _repoAccessor.DonHang.Remove(cong);
-                return await _repoAccessor.Save();
+                foreach (var item in listChitiet)
+                {
+                    var sp = await _repoAccessor.SanPham.FindById(item.ID_SP);
+                    if(dh.Loai == 1) sp.SoLuong -= item.SoLuong;
+                    else sp.SoLuong += item.SoLuong;
+                    _repoAccessor.ChiTietDonHang.Remove(item);
+                }
+                _repoAccessor.DonHang.Remove(dh);
+                try {
+                    return await _repoAccessor.Save();  
+                }catch {
+                    return false;
+                }
             }
             else
             {

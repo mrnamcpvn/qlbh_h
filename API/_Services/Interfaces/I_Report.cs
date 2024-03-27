@@ -5,7 +5,7 @@ namespace API._Services.Interfaces
 {
     public interface I_Report
     {
-      //  Task<PaginationUtility<Report>> GetDataPagination(PaginationParam pagination, ReportParam param, bool isPaging = true);
+        Task<PaginationUtility<ReportDTO>> GetDataPagination(PaginationParam pagination, ReportParam param, bool isPaging = true);
       //  Task<byte[]> ExportExcel(PaginationParam pagination, ReportParam param, bool isPaging = true);
     }
 }

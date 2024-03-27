@@ -6,11 +6,11 @@
           <div class="card-header">
             <div class="row">
               <div class="col-md-6 col-sm-12">
-                <h5>Nhập Hàng</h5>
+                <h5>Xuất Hàng</h5>
               </div>
               <div class="col-md-6 col-sm-12">
                 <button type="button" class="btn btn-sm btn-primary float-right" (click)="add()">
-                  <i class="fa fa-plus"></i>&nbsp; Nhập</button>
+                  <i class="fa fa-plus"></i>&nbsp; Xuất</button>
               </div>
             </div>
             <form class="form-group row" autocomplete="off">
@@ -70,10 +70,10 @@
                       <td>{{item.ten_KH}}</td>
                       <td>{{item.tongTien | number}} - VNĐ</td>
                       <td style="width: 10rem;">
-                        <button type="button" class="btn btn-primary btn-sm " (click)="detail(item)">
+                        <button type="button" class="btn btn-primary btn-sm" (click)="detail(item)">
                           <i class="fa fa-edit"></i>&nbsp;Chi tiết </button>
-                          <button type="button" (click)="delete(item.id)" class="btn btn-danger btn-sm ml-2">
-                            <i class="fa fa-trash-o"></i>&nbsp;Xóa </button>
+                        <button type="button" (click)="delete(item.id)" class="btn btn-danger btn-sm ml-2">
+                          <i class="fa fa-trash-o"></i>&nbsp;Xóa </button>
                       </td>
                     </tr>
                     <tr *ngIf="data?.length === 0">

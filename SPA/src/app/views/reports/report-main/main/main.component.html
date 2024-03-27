@@ -8,19 +8,19 @@
             <div class="row border-title">
               <div class="col-md-12">
                 <strong class="title-card-cs">
-                  <h5>Báo cáo</h5>
+                  <h5>Báo cáo tồn kho</h5>
                 </strong>
               </div>
             </div>
             <form class="form-group row" autocomplete="off">
               <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
                 <label class="badge badge-warning">
-                  Người lao động:
+                  Sản phẩm:
                 </label>
                 <div class="full-width">
-                  <ng-select name="khach-hang" [items]="khs" bindLabel="name" bindValue="id"
-                    [(ngModel)]="param.id_kh" placeholder="Chọn người lao động" [clearable]="param.id_kh != 0"
-                    (clear)="param.id_kh = 0">
+                  <ng-select name="san-pham" [items]="listSP" bindLabel="ten" bindValue="id"
+                    [(ngModel)]="param.id_sp" placeholder="Chọn sản phẩm" [clearable]="param.id_sp != 0"
+                    (clear)="param.id_sp = 0">
                   </ng-select>
                 </div>
               </div>
@@ -52,10 +52,10 @@
               <!-- Button function-->
               <div class="col-xl-5 col-lg-6 col-md-6 mt-4 pt-1">
                 <div>
-                  <button type="submit" class="btn btn-primary" (click)="search()" [disabled]="param.id_kh == 0">
+                  <button type="submit" class="btn btn-primary" (click)="search()">
                     <i class="{{iconButton.SEARCH}}"></i> Tìm kiếm
                   </button>
-                  <button type="submit" class="btn btn-danger ml-2" (click)="clearSearch()" [disabled]="param.id_kh == 0">
+                  <button type="submit" class="btn btn-danger ml-2" (click)="clearSearch()" [disabled]="param.id_sp == 0">
                     <i class="{{iconButton.CLEAR}}"></i> Xóa
                   </button>
                   <button type="button" class="btn btn-success ml-2" (click)="exportExcel()">
@@ -75,24 +75,28 @@
                 <table class="table table-bordered">
                   <thead>
                     <tr>
-                      <th>Ngày</th>
-                      <!-- <th>NLĐ</th> -->
-                      <th>Mã Hàng</th>
-                      <th>Công Đoạn</th>
-                      <th>Số lượng</th>
-                      <th>Tiền công</th>
-                      <th>Thành tiền</th>
+                      <th>Tên sản phẩm</th>
+                      <th>Số lượng nhập</th>
+                      <th>Tổng tiền nhập</th>
+                      <th>Số lượng xuất</th>
+                      <th>Tổng tiền xuất</th>
+                      <th>Số lượng tồn ban đầu</th>
+                      <th>Giá tồn</th>
+                      <th>Số lượng tồn cuối</th>
+                      <th>Doanh thu</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr *ngFor="let item of data">
-                      <td>{{item?.dateView}}</td>
-                      <!-- <td>{{item?.khach-hang}}</td> -->
-                      <td>{{item?.mH_Name}}</td>
-                      <td>{{item?.cD_Name}}</td>
-                      <td class="text-right">{{item?.quantity}}</td>
-                      <td class="text-right">{{item?.money | number}}</td>
-                      <td class="text-right">{{item?.total_Money | number}}</td>
+                      <td>{{item?.ten_SP}}</td>
+                      <td class="text-right">{{item?.soLuongNhap}}</td>
+                      <td class="text-right">{{item?.tongTienNhap | number}}</td>
+                      <td class="text-right">{{item?.soLuongXuat}}</td>
+                      <td class="text-right">{{item?.tongTienXuat | number}}</td>
+                      <td class="text-right">{{item?.soLuongTonDau }}</td>
+                      <td class="text-right">{{item?.giaTon | number}}</td>
+                      <td class="text-right slTon">{{item?.soLuongTonCuoi}}</td>
+                      <td class="text-right doanhthu">{{item?.doanhThu | number}}</td>
                     </tr>
                     <tr *ngIf="!data || data?.length === 0">
                       <td colspan="100%" class="table-warning text-center font-weight-bold">

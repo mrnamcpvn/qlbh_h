@@ -1,10 +1,11 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ChiTietDonHang, DonHang, DonHangDTO } from '@models/maintains/don-hang';
+import { IconButton } from '@constants/common.constants';
+import { ChiTietDonHang, DonHang } from '@models/maintains/don-hang';
 import { DonHangService } from '@services/don-hang.service';
 import { ToVietnameseService } from '@services/to-vietnamese.service';
 import { InjectBase } from "@utilities/inject-base-app";
-import { IconButton } from '@constants/common.constants';
+
 
 @Component({
   selector: 'app-chi-tiet',
@@ -15,9 +16,9 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
   iconButton = IconButton;
   id: number;
   tienChu: string = '';
-  tongSL: number;
   donHang: DonHang;
   listChiTiet: ChiTietDonHang[] = [];
+  tongSL: number;
   printDate = new Date();
   constructor(
     private donHangService: DonHangService,
@@ -28,15 +29,11 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
   ngOnInit() {
     this.donHangService.current_DH.subscribe({
       next: res => {
-        if(res){
+        if(res)
           this.donHang = res
-          console.log("Tại chi Tiết: ", this.donHang);
-
-        }
-
-        else this.router.navigate(['/maintain/mua-hang'])
+        else this.router.navigate(['/maintain/ban-hang'])
       },
-      error: err => this.router.navigate(['/maintain/mua-hang'])
+      error: err => this.router.navigate(['/maintain/ban-hang'])
     })
 
     this.tienChu = this.toVNService.toVietnamese(this.donHang.tongTien)
@@ -52,17 +49,17 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
     this.donHangService.getDetail(this.id).subscribe({
       next: res => {
         this.listChiTiet = res;
-        this.tongSL = this.listChiTiet.reduce((x, y) => x + y.soLuong, 0);
+        this.tongSL = this.listChiTiet.reduce((x, y)=> x + y.soLuong, 0)
       }
     })
   }
 
-  update() {
-    this.router.navigate(['/maintain/mua-hang/edit', this.donHang.id]);
+  back() {
+    this.router.navigate(['/maintain/ban-hang']);
   }
 
-  back() {
-    this.router.navigate(['/maintain/mua-hang']);
+  update() {
+    this.router.navigate(['/maintain/ban-hang/edit', this.donHang.id]);
   }
 
 }

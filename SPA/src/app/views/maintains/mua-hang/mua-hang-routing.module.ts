@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AddOrEditComponent } from './add-or-edit/add-or-edit.component';
+import { AddOrEditComponent } from './add/add-or-edit.component';
 import {MainComponent} from "./main/main.component";
 import { ChiTietComponent } from "./chi-tiet/chi-tiet.component"
-import { PrintComponent } from './print/print.component';
+import { EditComponent } from './edit/edit.component';
 
 const routes: Routes = [
   {
@@ -28,16 +28,16 @@ const routes: Routes = [
     }
   },
   {
-    path: 'print',
-    component: PrintComponent,
+    path: 'edit/:id',
+    component: EditComponent,
     data: {
-      title: 'In chi tiết đơn hàng'
+      title: 'Chỉnh sửa đơn hàng'
     }
-  }
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class ChamCongRoutingModule { }
+export class MuaHangRoutingModule { }

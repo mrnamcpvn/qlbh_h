@@ -2,24 +2,34 @@ namespace API.DTOs.Report
 {
     public class Report
     {
-        public int ID_KH { get; set; }
-        public string Ten_KH { get; set; }
-        public DateTime Date { get; set; }
-        public string DateView { get; set; }
-        public int? MH_ID { get; set; }
-        public string MH_Name { get; set; }
-        public int CD_ID { get; set; }
-        public string CD_Name { get; set; }
-        public int Quantity { get; set; }
-        public decimal Money { get; set; }
-        public decimal Total_Money { get => Money * Quantity; }
-        public string Total_Money_View { get => Total_Money.ToString("#,##"); }
+        public int ID_SP { get; set; }
+        public string Ten_SP { get; set; }
+        public int SoLuong { get; set; }
+        public int? SLTonDau { get; set; }
+        public int? SLTonCuoi { get; set; }
+        public decimal? Gia { get; set; }
+        public int? Loai { get; set; }
+        public DateTime? Updated_time { get; set; }
+    }
+
+    public class ReportDTO
+    {
+        public int ID_SP { get; set; }
+        public string Ten_SP { get; set; }
+        public int SoLuongNhap { get; set; }
+        public int SoLuongXuat { get; set; }
+        public int? SoLuongTonDau { get; set; }
+        public int? SoLuongTonCuoi { get; set; }
+        public decimal? TongTienNhap { get; set; }
+        public decimal? GiaTon { get; set; }
+        public decimal? TongTienXuat { get; set; }
+        public decimal? DoanhThu { get; set; }
     }
 
     public class ReportParam
     {
         public string FromDate { get; set; }
         public string ToDate { get; set; }
-        public int  ID_KH { get; set; }
+        public int  ID_SP { get; set; }
     }
 }

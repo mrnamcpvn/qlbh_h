@@ -7,8 +7,10 @@ import { CaptionConstants, MessageConstants } from '@constants/message.enum';
 import { IconButton } from '@constants/common.constants';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { KhachHang } from '@models/maintains/khach-hang';
-import { Report, ReportMainParam } from '@models/reports/report-main';
+import { Report, ReportExportDetail, ReportMainParam } from '@models/reports/report-main';
 import { KhachHangService } from '@services/khach-hang.service';
+import { SanPhamService } from '@services/san-pham.service';
+import { SanPham } from '@models/maintains/san-pham';
 
 @Component({
   selector: 'app-main',
@@ -29,51 +31,53 @@ export class MainComponent extends InjectBase implements OnInit {
     dateInputFormat: "DD/MM/YYYY",
     isAnimated: true,
   }
-  khs: KhachHang[] = [];
+  test = [1,2,3,4];
+  listSP: SanPham[] = [];
   constructor(
     private reportService: ReportService,
     private datePipe: DatePipe,
-    private khService: KhachHangService
+    private spService: SanPhamService
   ) {
     super();
   }
 
   ngOnInit(): void {
-    //this.getAllkhach-hang();
+    this.getAllSP();
     this.clearSearch();
   }
 
   getData() {
     this.spinnerService.show();
-    // this.reportService.getDatapagination(this.pagination, this.param)
-    //   .subscribe({
-    //     next: (res) => {
-    //       this.pagination = res.pagination;
-    //       this.data = res.result;
-    //     },
-    //     error: () => this.snotifyService.error(MessageConstants.UN_KNOWN_ERROR, CaptionConstants.ERROR),
-    //     complete: () => this.spinnerService.hide()
-    //   });
+    this.reportService.getDatapagination(this.pagination, this.param)
+      .subscribe({
+        next: (res) => {
+          this.pagination = res.pagination;
+          this.data = res.result;
+        },
+        error: () => this.snotifyService.error(MessageConstants.UN_KNOWN_ERROR, CaptionConstants.ERROR),
+        complete: () => this.spinnerService.hide()
+      });
   }
 
   search() {
     this.pagination.pageNumber == 1 ? this.getData() : this.pagination.pageNumber = 1;
   }
 
-  // getAllkhach-hang() {
-  //   this.khach-hangService.getAll().subscribe({
-  //     next: (res) => {
-  //       this.khach-hangs = res;
-  //       this.khach-hangs.unshift({ id: 0, name: 'Chọn NLĐ...'});
-  //     }
-  //   })
-  // }
+  getAllSP() {
+    this.spService.getAll().subscribe({
+      next: (res) => {
+        this.listSP = res;
+        let sp = <SanPham> {id: 0, ten: 'Tất cả sản phẩm'}
+        this.listSP.unshift(sp);
+      }
+    })
+  }
 
   clearSearch() {
     this.param = <ReportMainParam>{
       fromDate: new Date(this.now.getFullYear(), this.now.getMonth(), 1),
       toDate: new Date(this.now.getFullYear(), this.now.getMonth() + 1, 0),
-      id_kh: 0
+      id_sp: 0
     };
     this.data = [];
   }

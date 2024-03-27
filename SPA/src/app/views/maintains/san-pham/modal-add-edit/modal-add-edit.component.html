@@ -25,6 +25,12 @@
             <div class="col-sm-8">
               <input type="text" [(ngModel)]="data.ten" name="name" class="form-control" id="name" required />
             </div>
+            <label for="dvt" class="col-sm-4 col-form-label  lb form-group required control-label">
+              Đơn vị tính
+            </label>
+            <div class="col-sm-8">
+              <input type="text" [(ngModel)]="data.dvt" name="dvt" class="form-control" id="dvt" required />
+            </div>
             <label for="gia" class="col-sm-4 col-form-label  lb form-group required control-label">Giá</label>
             <div class="col-sm-8">
               <input type="number" step="1" [(ngModel)]="data.gia" name="gia" class="form-control" id="gia"

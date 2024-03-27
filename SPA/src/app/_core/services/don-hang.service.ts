@@ -13,25 +13,27 @@ export class DonHangService {
   apiUrl = environment.apiUrl+'DonHang';
   s_DonHang = new BehaviorSubject<DonHang>(null);
   current_DH = this.s_DonHang.asObservable();
+  s_DonHangDTO = new BehaviorSubject<DonHangDTO>(null);
+  current_DHDTO = this.s_DonHang.asObservable();
   constructor(private http: HttpClient, private functionUtility: FunctionUtility) { }
 
-  getDataPagination_Mua(pagination: PaginationParam, fromDate: string | Date, toDate: string | Date) {
+  getDataPagination(pagination: PaginationParam, fromDate: string | Date, toDate: string | Date, type: number) {
     let dateStart = this.functionUtility.getDateFormat(fromDate as Date);
     let dateEnd = this.functionUtility.getDateFormat(toDate as Date);
-    let params = new HttpParams().appendAll({ ...pagination, 'fromDate': dateStart, 'toDate': dateEnd });
-    return this.http.get<PaginationResult<DonHang>>(`${this.apiUrl}/GetMuaHangPagination`, { params });
+    let params = new HttpParams().appendAll({ ...pagination, 'fromDate': dateStart, 'toDate': dateEnd, 'loai': type });
+    return this.http.get<PaginationResult<DonHang>>(`${this.apiUrl}/GetDonHangPagination`, { params });
   }
 
   create(model: DonHangDTO) {
-    return this.http.post<boolean>(`${this.apiUrl}/Create`, model);
+    return this.http.post<DonHang>(`${this.apiUrl}/Create`, model);
   }
 
   delete(id: number) {
     return this.http.delete<boolean>(`${this.apiUrl}/Delete`, { params: { id: id } });
   }
 
-  update(model: DonHang) {
-    return this.http.put<boolean>(`${this.apiUrl}/Update`, model);
+  update(model: DonHangDTO) {
+    return this.http.put<DonHang>(`${this.apiUrl}/Update`, model);
   }
 
   getDetail(id: number) {
@@ -40,5 +42,8 @@ export class DonHangService {
 
   changeSDonHang(model: DonHang) {
     this.s_DonHang.next(model);
+  }
+  changeSDonHangDTO(model: DonHangDTO) {
+    this.s_DonHangDTO.next(model);
   }
 }

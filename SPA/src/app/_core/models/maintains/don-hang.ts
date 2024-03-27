@@ -14,6 +14,10 @@ export interface ChiTietDonHang {
   ten_SP: string;
   soLuong: number;
   gia: number;
+  sL_Ton_Dau: number;
+  sL_Ton_Cuoi: number;
+  updated_time: string | Date;
+  dvt: string;
   thanhTien: number;
 }
 

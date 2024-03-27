@@ -15,6 +15,10 @@ namespace API.Models
         public decimal? Gia { get; set; }
         [Column(TypeName = "decimal(18, 0)")]
         public decimal? ThanhTien { get; set; }
+        public DateTime? Updated_Time { get; set; }
+        public int? SL_Ton_Dau { get; set; }
+        public int? SL_Ton_Cuoi { get; set; }
+        public string Dvt { get; set; }
        
     }
 }

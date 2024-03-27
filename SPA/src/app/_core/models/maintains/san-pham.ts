@@ -4,4 +4,5 @@ export interface SanPham {
   maSP: string;
   gia: number;
   soLuong: number;
+  dvt: string;
 }

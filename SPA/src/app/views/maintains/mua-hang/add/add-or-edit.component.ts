@@ -18,7 +18,7 @@ import { KeyValuePair } from '@utilities/key-value-pair';
   templateUrl: './add-or-edit.component.html',
   styleUrls: ['./add-or-edit.component.scss']
 })
-export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewInit {
+export class AddOrEditComponent extends InjectBase implements OnInit {
   iconButton = IconButton;
   bsConfig: Partial<BsDatepickerConfig> = <Partial<BsDatepickerConfig>>{
     dateInputFormat: 'DD/MM/YYYY'
@@ -36,6 +36,7 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
   tongTien: number;
   id: number;
   type: string = 'add';
+  dvt: string = '';
   constructor(
     private donHangService: DonHangService,
     private khService: KhachHangService,
@@ -50,13 +51,6 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
     this.clear();
   }
 
-  ngAfterViewInit(): void {
-    this.id = this.route.snapshot.params['id'];
-    if (this.id) {
-      this.type = 'edit';
-      this.getDetail();
-    }
-  }
 
   getDetail() {
     // this.chamcongService.getDetail(this.id)
@@ -88,6 +82,7 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
     this.tenSP = item.ten;
     this.chiTiet.ten_SP = item.ten;
     this.chiTiet.iD_SP = item.id;
+    this.dvt = item.dvt;
   }
 
   getAllSP() {
@@ -100,6 +95,7 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
 
   add() {
     this.chiTiet.gia = this.giaSP;
+    this.chiTiet.dvt = this.dvt;
     this.chiTiet.thanhTien = this.chiTiet.soLuong * this.chiTiet.gia;
     console.log(this.listChiTiet.some(x => x.iD_SP == this.chiTiet.iD_SP));
 
@@ -125,16 +121,19 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
 
   create(type: string) {
     this.data.ten_KH = this.khachHangs.find(x=> x.id == this.data.iD_KH).ten;
-    this.data.date = this.functionUtility.getUTCDate(new Date(this.data.date));
+    this.data.tongTien = this.tongTien;
+    this.data.loai = 1;
     this.data.chitiet = this.listChiTiet;
     this.donHangService.create(this.data).subscribe({
       next: (res) => {
+        console.log("Thêm đh: ",res);
         if (res) {
           this.snotifyService.success('Thêm đơn hàng thành công', 'Thành công');
-          type == 'SAVE' ? this.back() : this.clear();
+          this.donHangService.changeSDonHang(res);
+          this.router.navigate(['/maintain/mua-hang/detail', res.id]);
         }
         else
-          this.snotifyService.success('Chấm công không thành công', 'Lỗi');
+          this.snotifyService.success('Thêm đơn hàng không thành công', 'Lỗi');
       }
     })
   }

@@ -15,10 +15,10 @@ namespace API.Controllers
             _service = service;
         }
 
-       [HttpGet("GetMuaHangPagination")]
-        public async Task<IActionResult> GetMuaHangPagination([FromQuery] PaginationParams pagination, string fromDate, string toDate)
+       [HttpGet("GetDonHangPagination")]
+        public async Task<IActionResult> GetDonHangPagination([FromQuery] PaginationParams pagination, string fromDate, string toDate, int loai)
         {
-            var result = await _service.GetDataPagination(pagination, fromDate, toDate, 1);
+            var result = await _service.GetDataPagination(pagination, fromDate, toDate, loai);
             return Ok(result);
         }
 
@@ -29,19 +29,19 @@ namespace API.Controllers
             return Ok(result);
         }
 
-        // [HttpDelete("Delete")]
-        // public async Task<IActionResult> Delete(int id)
-        // {
-        //     var result = await _service.Delete(id);
-        //     return Ok(result);
-        // }
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await _service.Delete(id);
+            return Ok(result);
+        }
 
-        // [HttpPut("Update")]
-        // public async Task<IActionResult> Update(ChamCong model)
-        // {
-        //     var result = await _service.Update(model);
-        //     return Ok(result);
-        // }
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update(DonHangDTO model)
+        {
+            var result = await _service.Update(model);
+            return Ok(result);
+        }
 
         [HttpGet("GetDetail")]
         public async Task<IActionResult> GetDetail(int id)

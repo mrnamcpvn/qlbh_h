@@ -1,4 +1,5 @@
 using System.Drawing;
+using AgileObjects.AgileMapper.Extensions;
 using API._Repositories;
 using API._Services.Interfaces;
 using API.DTOs.Report;
@@ -7,6 +8,7 @@ using API.Models;
 using Aspose.Cells;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using SD3_API.Helpers.Utilities;
 
 namespace API._Services.Services
@@ -20,32 +22,56 @@ namespace API._Services.Services
             _repoAccessor = repoAccessor;
         }
 
-        // public async Task<PaginationUtility<Report>> GetDataPagination(PaginationParam pagination, ReportParam param, bool isPaging = true)
-        // {
-        //     var data = await GetDataQuery(param);
+        public async Task<PaginationUtility<ReportDTO>> GetDataPagination(PaginationParam pagination, ReportParam param, bool isPaging = true)
+        {
+            var data = await GetDataQuery(param);
+            if(param.ID_SP > 0) {
+                data = data.Where(x=> x.ID_SP == param.ID_SP).ToList();
+            }
+            List<ReportDTO> reports = new();
+            var group = data.GroupBy(x => new { x.ID_SP }).ToList();
+            group.ForEach(item =>
+            {
+                var listDetail = item.ToList();
+                var itemRP = new ReportDTO();
+                itemRP.ID_SP = item.Key.ID_SP;
+                itemRP.Ten_SP = item.FirstOrDefault().Ten_SP;
+                itemRP.GiaTon = item.OrderByDescending(x=> x.Updated_time).FirstOrDefault(x => x.Loai == 1).Gia;
+                itemRP.SoLuongNhap = item.Filter(x=>x.Loai == 1).Sum(x=> x.SoLuong);
+                itemRP.SoLuongXuat = item.Filter(x=>x.Loai == 2).Sum(x=> x.SoLuong);
+                itemRP.TongTienNhap = item.Filter(x=>x.Loai == 1).Sum(x=> x.SoLuong*x.Gia);
+                itemRP.TongTienXuat = item.Filter(x=>x.Loai == 2).Sum(x=> x.SoLuong*x.Gia);
+                itemRP.SoLuongTonDau = item.OrderBy(x=> x.Updated_time).FirstOrDefault().SLTonDau;
+                itemRP.SoLuongTonCuoi = item.OrderByDescending(x=> x.Updated_time).FirstOrDefault().SLTonCuoi;
+                itemRP.DoanhThu = itemRP.SoLuongTonDau* itemRP.GiaTon + itemRP.TongTienNhap - itemRP.TongTienXuat;
+                
+                reports.Add(itemRP);
+            });
+            return PaginationUtility<ReportDTO>.Create(reports, pagination.PageNumber, pagination.PageSize, isPaging);
+        }
 
-        //     List<Report> reports = new();
-        //     var group = data.GroupBy(x => new { x.MH_ID, x.CD_ID }).ToList();
-        //     group.ForEach(item =>
-        //     {
-        //         var report = data.Where(x => x.MH_ID == item.Key.MH_ID && x.CD_ID == item.Key.CD_ID).ToList();
-        //         var firstDate = report.OrderBy(x => x.Date).FirstOrDefault().Date.Day;
-        //         var lastDate = report.OrderByDescending(x => x.Date).FirstOrDefault().Date.ToString("dd/MM");
+        private async Task<List<Report>> GetDataQuery(ReportParam param)
+        {
+            var predicate = PredicateBuilder.New<DonHang>(x => Convert.ToDateTime(param.FromDate) <= x.Date && x.Date <= Convert.ToDateTime(param.ToDate));
+            var data = await _repoAccessor.DonHang.FindAll(predicate)
+                .Join(_repoAccessor.ChiTietDonHang.FindAll(),
+                    x => x.ID,
+                    y => y.ID_DH,
+                    (x, y) => new { donHang = x, chiTiet = y }
+                ).Select(x => new Report
+                {
+                    ID_SP = x.chiTiet.ID_SP,
+                    Ten_SP = x.chiTiet.Ten_SP,
+                    Gia = x.chiTiet.Gia,
+                    SoLuong = x.chiTiet.SoLuong,
+                    SLTonDau = x.chiTiet.SL_Ton_Dau,
+                    SLTonCuoi = x.chiTiet.SL_Ton_Cuoi,
+                    Loai = x.donHang.Loai,
+                    Updated_time = x.chiTiet.Updated_Time
+                }).AsNoTracking().OrderByDescending(x => x.ID_SP).ToListAsync();
 
-        //         reports.Add(new Report
-        //         {
-        //             khach-hang = string.Join(", ", report.Select(x => x.khach-hang).Distinct().ToList()),
-        //             CD_ID = item.Key.CD_ID,
-        //             CD_Name = report.FirstOrDefault().CD_Name,
-        //             MH_ID = item.Key.MH_ID,
-        //             MH_Name = report.FirstOrDefault().MH_Name,
-        //             Money = report.FirstOrDefault().Money,
-        //             Quantity = report.Sum(x => x.Quantity),
-        //             DateView = $"{firstDate} - {lastDate}"
-        //         });
-        //     });
-        //     return PaginationUtility<Report>.Create(reports, pagination.PageNumber, pagination.PageSize, isPaging);
-        // }
+            return data;
+        }
 
         // public async Task<byte[]> ExportExcel(PaginationParam pagination, ReportParam param, bool isPaging = true)
         // {
@@ -169,40 +195,7 @@ namespace API._Services.Services
         //     return stream.ToArray();
         // }
 
-        // private async Task<List<Report>> GetDataQuery(ReportParam param)
-        // {
-        //     var predicate = PredicateBuilder.New<ChamCong>(x => Convert.ToDateTime(param.FromDate) <= x.Date && x.Date <= Convert.ToDateTime(param.ToDate));
-        //     if (param.ID_khach-hang > 0)
-        //         predicate.And(x => x.ID_khach-hang == param.ID_khach-hang);
-
-        //     var data = await _repoAccessor.ChamCong.FindAll(predicate)
-        //         .Join(_repoAccessor.NguoiLD.FindAll(),
-        //             x => x.ID_khach-hang,
-        //             y => y.ID,
-        //             (x, y) => new { chamCong = x, khach-hang = y }
-        //         ).Join(_repoAccessor.SanPham.FindAll(),
-        //             x => x.chamCong.ID_CD,
-        //             y => y.ID,
-        //             (x, y) => new { chamCong = x.chamCong, khach-hang = x.khach-hang, SanPham = y }
-        //         ).Join(_repoAccessor.MaHang.FindAll(),
-        //             x => x.SanPham.IDMaHang,
-        //             y => y.ID,
-        //             (x, y) => new { chamCong = x.chamCong, khach-hang = x.khach-hang, SanPham = x.SanPham, maHang = y }
-        //         ).Select(x => new Report
-        //         {
-        //             ID_khach-hang = x.chamCong.ID_khach-hang,
-        //             khach-hang = x.khach-hang.Name,
-        //             CD_ID = x.chamCong.ID_CD,
-        //             CD_Name = x.SanPham.Name,
-        //             MH_ID = x.SanPham.IDMaHang,
-        //             MH_Name = x.maHang.Name,
-        //             Date = x.chamCong.Date,
-        //             Money = x.SanPham.Money,
-        //             Quantity = x.chamCong.Quantity
-        //         }).AsNoTracking().OrderBy(x => x.MH_ID).ThenBy(x => x.Date).ToListAsync();
-
-        //     return data;
-        // }
+        
 
         private Style GetStyleCommodityCode(Style style)
         {

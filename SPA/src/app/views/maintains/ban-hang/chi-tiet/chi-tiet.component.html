@@ -8,10 +8,9 @@
               <div class="col-md-6 col-sm-12">
                 <h5>Chi tiết đơn hàng
                   <button type="button" class="btn btn-success"  [useExistingCss]="true" printSectionId="printMuaHang" ngxPrint>
-                    <i class="fa fa-print"></i> In
-                  </button>
-                  <button type="button" class="btn btn-warning ml-2" (click)="update()"><i class="fa fa-update"></i> Chỉnh sửa đơn hàng</button>
-                </h5>
+                    <i class="fa fa-print"></i> In</button>
+                    <button type="button" class="btn btn-warning ml-2" (click)="update()"><i class="fa fa-update"></i> Chỉnh sửa đơn hàng</button>
+                  </h5>
               </div>
               <div class="col-md-6 col-sm-12">
                 <button type="button" class="btn btn-sm btn-primary float-right" (click)="back()">
@@ -47,7 +46,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr *ngFor="let item of listChiTiet; let i = index">
+                    <tr *ngFor="let item of listChiTiet; let i = index" >
                       <td>{{ i + 1 }}</td>
                       <td>{{item.ten_SP}}</td>
                       <td>{{item.dvt}}</td>
@@ -87,8 +86,8 @@
         </span>
       </div>
       <div class="col-4">
-        <h3>PHIẾU NHẬP HÀNG</h3>
-        <p class="font-20">Ngày {{printDate | date: ("dd/MM/YYYY")}} </p>
+        <h3>PHIẾU XUẤT HÀNG</h3>
+        <p class="font-20">Ngày {{printDate | date: 'dd/MM/YYYY'}} </p>
       </div>
     </div>
     <div class="row">

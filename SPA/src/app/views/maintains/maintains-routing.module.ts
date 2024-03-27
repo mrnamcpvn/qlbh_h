@@ -11,12 +11,16 @@ const routes: Routes = [
     loadChildren: () => import('./khach-hang/kh.module').then(m => m.KhachHangModule)
   },
   {
-    path: 'cd',
+    path: 'san-pham',
     loadChildren: () => import('./san-pham/sp.module').then(m => m.SanPhamModule)
   },
   {
     path: 'mua-hang',
-    loadChildren: () => import('./mua-hang/cham-cong.module').then(m => m.ChamCongModule)
+    loadChildren: () => import('./mua-hang/mua-hang.module').then(m => m.MuaHangModule)
+  },
+  {
+    path: 'ban-hang',
+    loadChildren: () => import('./ban-hang/ban-hang.module').then(m => m.BangHangModule)
   },
   {
     path: 'ma-hang',
