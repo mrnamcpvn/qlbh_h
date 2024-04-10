@@ -23,7 +23,7 @@ namespace API._Services.Services
             _repoAccessor = repoAccessor;
         }
 
-        public async Task<PaginationUtility<DonHang>> GetDataPagination(PaginationParams pagination,string fromDate, string toDate, int type)
+        public async Task<PaginationUtility<DonHangO>> GetDataPagination(PaginationParams pagination,string fromDate, string toDate, int type)
         {
             var predicateUser = PredicateBuilder.New<DonHang>(true);
 
@@ -34,8 +34,22 @@ namespace API._Services.Services
             if(type > 0) {
                 predicateUser.And(x => x.Loai == type);
             }
-            var donHangs = _repoAccessor.DonHang.FindAll(predicateUser).OrderByDescending(x => x.Date);
-            var result = await PaginationUtility<DonHang>.CreateAsync(donHangs, pagination.PageNumber, pagination.PageSize);
+            var donHangs = _repoAccessor.DonHang.FindAll(predicateUser)
+                            .Join(_repoAccessor.KhachHang.FindAll(),
+                                x=> x.ID_KH,
+                                y => y.ID,
+                                (x, y) => new { donHang = x, khachHang = y }
+                            ).Select(x => new DonHangO 
+                            {
+                                ID = x.donHang.ID,
+                                ID_KH = x.donHang.ID_KH,
+                                Ten_KH = x.donHang.Ten_KH,
+                                DiaChi = x.khachHang.DiaChi,
+                                Loai = x.donHang.Loai,
+                                TongTien = x.donHang.TongTien,
+                                Date = x.donHang.Date
+                            }).OrderByDescending(x => x.Date);
+            var result = await PaginationUtility<DonHangO>.CreateAsync(donHangs, pagination.PageNumber, pagination.PageSize);
             return result;
         }
 

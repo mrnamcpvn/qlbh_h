@@ -2,6 +2,7 @@ export interface DonHang {
   id: number;
   iD_KH: number;
   ten_KH: string;
+  diaChi: string;
   tongTien: number;
   date: string | Date;
   loai: number;

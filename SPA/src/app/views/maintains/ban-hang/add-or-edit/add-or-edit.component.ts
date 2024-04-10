@@ -31,7 +31,7 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
   sanPhams: SanPham[] = [];
   tenSP: string = '';
   giaSP: number;
-  slMax: number;
+  slMax: number | null = null;
   mahangs: MaHang[] = [];
   idSP: number;
   tongTien: number;
@@ -104,7 +104,12 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
   }
 
   add() {
-    this.chiTiet.gia = this.giaSP;
+    if(this.chiTiet.soLuong > this.slMax) {
+      let text = '';
+      this.slMax ? text += "Số lượng trong kho chỉ còn "+ this.slMax + " " + this.dvt : text += "Không có trong kho"
+      this.snotifyService.warning(text, 'Cảnh báo')
+    }else {
+      this.chiTiet.gia = this.giaSP;
     this.chiTiet.dvt = this.dvt;
     this.chiTiet.thanhTien = this.chiTiet.soLuong * this.chiTiet.gia;
     console.log(this.listChiTiet.some(x => x.iD_SP == this.chiTiet.iD_SP));
@@ -127,6 +132,7 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
     this.tenSP = '';
     this.giaSP = null;
     this.chiTiet = <ChiTietDonHang>{};
+    }
   }
 
   create(type: string) {

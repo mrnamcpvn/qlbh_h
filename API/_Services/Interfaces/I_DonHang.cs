@@ -7,7 +7,7 @@ namespace API._Services.Interfaces
 {
     public interface I_DonHang
     {
-        Task<PaginationUtility<DonHang>> GetDataPagination(PaginationParams pagination,string fromDate, string toDate, int type);
+        Task<PaginationUtility<DonHangO>> GetDataPagination(PaginationParams pagination,string fromDate, string toDate, int type);
         Task<DonHang> Create(DonHangDTO model);
         Task<bool> Delete(int id);
         Task<DonHang> Update(DonHangDTO model);
