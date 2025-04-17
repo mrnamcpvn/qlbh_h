@@ -32,12 +32,20 @@ export class DonHangService {
     return this.http.delete<boolean>(`${this.apiUrl}/Delete`, { params: { id: id } });
   }
 
+  deleteItem(id: number) {
+    return this.http.delete<boolean>(`${this.apiUrl}/DeleteItem`, { params: { id: id } });
+  }
+
   update(model: DonHangDTO) {
     return this.http.put<DonHang>(`${this.apiUrl}/Update`, model);
   }
 
   getDetail(id: number) {
     return this.http.get<ChiTietDonHang[]>(`${this.apiUrl}/GetDetail`, { params: { id } });
+  }
+
+  changeStatus(model: DonHang) {
+    return this.http.post<boolean>(`${this.apiUrl}/ChangeStatus`, model);
   }
 
   changeSDonHang(model: DonHang) {

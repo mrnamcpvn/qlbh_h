@@ -13,6 +13,8 @@ namespace API.Models
         [Column(TypeName = "decimal(18, 0)")]
         public decimal? TongTien { get; set; }
         public DateTime? Date { get; set; }
+
+        public bool? Status { get; set; }
        
     }
 }

@@ -58,9 +58,9 @@
                   <button type="submit" class="btn btn-danger ml-2" (click)="clearSearch()" [disabled]="param.id_sp == 0">
                     <i class="{{iconButton.CLEAR}}"></i> Xóa
                   </button>
-                  <button type="button" class="btn btn-success ml-2" (click)="exportExcel()">
+                  <!-- <button type="button" class="btn btn-success ml-2" (click)="exportExcel()">
                     <i class="{{iconButton.EXCEL}}"></i> Xuất dữ liệu
-                  </button>
+                  </button> -->
                 </div>
               </div>
             </form>
@@ -108,13 +108,13 @@
                 </table>
               </div>
               <div class="d-flex" *ngIf="data && data?.length > 0">
-                <pagination [totalItems]="pagination.totalCount" [itemsPerPage]="pagination.pageSize" [maxSize]="5"
+                <!-- <pagination [totalItems]="pagination.totalCount" [itemsPerPage]="pagination.pageSize" [maxSize]="5"
                   previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"
                   [(ngModel)]="pagination.pageNumber" (pageChanged)="pageChanged($event)" [boundaryLinks]="true">
                 </pagination>
                 <span class="cs-page ml-2">
                   Page - {{pagination.pageNumber}} / {{pagination.totalPage}}
-                </span>
+                </span> -->
               </div>
             </div>
           </div>

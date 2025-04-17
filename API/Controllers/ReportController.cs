@@ -17,7 +17,7 @@ namespace API.Controllers
         [HttpGet("GetDataPagination")]
         public async Task<IActionResult> GetDataPagination([FromQuery] PaginationParam pagination, [FromQuery] ReportParam param)
         {
-            return Ok(await _service.GetDataPagination(pagination, param));
+            return Ok(await _service.GetDataPagination(pagination, param, false));
         }
 
         // [HttpGet("ExportExcel")]

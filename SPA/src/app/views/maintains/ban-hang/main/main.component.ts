@@ -39,6 +39,7 @@ export class MainComponent extends InjectBase implements OnInit {
     this.donHangService.getDataPagination(this.pagination, this.fromDate, this.toDate, 2).subscribe({
       next: (res) => {
         this.data = res.result;
+        console.log(this.data)
         this.pagination = res.pagination;
         this.spinnerService.hide();
       }
@@ -81,6 +82,21 @@ export class MainComponent extends InjectBase implements OnInit {
           }
         })
       });
+  }
+
+  changeStatus(item: DonHang) {
+    this.donHangService.changeStatus(item).subscribe({
+      next: (res) => {
+        if(res) {
+          this.snotifyService.success("Đổi trạng thái thành công", " Thành công")
+          this.data.map(x => {
+            if(x == item) x.status = !x.status;
+          })
+        }
+        else this.snotifyService.error("Có lỗi xảy ra", "Lỗi")
+      },
+      error: () => this.snotifyService.error("Có lỗi xảy ra", "Lỗi")
+    })
   }
 
   clear() {

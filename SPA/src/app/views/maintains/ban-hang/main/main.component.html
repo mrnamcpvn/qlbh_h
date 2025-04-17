@@ -60,6 +60,7 @@
                       <th class="text-center">Ngày lập</th>
                       <th class=" text-center">Khách hàng</th>
                       <th class=" text-center">Tổng tiền</th>
+                      <th class=" text-center">Tình trạng</th>
                       <th class=" text-center">Hành động</th>
                     </tr>
                   </thead>
@@ -69,6 +70,20 @@
                       <td>{{item.date | date: 'dd/MM/YYYY hh:mm:ss'}}</td>
                       <td>{{item.ten_KH}}</td>
                       <td>{{item.tongTien | number}} - VNĐ</td>
+                      <td class=" text-center">
+                        <div>
+                          <div class="custom-control custom-checkbox " (click)="changeStatus(item)">
+                            <input
+                              type="checkbox"
+                              name="is_active"
+                              id="is_active"
+                              class="custom-control-input"
+                              [(ngModel)]="item.status"
+                            />
+                            <label class="custom-control-label"></label>
+                          </div>
+                        </div>
+                      </td>
                       <td style="width: 10rem;">
                         <button type="button" class="btn btn-primary btn-sm" (click)="detail(item)">
                           <i class="fa fa-edit"></i>&nbsp;Chi tiết </button>

@@ -165,11 +165,24 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
     this.router.navigate(['/maintain/mua-hang']);
   }
 
-  delete(item: ChiTietDonHang) {
-    this.listChiTiet = this.listChiTiet.filter(x=> x!= item);
-    this.tongTien = this.listChiTiet.reduce((tt, item) => {
-      return tt + (item.gia * item.soLuong);
-    },0)
+  deleteItem(item: ChiTietDonHang) {
+    this.snotifyService.confirm("Bạn có chắc chắc muốn xóa?","Xóa",
+      ()=> {
+
+        this.donHangService.deleteItem(item.id).subscribe({
+          next: (res) => {
+            if(res) {
+              this.snotifyService.success("Xóa thành công", "Thành công");
+              this.listChiTiet = this.listChiTiet.filter(x=> x!= item);
+              this.tongTien = this.listChiTiet.reduce((tt, item) => {
+                return tt + (item.gia * item.soLuong);
+              },0)
+            }else this.snotifyService.warning("Xóa không thành công", "Cảnh báo");
+          },
+          error: (err) => this.snotifyService.error(err, "Lỗi")
+        })
+      }
+    )
   }
 
   openModal(template: TemplateRef<void>, item: ChiTietDonHang) {

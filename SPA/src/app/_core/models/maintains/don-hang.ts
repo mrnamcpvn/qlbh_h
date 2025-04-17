@@ -6,6 +6,7 @@ export interface DonHang {
   tongTien: number;
   date: string | Date;
   loai: number;
+  status: boolean;
 }
 
 export interface ChiTietDonHang {

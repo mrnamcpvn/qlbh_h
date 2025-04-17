@@ -36,10 +36,24 @@ namespace API.Controllers
             return Ok(result);
         }
 
+        [HttpDelete("DeleteItem")]
+        public async Task<IActionResult> DeleteItem(int id)
+        {
+            var result = await _service.DeleteItem(id);
+            return Ok(result);
+        }
+
         [HttpPut("Update")]
         public async Task<IActionResult> Update(DonHangDTO model)
         {
             var result = await _service.Update(model);
+            return Ok(result);
+        }
+
+        [HttpPost("ChangeStatus")]
+        public async Task<IActionResult> ChangeStatus(DonHang model)
+        {
+            var result = await _service.ChangeStatus(model);
             return Ok(result);
         }
 

@@ -10,7 +10,9 @@ namespace API._Services.Interfaces
         Task<PaginationUtility<DonHangO>> GetDataPagination(PaginationParams pagination,string fromDate, string toDate, int type);
         Task<DonHang> Create(DonHangDTO model);
         Task<bool> Delete(int id);
+        Task<bool> DeleteItem(int id);
         Task<DonHang> Update(DonHangDTO model);
+        Task<bool> ChangeStatus(DonHang model);
         Task<List<ChiTietDonHang>> GetDetail(int id);
     }
 }
