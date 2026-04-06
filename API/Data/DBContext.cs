@@ -14,13 +14,15 @@ namespace API.Data
 
             Database.SetCommandTimeout((int)TimeSpan.FromMinutes(10).TotalSeconds);
         }
-        
-        
-        public virtual DbSet<KhachHang> KhachHang {get;set;}
-        public virtual DbSet<SanPham> SanPham {get;set;}
-        public virtual DbSet<DonHang> DonHang {get;set;}
+
+
+        public virtual DbSet<KhachHang> KhachHang { get; set; }
+        public virtual DbSet<SanPham> SanPham { get; set; }
+        public virtual DbSet<DonHang> DonHang { get; set; }
         public virtual DbSet<ChiTietDonHang> ChiTietDonHang { get; set; }
         public virtual DbSet<NguoiDung> NguoiDung { get; set; }
+        public virtual DbSet<CuaHang> CuaHang { get; set; }
+        public virtual DbSet<NhanVien> NhanVien { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
