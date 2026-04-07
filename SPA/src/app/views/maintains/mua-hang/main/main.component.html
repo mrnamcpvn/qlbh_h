@@ -14,6 +14,15 @@
               </div>
             </div>
             <form class="form-group row" autocomplete="off">
+              <div class="col-xl-2 col-lg-3 col-md-3 col-sm-6">
+                <label class="badge badge-warning">
+                  Lọc theo:
+                </label>
+                <ng-select name="filterType" [(ngModel)]="param.filterType" (ngModelChange)="onFilterTypeChange()"
+                  [clearable]="param.filterType !== ''" placeholder="Lọc theo" required>
+                  <ng-option *ngFor="let item of filterTypeList" [value]="item.key">{{ item.value }}</ng-option>
+                </ng-select>
+              </div>
               <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
                 <label class="badge badge-warning">
                   Ngày:
@@ -37,13 +46,40 @@
                   </div>
                 </div>
               </div>
-              <div class="col">
+              
+              <div class="col-auto">
+                <label class="badge badge-warning">
+                  Thanh Toán:
+                </label>
+                <div class="row pl-4 pr-4">
+                  <div *ngFor="let item of thanhToanList; index as i">
+                    <label class="container">
+                      <div class="row">
+                        <div [ngClass]="{'mr-2': i != thanhToanList.length - 1}"
+                          class="custom-control custom-radio pt-2">
+                          <input [id]="'payType' + i" class="custom-control-input" type="radio" name="payType"
+                            [(ngModel)]="param.payType" [value]="item.key" required />
+                          <p class="custom-control-label" [for]="'payType' + i">
+                            <strong>
+                              {{ item.value }}
+                            </strong>
+                          </p>
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
                 <label class="d-block">&nbsp;</label>
                 <button type="submit" (click)="search()" class="btn btn-primary" [disabled]="!fromDate || !toDate">
                   <i class="{{iconButton.SEARCH}}"></i> Tìm kiếm
                 </button>
                 <button type="button" (click)="clear()" class="btn btn-danger ml-1">
                   <i class="{{iconButton.CLEAR}}"></i> Xóa
+                </button>
+                <button type="submit" (click)="excel()" class="btn btn-success ml-1" [disabled]="!fromDate || !toDate">
+                  <i class="{{iconButton.EXCEL}}"></i> Export
                 </button>
               </div>
             </form>
@@ -60,21 +96,52 @@
                       <th class="text-center">Ngày lập</th>
                       <th class=" text-center">Khách hàng</th>
                       <th class=" text-center">Tổng tiền</th>
+                      <th class=" text-center">Tình trạng</th>
+                      <th class=" text-center">Thanh toán</th>
                       <th class=" text-center">Hành động</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr *ngFor="let item of data; let i = index">
-                      <td>{{ ((pagination.pageNumber - 1) * pagination.pageSize) + i + 1 }}</td>
-                      <td>{{item.date | date: 'dd/MM/YYYY hh:mm:ss'}}</td>
+                      <td style="width: 2rem;">{{ ((pagination.pageNumber - 1) * pagination.pageSize) + i + 1 }}</td>
+                      <td class=" text-center" style="width: 10rem;">{{item.date | date: 'dd/MM/YYYY hh:mm:ss'}}</td>
                       <td>{{item.ten_KH}}</td>
-                      <td>{{item.tongTien | number}} - VNĐ</td>
-                      <td style="width: 10rem;">
-                        <button type="button" class="btn btn-primary btn-sm " (click)="detail(item)">
+                      <td class="col-2">{{item.tongTien | number}} VNĐ</td>
+                      <td class=" text-center" style="width: 9rem;">
+                        <span *ngIf="item.status; else unpaid" class="text-success">
+                          Đã thanh toán
+                        </span>
+                        <ng-template #unpaid>
+                          <span class="text-danger">Chưa thanh toán</span>
+                        </ng-template>
+                      </td>
+                      <td class="col-2">
+                        <ng-container *ngIf="(item.tienMat + item.chuyenKhoan) > 0">
+                          <!-- Hiển thị Tiền Mặt (nếu có) -->
+                          <div class="mb-1" *ngIf="item.tienMat > 0">
+                            <span class="badge badge-info">Tiền mặt: </span> {{item.tienMat | number}} VNĐ
+                          </div>
+                          <!-- Hiển thị Chuyển Khoản (nếu có) -->
+                          <div *ngIf="item.chuyenKhoan > 0">
+                            <span class="badge badge-primary">Chuyển khoản: </span> {{item.chuyenKhoan | number}} VNĐ
+                          </div>
+                        </ng-container>
+                      </td>
+                      <td style="width: 17rem;">
+                        <button type="button" class="btn btn-success btn-sm" (click)="openModal('add-modal', item)">
+                          &nbsp;Thanh Toán </button>
+                        <button type="button" class="btn btn-primary btn-sm ml-2" (click)="detail(item)">
                           <i class="fa fa-edit"></i>&nbsp;Chi tiết </button>
-                          <button type="button" (click)="delete(item.id)" class="btn btn-danger btn-sm ml-2">
+                          <button type="button" class="btn btn-danger btn-sm ml-2" (click)="delete(item.id)" >
                             <i class="fa fa-trash-o"></i>&nbsp;Xóa </button>
                       </td>
+                    </tr>
+                    <tr *ngIf="data?.length > 0">
+                      <td colspan="3"> <b>Tổng tiền: </b> </td>
+                      <td><b>{{tongTien | number}} VNĐ</b></td>
+                      <td colspan="3"></td>
+                      <!-- <td> <b>Đã thanh toán: </b> </td>
+                      <td>{{tongTienTT | number}} VNĐ</td> -->
                     </tr>
                     <tr *ngIf="data?.length === 0">
                       <td colspan="100%" class="table-warning text-center font-weight-bold">
@@ -98,3 +165,6 @@
     </div>
   </div>
 </div>
+<app-model-thanh-toan id="add-modal" [data]="editData" (changeData)="changeData($event)">
+
+</app-model-thanh-toan>

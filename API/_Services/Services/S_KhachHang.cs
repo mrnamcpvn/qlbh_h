@@ -24,7 +24,7 @@ namespace API._Services.Services
 
             if (!string.IsNullOrEmpty(name))
             {
-                predicateUser.And(x => x.Ten.Trim().Contains(name));
+                predicateUser.And(x => x.Ten.Contains(name));
             }
             var data = _repoAccessor.KhachHang.FindAll(predicateUser);
             var result = await PaginationUtility<KhachHang>.CreateAsync(data, pagination.PageNumber, pagination.PageSize);

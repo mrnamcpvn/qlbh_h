@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API.Models
 {
-     public partial class ChiTietDonHang
+    public partial class ChiTietDonHang
     {
         [Key]
         public int ID { get; set; }
@@ -19,6 +19,5 @@ namespace API.Models
         public int? SL_Ton_Dau { get; set; }
         public int? SL_Ton_Cuoi { get; set; }
         public string Dvt { get; set; }
-       
     }
 }

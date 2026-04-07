@@ -1,3 +1,5 @@
+import { Pagination } from '@utilities/pagination-utility';
+
 export interface DonHang {
   id: number;
   iD_KH: number;
@@ -7,6 +9,19 @@ export interface DonHang {
   date: string | Date;
   loai: number;
   status: boolean;
+  tienMat?: number;
+  chuyenKhoan?: number;
+  iD_NV: number;
+  paymentSummary?: { key: string; value: number }[];
+}
+
+export interface DonHangFilter {
+  pagination?: Pagination;
+  fromDate: string | Date;
+  toDate: string | Date;
+  loai: number;
+  soHoaDon?: number;
+  payType?: number;
 }
 
 export interface ChiTietDonHang {

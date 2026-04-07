@@ -21,6 +21,8 @@ namespace API.Configurations
             services.AddScoped<I_SanPham, S_SanPham>();
             services.AddScoped<I_User, S_User>();
             services.AddScoped<I_Report, S_Report>();
+            services.AddScoped<I_NhanVien, S_NhanVien>();
+            services.AddScoped<I_CuaHang, S_CuaHang>();
         }
     }
 }

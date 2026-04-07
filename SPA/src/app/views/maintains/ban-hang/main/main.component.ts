@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
-import { DonHang, ChiTietDonHang } from "@models/maintains/don-hang";
+import { ModalService } from '@services/modal.service';
+import { DonHang, ChiTietDonHang, DonHangFilter } from "@models/maintains/don-hang";
 import { DonHangService } from "@services/don-hang.service";
 import { InjectBase } from "@utilities/inject-base-app";
 import { IconButton } from "@constants/common.constants";
 import { Pagination } from '@utilities/pagination-utility';
 import { PageChangedEvent } from 'ngx-bootstrap/pagination';
+import { KeyValuePair } from '@utilities/key-value-pair';
 
 @Component({
   selector: 'app-main',
@@ -25,9 +27,48 @@ export class MainComponent extends InjectBase implements OnInit {
     pageNumber: 1,
     pageSize: 10
   };
+  param: any = {
+    filterType: null,
+    soHoaDon: null,
+    payType: '3'
+  };
+  thanhToanList: KeyValuePair[] = [
+    { key: '1', value: 'Tiền Mặt' },
+    { key: '2', value: 'Chuyển Khoản' },
+    { key: '3', value: 'Tất cả' },
+  ];
+  filterTypeList: KeyValuePair[] = [
+    {
+      key: '1',
+      value: 'Theo Năm',
+    },
+    {
+      key: '2',
+      value: 'Theo Quý',
+    },
+    {
+      key: '3',
+      value: 'Theo Tháng',
+    },
+    {
+      key: '4',
+      value: 'Theo Tuần',
+    },
+    {
+      key: '5',
+      value: 'Theo Ngày',
+    }
+  ];
+  tongTien: number;
+  tongTienTT: number;
   data: DonHang[] = [];
-  constructor(private donHangService: DonHangService) {
+  editData: DonHang = <DonHang>{};
+  constructor(private donHangService: DonHangService, private modalService: ModalService) {
     super();
+  }
+  openModal(id: string, item: DonHang) {
+    this.editData = item;
+    this.modalService.open(id);
   }
 
   ngOnInit() {
@@ -36,18 +77,48 @@ export class MainComponent extends InjectBase implements OnInit {
 
   getData() {
     this.spinnerService.show();
-    this.donHangService.getDataPagination(this.pagination, this.fromDate, this.toDate, 2).subscribe({
+    const filter: DonHangFilter = {
+      pagination: this.pagination,
+      fromDate: this.fromDate,
+      toDate: this.toDate,
+      loai: 2,
+      soHoaDon: this.param.soHoaDon,
+      payType: this.param.payType
+    };
+    this.donHangService.getDataPagination(filter).subscribe({
       next: (res) => {
         this.data = res.result;
-        console.log(this.data)
         this.pagination = res.pagination;
+        this.tongTien = this.data.reduce((x, y) => x + y.tongTien, 0);
+        //this.tongTienTT = this.data.reduce((x, y) => x + (y.tienMat || 0) + (y.chuyenKhoan || 0), 0);
         this.spinnerService.hide();
       }
     });
   }
-
+  excel() {
+    this.spinnerService.show();
+    const filter: DonHangFilter = {
+      fromDate: this.fromDate,
+      toDate: this.toDate,
+      loai: 2,
+      soHoaDon: this.param.soHoaDon,
+      payType: this.param.payType
+    };
+    this.donHangService.excelExport(filter)
+      .subscribe({
+        next: (result) => {
+          this.spinnerService.hide();
+          if (!result)
+            this.snotifyService.warning('Không có dử liệu', 'Cảnh báo!');
+          else {
+            this.functionUtility.exportExcel(result.data, 'Download_DonHang');
+          }
+        }
+      });
+  }
   search() {
-    this.pagination.pageNumber !== 1 ? this.pagination.pageNumber = 1 : this.getData();
+    this.pagination.pageNumber = 1;
+    this.getData();
   }
 
   pageChanged(e: PageChangedEvent) {
@@ -73,6 +144,8 @@ export class MainComponent extends InjectBase implements OnInit {
             if (res) {
               this.snotifyService.success('Xóa đơn hàng thành công', 'Thành Công');
               this.data = this.data.filter(x => x.id !== id);
+              this.tongTien = this.data.reduce((x, y) => x + y.tongTien, 0);
+              //this.tongTienTT = this.data.reduce((x, y) => x + (y.tienMat || 0) + (y.chuyenKhoan || 0), 0);
               this.spinnerService.hide();
             }
           },
@@ -84,26 +157,55 @@ export class MainComponent extends InjectBase implements OnInit {
       });
   }
 
-  changeStatus(item: DonHang) {
-    this.donHangService.changeStatus(item).subscribe({
-      next: (res) => {
-        if(res) {
-          this.snotifyService.success("Đổi trạng thái thành công", " Thành công")
-          this.data.map(x => {
-            if(x == item) x.status = !x.status;
-          })
-        }
-        else this.snotifyService.error("Có lỗi xảy ra", "Lỗi")
-      },
-      error: () => this.snotifyService.error("Có lỗi xảy ra", "Lỗi")
-    })
-  }
-
   clear() {
     // First of month
     this.fromDate = new Date(this.now.getFullYear(), this.now.getMonth(), 1);
     // Last of month
     this.toDate = new Date(this.now.getFullYear(), this.now.getMonth() + 1, 0);
+    this.param.filterType = null;
+    this.param.soHoaDon = null;
+    this.param.payType = '3';
+    this.search();
+  }
+
+  deleteProperty(property: string) {
+    delete this.param[property];
+    this.search();
+  }
+  onFilterTypeChange() {
+    if (!this.fromDate) return;
+    const referenceDate = new Date(this.fromDate);
+    const year = referenceDate.getFullYear();
+    const month = referenceDate.getMonth();
+
+    switch (this.param.filterType) {
+      case '1': // Theo Năm
+        this.fromDate = new Date(year, 0, 1);
+        this.toDate = new Date(year, 11, 31);
+        break;
+      case '2': // Theo Quý
+        const quarterStartMonth = Math.floor(month / 3) * 3;
+        this.fromDate = new Date(year, quarterStartMonth, 1);
+        this.toDate = new Date(year, quarterStartMonth + 3, 0);
+        break;
+      case '3': // Theo Tháng
+        this.fromDate = new Date(year, month, 1);
+        this.toDate = new Date(year, month + 1, 0);
+        break;
+      case '4': // Theo Tuần
+        const day = referenceDate.getDay();
+        const diff = referenceDate.getDate() - day + (day === 0 ? -6 : 1);
+        this.fromDate = new Date(year, month, diff);
+        this.toDate = new Date(year, month, diff + 6);
+        break;
+      case '5': // Theo Ngày
+        this.fromDate = referenceDate;
+        this.toDate = referenceDate;
+        break;
+    }
+    this.search();
+  }
+  changeData($event) {
     this.search();
   }
 }

@@ -12,15 +12,17 @@ import {BsDatepickerModule} from "ngx-bootstrap/datepicker";
 import { AddOrEditComponent } from './add-or-edit/add-or-edit.component';
 import { ChiTietComponent } from './chi-tiet/chi-tiet.component';
 import { EditComponent } from '../ban-hang/edit/edit.component';
+import { ModelThanhToanComponent } from './model-thanh-toan/model-thanh-toan.component';
 
 
 @NgModule({
   declarations: [
-    MainComponent,
+		MainComponent,
     AddOrEditComponent,
     ChiTietComponent,
-    EditComponent
-  ],
+    EditComponent,
+		ModelThanhToanComponent
+	],
   imports: [
     CommonModule,
     FormsModule,
@@ -30,7 +32,6 @@ import { EditComponent } from '../ban-hang/edit/edit.component';
     NgxPrintModule,
     ReactiveFormsModule,
     BsDatepickerModule.forRoot(),
-
     BanHangRoutingModule
   ]
 })

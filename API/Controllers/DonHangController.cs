@@ -16,11 +16,18 @@ namespace API.Controllers
         }
 
        [HttpGet("GetDonHangPagination")]
-        public async Task<IActionResult> GetDonHangPagination([FromQuery] PaginationParams pagination, string fromDate, string toDate, int loai)
+        public async Task<IActionResult> GetDonHangPagination([FromQuery] DonHangRequestDTO filter)
         {
-            var result = await _service.GetDataPagination(pagination, fromDate, toDate, loai);
+            var result = await _service.GetDataPagination(filter);
             return Ok(result);
         }
+        [HttpGet("ExcelExport")]
+        public async Task<ActionResult> ExcelExport([FromQuery] DonHangRequestDTO filter)
+        {
+            var result = await _service.DownloadExcel(filter);
+            return Ok(result);
+        }
+
 
        [HttpPost("Create")]
         public async Task<IActionResult> Create(DonHangDTO model)
@@ -54,6 +61,13 @@ namespace API.Controllers
         public async Task<IActionResult> ChangeStatus(DonHang model)
         {
             var result = await _service.ChangeStatus(model);
+            return Ok(result);
+        }
+
+        [HttpPost("UpdatePayment")]
+        public async Task<IActionResult> UpdatePayment(DonHang model)
+        {
+            var result = await _service.UpdatePayment(model);
             return Ok(result);
         }
 

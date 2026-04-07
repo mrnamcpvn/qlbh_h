@@ -7,15 +7,17 @@
             <div class="row">
               <div class="col-md-6 col-sm-12">
                 <h5>Chi tiết đơn hàng
-                  <button type="button" class="btn btn-success"  [useExistingCss]="true" printSectionId="printMuaHang" ngxPrint>
+                  <button type="button" class="btn btn-success" [useExistingCss]="true" printSectionId="printMuaHang"
+                    ngxPrint>
                     <i class="fa fa-print"></i> In</button>
-                    <button type="button" class="btn btn-warning ml-2" (click)="update()"><i class="fa fa-update"></i> Chỉnh sửa đơn hàng</button>
-                  </h5>
+                  <button type="button" class="btn btn-warning ml-2" (click)="update()"><i class="fa fa-update"></i>
+                    Chỉnh sửa đơn hàng</button>
+                </h5>
               </div>
               <div class="col-md-6 col-sm-12">
                 <button type="button" class="btn btn-sm btn-primary float-right" (click)="back()">
                   <i class="{{iconButton.BACK}}"></i>
-                                Trờ về</button>
+                  Trờ về</button>
               </div>
             </div>
             <form class="form-group row" autocomplete="off">
@@ -25,6 +27,9 @@
                 </p>
                 <p>
                   Tên khách hàng: {{donHang.ten_KH}}
+                </p>
+                <p>
+                  Nhân viên bán hàng: {{ten_NV}}
                 </p>
               </div>
             </form>
@@ -46,12 +51,12 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr *ngFor="let item of listChiTiet; let i = index" >
+                    <tr *ngFor="let item of listChiTiet; let i = index">
                       <td>{{ i + 1 }}</td>
                       <td>{{item.ten_SP}}</td>
                       <td>{{item.dvt}}</td>
                       <td class="text-right">{{item.soLuong}}</td>
-                      <td class="text-right">{{item.gia  | number}}</td>
+                      <td class="text-right">{{item.gia | number}}</td>
                       <td class="text-right">{{item.thanhTien | number}}</td>
                     </tr>
                     <tr class="font-20">
@@ -80,10 +85,12 @@
   <div class="padding-print">
     <div class="row">
       <div class="col-8">
-        <h3>NPP BIA NGK - THANH TÚ - STK: T7878 VIETINBANK</h3>
-        <span class="font-big">
-          156/3B THUẬN AN - BÌNH DƯƠNG - Điện thoại: 0933290890
-        </span>
+        <ng-container *ngIf="cuaHangs && cuaHangs.length > 0">
+          <h3>{{cuaHangs[0].ten}}</h3>
+          <span class="font-big">
+            {{cuaHangs[0].diaChi}} - Điện thoại: {{cuaHangs[0].sdt}}
+          </span>
+        </ng-container>
       </div>
       <div class="col-4">
         <h3>PHIẾU XUẤT HÀNG</h3>
@@ -95,12 +102,15 @@
         <p class="font-big2">Khách Hàng: {{donHang.ten_KH}} <br>
           Địa chỉ: {{donHang.diaChi}}
         </p>
+        <p class="font-big2">
+          Nhân viên bán hàng: {{ten_NV}}
+        </p>
       </div>
     </div>
     <div class="row">
       <div class="col-12" id="border-bold">
         <table class="table table-bordered table-print font-20">
-          <thead >
+          <thead>
             <tr class="print-txt-bold">
               <th class="text-center">Stt</th>
               <th class="text-center">Tên sản phẩm</th>
@@ -116,7 +126,7 @@
               <td>{{item.ten_SP}}</td>
               <td>{{item.dvt}}</td>
               <td class="text-right">{{item.soLuong}}</td>
-              <td class="text-right">{{item.gia  | number}}</td>
+              <td class="text-right">{{item.gia | number}}</td>
               <td class="text-right">{{item.thanhTien | number}}</td>
             </tr>
             <tr>
@@ -130,9 +140,6 @@
         <p class="font-20"><b>Bằng chữ: {{tienChu}}</b></p>
         <i class="font-20">Lưu ý: Kiểm tra hàng trước khi thanh toán</i>
       </div>
-
     </div>
   </div>
-
 </div>
-

@@ -12,8 +12,8 @@ export class KhachHangService {
   baseControler: string = '';
   constructor(private http: HttpClient) { }
 
-  getDataPagination(pagination: PaginationParam, ten?: string) {
-    let params = new HttpParams().appendAll({ ...pagination, ten })
+  getDataPagination(pagination: PaginationParam, name?: string) {
+    let params = new HttpParams().appendAll({ ...pagination, name })
     return this.http.get<PaginationResult<KhachHang>>(`${this.apiUrl}/GetDataPagination`, { params });
   }
 
