@@ -31,14 +31,14 @@ pageSize: 10
   constructor(private modalService: ModalService, private chService: CuaHangService) {
 	super();
   }
-   
+
   ngOnInit(): void {
 	this.search();
   }
 
   openModal(id: string, nv?: NhanVien) {
 	this.type = nv ? 'edit' : 'add';
-	this.editData = nv ? nv : <NhanVien>{};
+	this.editData = nv ? { ...nv } : <NhanVien>{};
 	this.modalService.open(id);
   }
 

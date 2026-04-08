@@ -186,7 +186,7 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
   }
 
   openModal(template: TemplateRef<void>, item: ChiTietDonHang) {
-    this.chiTiet = item;
+    this.chiTiet = { ...item };
     this.modalRef = this.modalService.show(template);
   }
   cancel(){
