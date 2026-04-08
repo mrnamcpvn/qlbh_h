@@ -4,6 +4,7 @@ using API._Repositories;
 using API._Services.Interfaces;
 using API.DTOs.Maintain;
 using API.Helper.Mappers;
+using API.Helper.Utilities;
 using API.Helpers.Params;
 using API.Models;
 using LinqKit;
@@ -22,24 +23,61 @@ namespace API._Services.Services
         {
             _repoAccessor = repoAccessor;
         }
-
-        public async Task<PaginationUtility<DonHangO>> GetDataPagination(PaginationParams pagination,string fromDate, string toDate, int type)
+        #region Download
+        public async Task<OperationResult> DownloadExcel(DonHangRequestDTO filter)
         {
+            var data = await GetData(filter).ToListAsync();
+            if (!data.Any())
+                return new OperationResult(false, "No Data");
+
+            foreach (var item in data)
+            {
+                item.StatusName = item.Status == true ? "Đã thanh toán" : "Chưa thanh toán";
+            }
+            var excelResult = ExcelUtility.DownloadExcel(data, "Resources\\Template\\DonHang\\Download.xlsx");
+            return new OperationResult(excelResult.IsSuccess, excelResult.Error, excelResult.Result);
+        }
+        #endregion
+        #region Getdata
+        public async Task<PaginationUtility<DonHangO>> GetDataPagination(DonHangRequestDTO filter)
+        {
+            var donHangs = GetData(filter);
+            var pageNumber = filter.Pagination?.PageNumber ?? 1;
+            var pageSize = filter.Pagination?.PageSize ?? 10;
+            var result = await PaginationUtility<DonHangO>.CreateAsync(donHangs, pageNumber, pageSize);
+            return result;
+        }
+
+        private IQueryable<DonHangO> GetData(DonHangRequestDTO filter)
+        {
+            string fromDate = filter.FromDate;
+            string toDate = filter.ToDate;
+            int type = filter.Loai;
+            int? soHoaDon = filter.SoHoaDon;
+            int? payType = filter.PayType;
             var predicateUser = PredicateBuilder.New<DonHang>(true);
 
             if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
             {
-                predicateUser.And(x => Convert.ToDateTime(fromDate) <= x.Date && x.Date <= Convert.ToDateTime(toDate).AddDays(1));
+                var start = Convert.ToDateTime(fromDate);
+                var end = Convert.ToDateTime(toDate).AddDays(1);
+                predicateUser.And(x => start <= x.Date && x.Date <= end);
             }
-            if(type > 0) {
+            if (type > 0)
                 predicateUser.And(x => x.Loai == type);
-            }
+            if (soHoaDon > 0)
+                predicateUser.And(x => x.ID == soHoaDon);
+            if (payType == 1)
+                predicateUser.And(x => x.TienMat > 0);
+            else if (payType == 2)
+                predicateUser.And(x => x.ChuyenKhoan > 0);
+
             var donHangs = _repoAccessor.DonHang.FindAll(predicateUser)
                             .Join(_repoAccessor.KhachHang.FindAll(),
-                                x=> x.ID_KH,
+                                x => x.ID_KH,
                                 y => y.ID,
                                 (x, y) => new { donHang = x, khachHang = y }
-                            ).Select(x => new DonHangO 
+                            ).Select(x => new DonHangO
                             {
                                 ID = x.donHang.ID,
                                 ID_KH = x.donHang.ID_KH,
@@ -48,25 +86,33 @@ namespace API._Services.Services
                                 Loai = x.donHang.Loai,
                                 TongTien = x.donHang.TongTien,
                                 Date = x.donHang.Date,
+                                TienMat = x.donHang.TienMat,
+                                ChuyenKhoan = x.donHang.ChuyenKhoan,
+                                ID_NV = x.donHang.ID_NV,
                                 Status = x.donHang.Status
                             }).OrderByDescending(x => x.Date);
-            var result = await PaginationUtility<DonHangO>.CreateAsync(donHangs, pagination.PageNumber, pagination.PageSize);
-            return result;
+            return donHangs;
         }
-
+        public async Task<List<ChiTietDonHang>> GetDetail(int id)
+        {
+            var data = await _repoAccessor.ChiTietDonHang.FindAll(x => x.ID_DH == id).ToListAsync();
+            return data;
+        }
+        #endregion
+        #region CUD
         public async Task<DonHang> Create(DonHangDTO model)
         {
             DonHang dh = new DonHang();
-            dh.Date = model.Date;
+            dh.Date = model.Date ?? DateTime.Now;
             dh.ID_KH = model.ID_KH;
             dh.Ten_KH = model.Ten_KH;
             dh.TongTien = model.TongTien;
             dh.Loai = model.Loai;
+            dh.ID_NV = model.ID_NV;
             dh.Status = false;
-            dh.Date = DateTime.Now;
             _repoAccessor.DonHang.Add(dh);
             await _repoAccessor.Save();
-            var idDH = _repoAccessor.DonHang.FindAll().DefaultIfEmpty().Max(r => r == null ? 0 : r.ID);
+            var idDH = dh.ID;
             foreach(var item in model.ChiTiet)
             {
                 var sp = await _repoAccessor.SanPham.FindById(item.ID_SP);
@@ -89,9 +135,9 @@ namespace API._Services.Services
             }
             catch
             {
-                _repoAccessor.DonHang.Remove(idDH);
+                _repoAccessor.DonHang.Remove(dh);
                 await _repoAccessor.Save();
-                return new DonHang();
+                throw; // or return null, but better throw to let controller handle
             }
             
         }
@@ -102,6 +148,7 @@ namespace API._Services.Services
             dh.ID_KH = model.ID_KH;
             dh.Ten_KH = model.Ten_KH;
             dh.TongTien = model.TongTien;
+            dh.ID_NV = model.ID_NV;
             _repoAccessor.DonHang.Update(dh);
             foreach(var item in model.ChiTiet)
             {
@@ -189,12 +236,8 @@ namespace API._Services.Services
                 }
             }else return false;
         }
-
-        public async Task<List<ChiTietDonHang>> GetDetail(int id)
-        {
-            var data = await _repoAccessor.ChiTietDonHang.FindAll(x => x.ID_DH == id).ToListAsync();
-            return data;
-        }
+        #endregion
+        
 
         public async Task<bool> ChangeStatus(DonHang model)
         {
@@ -206,5 +249,24 @@ namespace API._Services.Services
                 return await _repoAccessor.Save();
             }else return false;
         }
+#region Payment
+        public async Task<bool> UpdatePayment(DonHang model)
+        {
+            var item = await _repoAccessor.DonHang.FindById(model.ID);
+            if(item!=null)
+            {
+                item.TienMat = model.TienMat;
+                item.ChuyenKhoan = model.ChuyenKhoan;
+
+                // Kiểm tra nếu tổng tiền mặt và chuyển khoản khớp với tổng đơn hàng
+                if ((item.TienMat ?? 0) + (item.ChuyenKhoan ?? 0) == item.TongTien)
+                {
+                    item.Status = true; 
+                }
+                _repoAccessor.DonHang.Update(item);
+                return await _repoAccessor.Save();
+            }else return false;
+        }
     }
+    #endregion
 }

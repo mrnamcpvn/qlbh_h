@@ -5,6 +5,8 @@ import { ChiTietDonHang, DonHang, DonHangDTO } from '@models/maintains/don-hang'
 import { SanPham } from '@models/maintains/san-pham';
 import { MaHang } from '@models/maintains/ma-hang';
 import { KhachHang } from '@models/maintains/khach-hang';
+import { NhanVien } from '@models/maintains/nhan-vien';
+import { NhanVienService } from '@services/nhan-vien.service';
 import { SanPhamService } from '@services/san-pham.service';
 import { DonHangService } from '@services/don-hang.service';
 import { MaHangService } from '@services/mahang.service';
@@ -31,11 +33,13 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
   chiTiet: ChiTietDonHang = <ChiTietDonHang>{}
   listChiTiet: ChiTietDonHang[] = [];
   khachHangs: KhachHang[] = [];
+  nhanViens: NhanVien[] = [];
   sanPhams: SanPham[] = [];
   tenSP: string = '';
   giaSP: number;
   mahangs: MaHang[] = [];
   idSP: number;
+  iD_NV: number;
   tongTien: number;
   id: number;
   type: string = 'add';
@@ -44,6 +48,7 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
   constructor(
     private donHangService: DonHangService,
     private khService: KhachHangService,
+    private nvService: NhanVienService,
     private spService: SanPhamService,
     private modalService: BsModalService,
     private route: ActivatedRoute) {
@@ -56,6 +61,7 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
         if(res){
           this.donHang = res;
           this.data.iD_KH = res.iD_KH;
+          this.data.iD_NV = res.iD_NV;
           this.tongTien = res.tongTien;
           console.log(" Trang Edit:", this.donHang);
 
@@ -66,6 +72,7 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
       error: err => this.router.navigate(['/maintain/ban-hang'])
     })
     this.getAllKH();
+    this.getAllNV();
     this.getAllSP();
     this.clear();
   }
@@ -89,6 +96,14 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
     this.khService.getAll().subscribe({
       next: (res) => {
         this.khachHangs = res;
+      }
+    })
+  }
+
+  getAllNV() {
+    this.nvService.getAll().subscribe({
+      next: (res) => {
+        this.nhanViens = res;
       }
     })
   }

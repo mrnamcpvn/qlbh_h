@@ -6,7 +6,7 @@ import { ChiTietComponent } from "./chi-tiet/chi-tiet.component"
 import { EditComponent } from './edit/edit.component';
 
 const routes: Routes = [
-  {
+	{
     path: '',
     component: MainComponent,
     data: {
@@ -33,7 +33,7 @@ const routes: Routes = [
     data: {
       title: 'Chỉnh sửa đơn hàng'
     }
-  },
+  }
 ];
 
 @NgModule({

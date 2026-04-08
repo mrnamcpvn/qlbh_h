@@ -12,7 +12,7 @@
                         <div class="col-6">
                             <button type="button" class="btn btn-primary btn-sm float-right" (click)="back()">
                                 <i class="{{iconButton.BACK}}"></i>
-                                Trờ về
+                                Trở về
                             </button>
                         </div>
                     </div>
@@ -30,7 +30,17 @@
                                     </ng-select>
                                 </div>
                                 <div class="col-sm-6"></div>
+                                <label for="nhan-vien"
+                                    class="col-sm-2 col-form-label lb form-group required control-label">Nhân Viên BH
+                                    <i class="i-required">*</i></label>
+                                <div class="col-sm-4">
+                                    <ng-select name="nhan-vien" required [items]="nhanViens" bindLabel="ten"
+                                        bindValue="id" [(ngModel)]="iD_NV" placeholder="Chọn Nhân Viên">
+                                    </ng-select>
+                                </div>
+                                <div class="col-sm-6"></div>
                                 <hr>
+                                
                                 <label for="mahang"
                                     class="col-sm-2 col-form-label lb form-group required control-label">Mã sản phẩm
                                     <i class="i-required">*</i></label>

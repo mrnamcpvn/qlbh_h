@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API.Models
 {
-     public partial class ChiTietDonHang
+    public partial class ChiTietDonHang
     {
         [Key]
         public int ID { get; set; }
