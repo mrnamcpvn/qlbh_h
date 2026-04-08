@@ -15,12 +15,14 @@
             </div>
             <form class="form-group row" autocomplete="off">
               <div class="col-xl-2 col-lg-3 col-md-3 col-sm-6">
-                <label class="badge badge-warning">
-                  Lọc theo:
-                </label>
-                <ng-select name="filterType" [(ngModel)]="param.filterType" (ngModelChange)="onFilterTypeChange()"
-                  [clearable]="param.filterType !== ''" placeholder="Lọc theo" required>
-                  <ng-option *ngFor="let item of filterTypeList" [value]="item.key">{{ item.value }}</ng-option>
+                <label class="badge badge-warning">Kỳ Báo Cáo:</label>
+                <ng-select name="filterBy"
+                           [(ngModel)]="param.filterBy"
+                           (ngModelChange)="onFilterByChange()"
+                           (clear)="param.filterBy = '0'"
+                           [clearable]="param.filterBy != '0'">
+                  <ng-option *ngFor="let item of filterByList"
+                             [value]="item.key">{{ item.value }}</ng-option>
                 </ng-select>
               </div>
               <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
@@ -30,15 +32,31 @@
                 <div class="full-width">
                   <div class="container_date">
                     <div class="input-group mr-1">
-                      <input type="text" placeholder="Từ ngày..." [maxDate]="toDate" name="date_start"
-                        [bsConfig]="bsConfig" class="form-control" bsDatepicker [(ngModel)]="fromDate">
+                      <input type="text"
+                             placeholder="Từ ngày..."
+                             [maxDate]="param.filterBy == '0' ? toDate : null"
+                             name="date_start"
+                             [bsConfig]="bsConfig"
+                             class="form-control"
+                             bsDatepicker
+                             [(ngModel)]="fromDate"
+                             (ngModelChange)="onFromDateChange()"
+                             required>
                       <div class="input-group-append">
                         <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
                       </div>
                     </div>
                     <div class="input-group ml-1">
-                      <input type="text" placeholder="Đến ngày..." [minDate]="fromDate" name="date_end"
-                        [bsConfig]="bsConfig" class="form-control" bsDatepicker [(ngModel)]="toDate">
+                      <input type="text"
+                             placeholder="Đến ngày..."
+                             [minDate]="param.filterBy == '0' ? fromDate : null"
+                             name="date_end"
+                             [bsConfig]="bsConfig"
+                             class="form-control"
+                             bsDatepicker
+                             [(ngModel)]="toDate"
+                             (ngModelChange)="onToDateChange()"
+                             required>
                       <div class="input-group-append">
                         <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
                       </div>

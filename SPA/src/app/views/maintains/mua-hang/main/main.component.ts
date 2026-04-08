@@ -31,7 +31,7 @@ export class MainComponent extends InjectBase implements OnInit {
   data: DonHang[] = [];
   editData: DonHang = <DonHang>{};
   param: any = {
-    filterType: null,
+    filterBy: '0',
     soHoaDon: null,
     payType: '3'
   };
@@ -40,27 +40,13 @@ export class MainComponent extends InjectBase implements OnInit {
     { key: '2', value: 'Chuyển Khoản' },
     { key: '3', value: 'Tất cả' },
   ];
-  filterTypeList: KeyValuePair[] = [
-    {
-      key: '1',
-      value: 'Theo Năm',
-    },
-    {
-      key: '2',
-      value: 'Theo Quý',
-    },
-    {
-      key: '3',
-      value: 'Theo Tháng',
-    },
-    {
-      key: '4',
-      value: 'Theo Tuần',
-    },
-    {
-      key: '5',
-      value: 'Theo Ngày',
-    }
+  filterByList: KeyValuePair[] = [
+    { key: "0", value: 'Khoảng thời gian' },
+    { key: "1", value: 'Năm' },
+    { key: "2", value: 'Quý' },
+    { key: "3", value: 'Tháng' },
+    { key: "4", value: 'Tuần' },
+    { key: "5", value: 'Ngày' },
   ];
   constructor(private donHangService: DonHangService, private modalService: ModalService) {
     super();
@@ -160,38 +146,73 @@ export class MainComponent extends InjectBase implements OnInit {
     this.toDate = new Date(this.now.getFullYear(), this.now.getMonth() + 1, 0);
     this.search();
   }
-  onFilterTypeChange() {
-    if (!this.fromDate) return;
-    const referenceDate = new Date(this.fromDate);
-    const year = referenceDate.getFullYear();
-    const month = referenceDate.getMonth();
+  onFilterByChange() {
+    if (this.fromDate) {
+      this.calculateFromDateByFilterBy(new Date(this.fromDate));
+      this.calculateToDateByFilterBy(new Date(this.fromDate));
+    }
+  }
 
-    switch (this.param.filterType) {
-      case '1': // Theo Năm
-        this.fromDate = new Date(year, 0, 1);
-        this.toDate = new Date(year, 11, 31);
+  onFromDateChange() {
+    if (this.fromDate) {
+      this.calculateFromDateByFilterBy(new Date(this.fromDate));
+      this.calculateToDateByFilterBy(new Date(this.fromDate));
+    }
+  }
+
+  onToDateChange() {
+    if (this.toDate) {
+      this.calculateToDateByFilterBy(new Date(this.toDate));
+      this.calculateFromDateByFilterBy(new Date(this.toDate));
+    }
+  }
+
+  calculateToDateByFilterBy(startDate: Date) {
+    switch (this.param.filterBy) {
+      case '1': // Năm
+        this.toDate = new Date(startDate.getFullYear(), 11, 31);
         break;
-      case '2': // Theo Quý
-        const quarterStartMonth = Math.floor(month / 3) * 3;
-        this.fromDate = new Date(year, quarterStartMonth, 1);
-        this.toDate = new Date(year, quarterStartMonth + 3, 0);
+      case '2': // Quý
+        const quarter = Math.floor(startDate.getMonth() / 3);
+        this.toDate = new Date(startDate.getFullYear(), quarter * 3 + 3, 0);
         break;
-      case '3': // Theo Tháng
-        this.fromDate = new Date(year, month, 1);
-        this.toDate = new Date(year, month + 1, 0);
+      case '3': // Tháng
+        this.toDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
         break;
-      case '4': // Theo Tuần
-        const day = referenceDate.getDay();
-        const diff = referenceDate.getDate() - day + (day === 0 ? -6 : 1);
-        this.fromDate = new Date(year, month, diff);
-        this.toDate = new Date(year, month, diff + 6);
+      case '4': // Tuần
+        this.toDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + 6);
         break;
-      case '5': // Theo Ngày
-        this.fromDate = referenceDate;
-        this.toDate = referenceDate;
+      case '5': // Ngày
+        this.toDate = new Date(startDate);
+        break;
+      default:
         break;
     }
-    this.search();
+  }
+
+  calculateFromDateByFilterBy(endDate: Date) {
+    switch (this.param.filterBy) {
+      case '1': // Năm
+        this.fromDate = new Date(endDate.getFullYear(), 0, 1);
+        break;
+      case '2': // Quý
+        const quarter = Math.floor(endDate.getMonth() / 3);
+        this.fromDate = new Date(endDate.getFullYear(), quarter * 3, 1);
+        break;
+      case '3': // Tháng
+        this.fromDate = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
+        break;
+      case '4': // Tuần
+        const day = endDate.getDay();
+        const diff = endDate.getDate() - day + (day === 0 ? -6 : 1);
+        this.fromDate = new Date(endDate.getFullYear(), endDate.getMonth(), diff);
+        break;
+      case '5': // Ngày
+        this.fromDate = new Date(endDate);
+        break;
+      default:
+        break;
+    }
   }
   changeData($event) {
     this.search();
