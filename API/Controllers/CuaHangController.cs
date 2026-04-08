@@ -14,6 +14,33 @@ namespace API.Controllers
             _service = service;
         }
 
+        [HttpGet("GetDataPagination")]
+        public async Task<IActionResult> GetDataPagination([FromQuery] PaginationParams pagination, string name)
+        {
+            var result = await _service.GetDataPagination(pagination, name);
+            return Ok(result);
+        }
+
+        [HttpPost("Create")]
+        public async Task<IActionResult> Create(CuaHang model)
+        {
+            var result = await _service.Create(model);
+            return Ok(result);
+        }
+
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await _service.Delete(id);
+            return Ok(result);
+        }
+
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update(CuaHang model)
+        {
+            var result = await _service.Update(model);
+            return Ok(result);
+        }
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAll()
         {
