@@ -7,7 +7,7 @@ namespace API._Services.Interfaces
 {
     public interface I_DonHang
     {
-        Task<PaginationUtility<DonHangO>> GetDataPagination(DonHangRequestDTO filter);
+        Task<DonHangPaginationResult> GetDataPagination(DonHangRequestDTO filter);
         Task<OperationResult> DownloadExcel(DonHangRequestDTO filter);
         Task<DonHang> Create(DonHangDTO model);
         Task<bool> Delete(int id);

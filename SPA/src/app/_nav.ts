@@ -6,11 +6,11 @@ export const navItems: INavData[] = [
     url: '/maintain/nguoi-dung',
     icon: 'fa fa-cogs',
   },{
-      name: 'Quản lý Cửa hàng',
+      name: 'Quản lý cửa hàng',
     url: '/maintain/cua-hang',
     icon: 'fa fa-home',
   },{
-    name: 'Quản lý Nhân viên',
+    name: 'Quản lý nhân viên',
     url: '/maintain/nhan-vien',
     icon: 'fa fa-user',
   },

@@ -39,13 +39,15 @@ namespace API._Services.Services
         }
         #endregion
         #region Getdata
-        public async Task<PaginationUtility<DonHangO>> GetDataPagination(DonHangRequestDTO filter)
+        public async Task<DonHangPaginationResult> GetDataPagination(DonHangRequestDTO filter)
         {
             var donHangs = GetData(filter);
             var pageNumber = filter.Pagination?.PageNumber ?? 1;
             var pageSize = filter.Pagination?.PageSize ?? 10;
-            var result = await PaginationUtility<DonHangO>.CreateAsync(donHangs, pageNumber, pageSize);
-            return result;
+            var donHangsList = await donHangs.ToListAsync();
+            var result = PaginationUtility<DonHangO>.Create(donHangsList, pageNumber, pageSize);
+            var total = donHangsList.Sum(x => x.TongTien ?? 0);
+            return new DonHangPaginationResult { Pagination = result, TotalAmount = total };
         }
 
         private IQueryable<DonHangO> GetData(DonHangRequestDTO filter)
@@ -53,7 +55,7 @@ namespace API._Services.Services
             string fromDate = filter.FromDate;
             string toDate = filter.ToDate;
             int type = filter.Loai;
-            int? soHoaDon = filter.SoHoaDon;
+            string? ma_DH = filter.Ma_DH;
             int? payType = filter.PayType;
             var predicateUser = PredicateBuilder.New<DonHang>(true);
 
@@ -65,8 +67,8 @@ namespace API._Services.Services
             }
             if (type > 0)
                 predicateUser.And(x => x.Loai == type);
-            if (soHoaDon > 0)
-                predicateUser.And(x => x.ID == soHoaDon);
+            if (!string.IsNullOrEmpty(ma_DH))
+                predicateUser.And(x => x.Ma_DH == ma_DH);
             if (payType == 1)
                 predicateUser.And(x => x.TienMat > 0);
             else if (payType == 2)
@@ -93,7 +95,8 @@ namespace API._Services.Services
                                 TienMat = x.donHang.TienMat,
                                 ChuyenKhoan = x.donHang.ChuyenKhoan,
                                 ID_NV = x.donHang.ID_NV,
-                                Status = (x.donHang.ChuyenKhoan ?? 0) + (x.donHang.TienMat ?? 0) >= (x.donHang.TongTien ?? 0)
+                                Status = (x.donHang.ChuyenKhoan ?? 0) + (x.donHang.TienMat ?? 0) >= (x.donHang.TongTien ?? 0),
+                                Ma_DH = x.donHang.Ma_DH
                             }).OrderByDescending(x => x.Date);
             return donHangs;
         }
@@ -113,7 +116,8 @@ namespace API._Services.Services
                 Ten_KH = model.Ten_KH,
                 TongTien = model.TongTien,
                 Loai = model.Loai,
-                ID_NV = model.ID_NV
+                ID_NV = model.ID_NV,
+                Ma_DH = model.Ma_DH
             };
             _repoAccessor.DonHang.Add(dh);
             await _repoAccessor.Save();
@@ -154,6 +158,7 @@ namespace API._Services.Services
             dh.Ten_KH = model.Ten_KH;
             dh.TongTien = model.TongTien;
             dh.ID_NV = model.ID_NV;
+            dh.Ma_DH = model.Ma_DH;
             _repoAccessor.DonHang.Update(dh);
             foreach (var item in model.ChiTiet)
             {

@@ -99,6 +99,7 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
   }
 
   mhChanges(id) {
+    this.clearSP();
     let item = this.sanPhams.find(x=>x.id == id);
     this.giaSP = item.gia;
     this.tenSP = item.ten;
@@ -106,6 +107,14 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
     this.chiTiet.iD_SP = item.id;
     this.slMax = item.soLuong;
     this.dvt = item.dvt;
+  }
+  clearSP(){
+    this.giaSP = null;
+    this.tenSP = '';
+    this.chiTiet.ten_SP = '';
+    this.chiTiet.iD_SP = null;
+    this.slMax = null;
+    this.dvt = '';
   }
 
   getAllSP() {
@@ -150,6 +159,7 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
       this.tenSP = '';
       this.giaSP = null;
       this.chiTiet = <ChiTietDonHang>{};
+      this.slMax = null;
     }
   }
 

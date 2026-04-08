@@ -18,8 +18,8 @@
             </div>
             <form class="form-group row"
                   autocomplete="off">
-              <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                <label class="badge badge-warning">Kỳ Báo Cáo:</label>
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+                <label class="badge badge-warning">Lọc theo:</label>
                 <ng-select name="filterBy"
                            [(ngModel)]="param.filterBy"
                            (ngModelChange)="onFilterByChange()"
@@ -75,10 +75,10 @@
                 <div class="input-group">
                   <input type="text"
                          placeholder="Số hóa đơn..."
-                         id="soHoaDon"
-                         name="soHoaDon"
+                         id="ma_DH"
+                         name="ma_DH"
                          class="form-control"
-                         [(ngModel)]="param.soHoaDon">
+                         [(ngModel)]="param.ma_DH">
                 </div>
               </div>
               <div class="col-12">
@@ -156,7 +156,7 @@
                         (click)="excel()"
                         class="btn btn-success ml-1"
                         [disabled]="!fromDate || !toDate">
-                  <i class="{{iconButton.EXCEL}}"></i> Xuất dử liệu
+                  <i class="{{iconButton.EXCEL}}"></i> Xuất dữ liệu
                 </button>
               </div>
             </form>
@@ -172,6 +172,7 @@
                       <th class="text-center">Stt</th>
                       <th class="text-center">Ngày lập</th>
                       <th class=" text-center">Khách hàng</th>
+                      <th class=" text-center">Số hóa đơn</th>
                       <th class=" text-center">Tổng tiền</th>
                       <th class=" text-center">Thanh toán</th>
                       <th class=" text-center">Tình trạng</th>
@@ -185,6 +186,7 @@
                       <td class="align-middle"
                           style="width: 10rem;">{{item.date | date: 'dd/MM/YYYY hh:mm:ss'}}</td>
                       <td class="align-middle">{{item.ten_KH}}</td>
+                      <td class="text-center align-middle">{{item.ma_DH}}</td>
                       <td class="col-2 align-middle">{{item.tongTien | number}} VNĐ</td>
 
                       <td class="align-middle">
@@ -204,7 +206,7 @@
                         </ng-container>
                       </td>
                       <td class="text-center align-middle">
-                        <span *ngIf="item.status; else unpaid"
+                        <span *ngIf="item.tienMat + item.chuyenKhoan >= item.tongTien; else unpaid"
                               class="badge badge-success px-2 py-1"> Đã thanh toán
                         </span>
                         <ng-template #unpaid>
@@ -228,7 +230,7 @@
                       </td>
                     </tr>
                     <tr *ngIf="data?.length > 0">
-                      <td colspan="3"> <b>Tổng tiền: </b> </td>
+                      <td colspan="4"> <b>Tổng tiền: </b> </td>
                       <td><b>{{tongTien | number}} VNĐ</b></td>
                       <td colspan="3"></td>
                     </tr>

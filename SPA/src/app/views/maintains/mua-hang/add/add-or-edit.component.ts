@@ -77,6 +77,7 @@ export class AddOrEditComponent extends InjectBase implements OnInit {
   }
 
   mhChanges(id) {
+    this.clearSP();
     let item = this.sanPhams.find(x=>x.id == id);
     this.giaSP = item.gia;
     this.tenSP = item.ten;
@@ -84,6 +85,13 @@ export class AddOrEditComponent extends InjectBase implements OnInit {
     this.chiTiet.iD_SP = item.id;
     this.dvt = item.dvt;
   }
+clearSP(){
+    this.giaSP = null;
+    this.tenSP = '';
+    this.chiTiet.ten_SP = '';
+    this.chiTiet.iD_SP = null;
+    this.dvt = '';
+  }  
 
   getAllSP() {
     this.spService.getAll().subscribe({

@@ -79,9 +79,12 @@ export class MainComponent extends InjectBase implements OnInit {
     };
     this.donHangService.getDataPagination(filter).subscribe({
       next: (res) => {
-        this.data = res.result;
-        this.pagination = res.pagination;
-        this.tongTien = this.data.reduce((x, y) => x + y.tongTien, 0);
+        this.data = res.pagination.result;
+        this.pagination = res.pagination.pagination;
+        this.tongTien = res.totalAmount;
+        this.spinnerService.hide();
+      },
+      error: () => {
         this.spinnerService.hide();
       }
     });
@@ -133,9 +136,8 @@ export class MainComponent extends InjectBase implements OnInit {
         this.donHangService.delete(id).subscribe({
           next: (res) => {
             if (res) {
+              this.getData();
               this.snotifyService.success('Xóa đơn hàng thành công', 'Thành Công');
-              this.data = this.data.filter(x => x.id !== id);
-              this.tongTien = this.data.reduce((x, y) => x + y.tongTien, 0);
               this.spinnerService.hide();
             }
           },
@@ -152,6 +154,9 @@ export class MainComponent extends InjectBase implements OnInit {
     this.fromDate = new Date(this.now.getFullYear(), this.now.getMonth(), 1);
     // Last of month
     this.toDate = new Date(this.now.getFullYear(), this.now.getMonth() + 1, 0);
+    this.param.filterBy = '0';
+    this.param.payType = '3';
+    this.param.tinhTrang = '3';
     this.search();
   }
   onFilterByChange() {

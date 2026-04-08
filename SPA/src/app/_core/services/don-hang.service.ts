@@ -3,7 +3,7 @@ import { environment } from "@env/environment";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { PaginationParam, PaginationResult } from '@utilities/pagination-utility';
 import { OperationResult } from '@utilities/operation-result';
-import { ChiTietDonHang, DonHang, DonHangDTO, DonHangFilter } from '@models/maintains/don-hang';
+import { ChiTietDonHang, DonHang, DonHangDTO, DonHangFilter, DonHangPaginationResult } from '@models/maintains/don-hang';
 import { ThanhToan } from '@models/maintains/thanh-toan';
 import { FunctionUtility } from '@utilities/function-utility';
 import { BehaviorSubject } from 'rxjs';
@@ -28,10 +28,10 @@ export class DonHangService {
       .append('fromDate', dateStart)
       .append('toDate', dateEnd)
       .append('loai', filter.loai);
-    if (filter.soHoaDon) params = params.append('soHoaDon', filter.soHoaDon);
+    if (filter.ma_DH) params = params.append('ma_DH', filter.ma_DH);
     if (filter.payType) params = params.append('payType', filter.payType);
     if (filter.tinhTrang) params = params.append('tinhTrang', filter.tinhTrang);
-    return this.http.get<PaginationResult<DonHang>>(`${this.apiUrl}/GetDonHangPagination`, { params });
+    return this.http.get<DonHangPaginationResult>(`${this.apiUrl}/GetDonHangPagination`, { params });
   }
 
   excelExport(filter: DonHangFilter) {
@@ -41,7 +41,7 @@ export class DonHangService {
       .append('fromDate', dateStart)
       .append('toDate', dateEnd)
       .append('loai', filter.loai);
-    if (filter.soHoaDon) params = params.append('soHoaDon', filter.soHoaDon);
+    if (filter.ma_DH) params = params.append('ma_DH', filter.ma_DH);
     if (filter.payType) params = params.append('payType', filter.payType);
     if (filter.tinhTrang) params = params.append('tinhTrang', filter.tinhTrang);
     return this.http.get<OperationResult>(`${this.apiUrl}/ExcelExport`, { params });

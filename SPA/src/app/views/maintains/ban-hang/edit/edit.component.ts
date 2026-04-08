@@ -41,6 +41,7 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
   idSP: number;
   iD_NV: number;
   tongTien: number;
+  slMax: number | null = null;
   id: number;
   type: string = 'add';
   dvt: string = '';
@@ -62,6 +63,7 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
           this.donHang = res;
           this.data.iD_KH = res.iD_KH;
           this.data.iD_NV = res.iD_NV;
+          this.data.ma_DH = res.ma_DH;
           this.tongTien = res.tongTien;
           console.log(" Trang Edit:", this.donHang);
 
@@ -109,12 +111,22 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
   }
 
   mhChanges(id) {
+    this.clearSP();
     let item = this.sanPhams.find(x=>x.id == id);
     this.giaSP = item.gia;
     this.tenSP = item.ten;
     this.chiTiet.ten_SP = item.ten;
     this.chiTiet.iD_SP = item.id;
     this.dvt = item.dvt;
+    this.slMax = item.soLuong;
+  }
+  clearSP(){
+    this.giaSP = null;
+    this.tenSP = '';
+    this.chiTiet.ten_SP = '';
+    this.chiTiet.iD_SP = null;
+    this.slMax = null;
+    this.dvt = '';
   }
 
   getAllSP() {
@@ -136,6 +148,8 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
       this.listChiTiet.map(x => {
         if(x.iD_SP == this.chiTiet.iD_SP){
           x.soLuong += this.chiTiet.soLuong;
+          let text = '';
+          this.slMax ? text += "Số lượng trong kho chỉ còn " + this.slMax + " " + this.dvt : text += "Không có trong kho"
           x.thanhTien = x.soLuong * x.gia;
         }
     })
@@ -149,6 +163,7 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
     this.tenSP = '';
     this.giaSP = null;
     this.chiTiet = <ChiTietDonHang>{};
+    this.slMax = null;
   }
 
   update() {
@@ -156,7 +171,7 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
     this.data.loai = this.donHang.loai;
     this.data.ten_KH = this.khachHangs.find(x=> x.id == this.data.iD_KH).ten;
     this.data.tongTien = this.tongTien;
-
+    this.data.ma_DH = this.donHang.ma_DH;
     this.data.chitiet = this.listChiTiet;
     this.donHangService.update(this.data).subscribe({
       next: (res) => {
@@ -206,7 +221,7 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
     this.modalRef = this.modalService.show(template);
   }
   cancel(){
-
+    this.modalRef.hide();
   }
 
   saveModal(){
@@ -225,8 +240,6 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
     this.donHangService.changeSDonHang(this.donHang)
     this.modalRef?.hide();
   }
-
-
 
   clear() {
     // this.data = <ChiTietDonHang>{

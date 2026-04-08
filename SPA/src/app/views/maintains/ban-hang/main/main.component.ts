@@ -29,8 +29,8 @@ export class MainComponent extends InjectBase implements OnInit {
   };
   param: any = {
     filterBy: '0',
-    soHoaDon: null,
     tinhTrang:'3',
+    ma_DH: null,
     payType: '3'
   };
   tinhTrangList: KeyValuePair[] = [
@@ -74,16 +74,19 @@ export class MainComponent extends InjectBase implements OnInit {
       fromDate: this.fromDate,
       toDate: this.toDate,
       loai: 2,
-      soHoaDon: this.param.soHoaDon,
       payType: this.param.payType,
-      tinhTrang: this.param.tinhTrang
-    };
+      tinhTrang: this.param.tinhTrang,
+      ma_DH: this.param.ma_DH
+      };
     this.donHangService.getDataPagination(filter).subscribe({
       next: (res) => {
-        this.data = res.result;
-        this.pagination = res.pagination;
-        this.tongTien = this.data.reduce((x, y) => x + y.tongTien, 0);
+        this.data = res.pagination.result;
+        this.pagination = res.pagination.pagination;
+        this.tongTien = res.totalAmount;
         //this.tongTienTT = this.data.reduce((x, y) => x + (y.tienMat || 0) + (y.chuyenKhoan || 0), 0);
+        this.spinnerService.hide();
+      },
+      error: () => {
         this.spinnerService.hide();
       }
     });
@@ -94,9 +97,9 @@ export class MainComponent extends InjectBase implements OnInit {
       fromDate: this.fromDate,
       toDate: this.toDate,
       loai: 2,
-      soHoaDon: this.param.soHoaDon,
       payType: this.param.payType,
-      tinhTrang: this.param.tinhTrang
+      tinhTrang: this.param.tinhTrang,
+      ma_DH: this.param.ma_DH
     };
     this.donHangService.excelExport(filter)
       .subscribe({
@@ -136,10 +139,8 @@ export class MainComponent extends InjectBase implements OnInit {
         this.donHangService.delete(id).subscribe({
           next: (res) => {
             if (res) {
+              this.getData();
               this.snotifyService.success('Xóa đơn hàng thành công', 'Thành Công');
-              this.data = this.data.filter(x => x.id !== id);
-              this.tongTien = this.data.reduce((x, y) => x + y.tongTien, 0);
-              //this.tongTienTT = this.data.reduce((x, y) => x + (y.tienMat || 0) + (y.chuyenKhoan || 0), 0);
               this.spinnerService.hide();
             }
           },
@@ -156,9 +157,10 @@ export class MainComponent extends InjectBase implements OnInit {
     this.fromDate = new Date(this.now.getFullYear(), this.now.getMonth(), 1);
     // Last of month
     this.toDate = new Date(this.now.getFullYear(), this.now.getMonth() + 1, 0);
-    this.param.filterType = null;
-    this.param.soHoaDon = null;
     this.param.payType = '3';
+    this.param.ma_DH = null;
+    this.param.filterBy = '0';
+    this.param.tinhTrang = '3';
     this.search();
   }
 

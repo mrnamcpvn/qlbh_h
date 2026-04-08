@@ -1,5 +1,6 @@
 using API.Helpers.Params;
 using API.Models;
+using SD3_API.Helpers.Utilities;
 using System.Collections.Generic;
 
 namespace API.DTOs.Maintain
@@ -23,7 +24,13 @@ namespace API.DTOs.Maintain
         public string ToDate { get; set; }
         public int Loai { get; set; }
         public string TinhTrang { get; set; }
-        public int? SoHoaDon { get; set; }
+        public string? Ma_DH { get; set; }
         public int? PayType { get; set; }
+    }
+
+    public class DonHangPaginationResult
+    {
+        public PaginationUtility<DonHangO> Pagination { get; set; }
+        public decimal TotalAmount { get; set; }
     }
 }
