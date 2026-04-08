@@ -4,11 +4,9 @@ import { ReportService } from '@services/report.service';
 import { InjectBase } from '@utilities/inject-base-app';
 import { DatePipe } from '@angular/common';
 import { CaptionConstants, MessageConstants } from '@constants/message.enum';
-import { IconButton } from '@constants/common.constants';
+import { ClassButton, IconButton } from '@constants/common.constants';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
-import { KhachHang } from '@models/maintains/khach-hang';
-import { Report, ReportExportDetail, ReportMainParam } from '@models/reports/report-main';
-import { KhachHangService } from '@services/khach-hang.service';
+import { Report_Data, ReportMainParam } from '@models/reports/report-main';
 import { SanPhamService } from '@services/san-pham.service';
 import { SanPham } from '@models/maintains/san-pham';
 
@@ -20,23 +18,20 @@ import { SanPham } from '@models/maintains/san-pham';
 })
 export class MainComponent extends InjectBase implements OnInit {
   now: Date = new Date();
-  pagination: Pagination = <Pagination>{
-    pageNumber: 1,
-    pageSize: 10
-  };
+
   param: ReportMainParam = <ReportMainParam>{};
-  data: Report[] = [];
+  data: Report_Data = <Report_Data>{};
   iconButton = IconButton;
+  classButton = ClassButton;
   bsConfig: Partial<BsDatepickerConfig> = {
     dateInputFormat: "DD/MM/YYYY",
     isAnimated: true,
   }
-  test = [1,2,3,4];
+  test = [1, 2, 3, 4];
   listSP: SanPham[] = [];
   constructor(
-    private reportService: ReportService,
-    private datePipe: DatePipe,
-    private spService: SanPhamService
+    private service: ReportService,
+    private spservice: SanPhamService
   ) {
     super();
   }
@@ -48,26 +43,21 @@ export class MainComponent extends InjectBase implements OnInit {
 
   getData() {
     this.spinnerService.show();
-    this.reportService.getDatapagination(this.pagination, this.param)
+    this.service.getData(this.param)
       .subscribe({
         next: (res) => {
-          this.pagination = res.pagination;
-          this.data = res.result;
+          this.data = res;
         },
         error: () => this.snotifyService.error(MessageConstants.UN_KNOWN_ERROR, CaptionConstants.ERROR),
         complete: () => this.spinnerService.hide()
       });
   }
 
-  search() {
-    this.pagination.pageNumber == 1 ? this.getData() : this.pagination.pageNumber = 1;
-  }
-
   getAllSP() {
-    this.spService.getAll().subscribe({
+    this.spservice.getAll().subscribe({
       next: (res) => {
         this.listSP = res;
-        let sp = <SanPham> {id: 0, ten: 'Tất cả sản phẩm'}
+        let sp = <SanPham>{ id: 0, ten: 'Tất cả sản phẩm' }
         this.listSP.unshift(sp);
       }
     })
@@ -79,24 +69,17 @@ export class MainComponent extends InjectBase implements OnInit {
       toDate: new Date(this.now.getFullYear(), this.now.getMonth() + 1, 0),
       id_sp: 0
     };
-    this.data = [];
+    this.data = <Report_Data>{ result: [] };
   }
-
-  pageChanged(event: any) {
-    this.pagination.pageNumber = event.page;
-    this.getData();
-  }
-
-  exportExcel() {
-    // this.spinnerService.show();
-    // this.reportService.exportExcel(this.pagination, this.param)
-    //   .subscribe({
-    //     next: (result: Blob) => {
-    //       const fileName = `Bao_cao_${this.datePipe.transform(new Date(), 'yyyyMMdd_HHmmss')}`;
-    //       this.functionUtility.exportExcel(result, fileName);
-    //     },
-    //     error: () => this.snotifyService.error(MessageConstants.UN_KNOWN_ERROR, CaptionConstants.ERROR),
-    //     complete: () => this.spinnerService.hide()
-    //   });
+  excel() {
+    this.spinnerService.show();
+    this.service.excel(this.param).subscribe({
+      next: (result) => {
+        this.spinnerService.hide();
+        result.isSuccess
+          ? this.functionUtility.exportExcel(result.data, `Báo cáo tồn kho`)
+          : this.snotifyService.error(result.error, 'Lỗi');
+      },
+    });
   }
 }

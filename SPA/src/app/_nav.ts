@@ -27,6 +27,11 @@ export const navItems: INavData[] = [
     icon: 'fa fa-steam-square',
   },
   {
+    name: 'Theo dõi nhân viên bán hàng',
+    url: '/maintain/theo-doi-nhan-vien-ban-hang',
+    icon: 'fa fa-users',
+  },
+  {
     name: 'Báo cáo tồn kho',
     url: '/report',
     icon: 'fa fa-calendar-check-o',

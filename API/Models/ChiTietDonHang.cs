@@ -19,6 +19,5 @@ namespace API.Models
         public int? SL_Ton_Dau { get; set; }
         public int? SL_Ton_Cuoi { get; set; }
         public string Dvt { get; set; }
-       
     }
 }

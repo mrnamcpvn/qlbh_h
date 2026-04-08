@@ -8,6 +8,7 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { MainComponent } from "./main/main.component";
 import { ModalAddEditComponent } from "./modal-add-edit/modal-add-edit.component";
 import { NgSelectModule } from '@ng-select/ng-select';
+import { SharedModule } from '../../_shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
     FormsModule,
     ModalModule.forRoot(),
     PaginationModule.forRoot(),
+    SharedModule,
     NgSelectModule,
     SanPhamRoutingModule
   ]

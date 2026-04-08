@@ -14,17 +14,16 @@ namespace API.Controllers
             _service = service;
         }
 
-        [HttpGet("GetDataPagination")]
-        public async Task<IActionResult> GetDataPagination([FromQuery] PaginationParam pagination, [FromQuery] ReportParam param)
+        [HttpGet("GetData")]
+        public async Task<IActionResult> GetData([FromQuery] ReportParam param)
         {
-            return Ok(await _service.GetDataPagination(pagination, param, false));
+            return Ok(await _service.GetData(param));
         }
 
-        // [HttpGet("ExportExcel")]
-        // public async Task<IActionResult> ExportExcel([FromQuery] PaginationParam pagination, [FromQuery] ReportParam param)
-        // {
-        //     byte[] result = await _service.ExportExcel(pagination, param, false);
-        //     return File(result, "application/xlsx");
-        // }
+        [HttpGet("Excel")]
+        public async Task<IActionResult> Excel([FromQuery] ReportParam param)
+        {
+            return Ok(await _service.Excel(param));
+        }
     }
 }

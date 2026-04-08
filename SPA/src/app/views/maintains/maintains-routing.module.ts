@@ -25,6 +25,10 @@ const routes: Routes = [
   {
     path: 'ma-hang',
     loadChildren: () => import('./ma-hang/ma-hang.module').then(m => m.MaHangModule)
+  },
+  {
+    path: 'theo-doi-nhan-vien-ban-hang',
+    loadChildren: () => import('./theo-doi-nhan-vien-ban-hang/theo-doi-nhan-vien-ban-hang.module').then(m => m.TheoDoiNhanVienBanHangModule)
   }
 ];
 
@@ -32,4 +36,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class MaintainsRoutingModule {}
+export class MaintainsRoutingModule { }

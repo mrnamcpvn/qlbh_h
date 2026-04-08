@@ -12,6 +12,8 @@ namespace API._Services.Interfaces
         Task<bool> Delete(int id);
         Task<bool> Update(SanPham model);
         Task<List<SanPham>> GetAll();
+        Task<OperationResult> Template();
+        Task<OperationResult> Upload(IFormFile file);
        //Task<List<KeyValuePair<int, string>>> GetAllByCommodityCodeId(int id);
     }
 }

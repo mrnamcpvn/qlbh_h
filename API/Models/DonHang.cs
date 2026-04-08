@@ -12,9 +12,12 @@ namespace API.Models
         public int? Loai { get; set; }
         [Column(TypeName = "decimal(18, 0)")]
         public decimal? TongTien { get; set; }
+        [Column(TypeName = "decimal(18, 0)")]
+        public decimal? TienMat { get; set; }
+        [Column(TypeName = "decimal(18, 0)")]
+        public decimal? ChuyenKhoan { get; set; }
         public DateTime? Date { get; set; }
-
         public bool? Status { get; set; }
-       
+        public int? ID_NV { get; set; }
     }
 }

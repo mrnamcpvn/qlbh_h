@@ -22,11 +22,18 @@
               </div>
               <div class="col-6">
                 <label class="d-block">&nbsp;</label>
-                <button type="submit" (click)="search()" class="btn btn-primary">
+                <button type="submit" (click)="search()" class="btn btn-primary mr-1">
                   <i class="fa fa-search"></i> Tìm kiếm
                 </button>
-                <button type="button" (click)="clear()" class="btn btn-danger ml-1">
+                <button type="button" (click)="clear()" class="btn btn-danger mr-1">
                   <i class="fa fa-ban"> </i> Xóa
+                </button>
+                <file-upload [allowExtensions]="acceptFormat"
+                         label="Tải Lên"
+                         (filesChange)="upload($event)"></file-upload>
+                <button type="button"
+                        class="{{ classButton.SEARCH}}"
+                        (click)="template()"> Tải Xuống File Mẫu
                 </button>
               </div>
             </div>

@@ -185,3 +185,9 @@ table {
   font-weight: 700;
   font-size: 20px;
 }
+.checkAll .custom-control-input:checked ~ .custom-control-label::before {
+  border-color: #fff;
+}
+.pe-none {
+  pointer-events: none;
+}

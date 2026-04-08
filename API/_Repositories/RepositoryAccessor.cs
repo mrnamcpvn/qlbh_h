@@ -15,6 +15,7 @@ namespace API._Repositories
             DonHang = new Repository<DonHang>(_dbContext);
             NguoiDung = new Repository<NguoiDung>(_dbContext);
             ChiTietDonHang = new Repository<ChiTietDonHang>(_dbContext);
+            NhanVien = new Repository<NhanVien>(_dbContext);
         }
 
         public IRepository<KhachHang> KhachHang { get; set; }
@@ -22,6 +23,7 @@ namespace API._Repositories
         public IRepository<DonHang> DonHang { get; set; }
         public IRepository<NguoiDung> NguoiDung { get; set; }
         public IRepository<ChiTietDonHang> ChiTietDonHang { get; set; }
+        public IRepository<NhanVien> NhanVien { get; set; }
 
         public async Task<bool> Save()
         {

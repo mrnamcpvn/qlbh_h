@@ -1,0 +1,286 @@
+<div class="animated fadeIn">
+  <div class="row pt-4">
+    <div class="col-lg-12">
+      <div class="card">
+        <form class="form-horizontal"
+              autocomplete="off"
+              #mainForm="ngForm">
+          <div class="card-header">
+            <div class="row">
+              <div class="col-md-6 col-sm-12">
+                <h5>Theo Dõi Nhân Viên Bán Hàng</h5>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+                <label class="badge badge-warning">Kỳ Báo Cáo:</label>
+                <ng-select name="filterBy"
+                           [(ngModel)]="param.filterBy"
+                           (ngModelChange)="onFilterByChange()"
+                           (clear)="param.filterBy = '0'"
+                           [clearable]="param.filterBy != '0'">
+                  <ng-option *ngFor="let item of filterByList"
+                             [value]="item.key">{{ item.value }}</ng-option>
+                </ng-select>
+              </div>
+              <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                <label class="badge badge-warning">
+                  Ngày:
+                </label>
+                <div class="full-width">
+                  <div class="container_date">
+                    <div class="input-group mr-1">
+                      <input type="text"
+                             placeholder="Từ ngày..."
+                             [maxDate]="param.filterBy == '0' ? toDate : null"
+                             name="date_start"
+                             [bsConfig]="bsConfig"
+                             class="form-control"
+                             bsDatepicker
+                             [(ngModel)]="fromDate"
+                             (ngModelChange)="onFromDateChange()"
+                             required>
+                      <div class="input-group-append">
+                        <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
+                      </div>
+                    </div>
+                    <div class="input-group ml-1">
+                      <input type="text"
+                             placeholder="Đến ngày..."
+                             [minDate]="param.filterBy == '0' ? fromDate : null"
+                             name="date_end"
+                             [bsConfig]="bsConfig"
+                             class="form-control"
+                             bsDatepicker
+                             [(ngModel)]="toDate"
+                             (ngModelChange)="onToDateChange()"
+                             required>
+                      <div class="input-group-append">
+                        <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12">
+                <div class="row">
+                  <div class="col-12">
+                    <label for="idSP"
+                           class="badge badge-warning"> Sản Phẩm
+                    </label>
+                    <ng-select [items]="sPList"
+                               [multiple]="true"
+                               name="idSP"
+                               groupBy="allGroup"
+                               [selectableGroup]="true"
+                               [selectableGroupAsModel]="false"
+                               [closeOnSelect]="false"
+                               bindLabel="value"
+                               bindValue="key"
+                               [(ngModel)]="param.idSP"
+                               placeholder="Vui lòng chọn sản phẩm"
+                               required>
+                      <ng-template ng-optgroup-tmp
+                                   let-item="item"
+                                   let-item$="item$"
+                                   let-index="index">
+                        <div class="custom-control custom-checkbox pe-none">
+                          <input id="item-idSP-{{ index }}"
+                                 type="checkbox"
+                                 class="custom-control-input"
+                                 name="item-idSP-{{ index }}"
+                                 [ngModel]="item$.selected" />
+                          <label class="custom-control-label"
+                                 for="item-idSP-{{ index }}">Chọn tất cả</label>
+                        </div>
+                      </ng-template>
+                      <ng-template ng-option-tmp
+                                   let-item="item"
+                                   let-item$="item$"
+                                   let-index="index">
+                        <div class="custom-control custom-checkbox pe-none">
+                          <input id="item-idSP-{{ index }}"
+                                 name="item-idSP-{{ index }}"
+                                 type="checkbox"
+                                 class="custom-control-input"
+                                 [ngModel]="item$.selected" />
+                          <label class="custom-control-label"
+                                 for="item-idSP-{{ index }}"> {{ item.value }}</label>
+                        </div>
+                      </ng-template>
+                    </ng-select>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12">
+                <div class="row">
+                  <div class="col-12">
+                    <label for="idNV"
+                           class="badge badge-warning"> Nhân Viên
+                    </label>
+                    <ng-select [items]="nVList"
+                               [multiple]="true"
+                               name="idNV"
+                               groupBy="allGroup"
+                               [selectableGroup]="true"
+                               [selectableGroupAsModel]="false"
+                               [closeOnSelect]="false"
+                               bindLabel="value"
+                               bindValue="key"
+                               [(ngModel)]="param.idNV"
+                               placeholder="Vui lòng chọn nhân viên"
+                               required>
+                      <ng-template ng-optgroup-tmp
+                                   let-item="item"
+                                   let-item$="item$"
+                                   let-index="index">
+                        <div class="custom-control custom-checkbox pe-none">
+                          <input id="item-idNV-{{ index }}"
+                                 type="checkbox"
+                                 class="custom-control-input"
+                                 name="item-idNV-{{ index }}"
+                                 [ngModel]="item$.selected" />
+                          <label class="custom-control-label"
+                                 for="item-idNV-{{ index }}">Chọn tất cả</label>
+                        </div>
+                      </ng-template>
+                      <ng-template ng-option-tmp
+                                   let-item="item"
+                                   let-item$="item$"
+                                   let-index="index">
+                        <div class="custom-control custom-checkbox pe-none">
+                          <input id="item-idNV-{{ index }}"
+                                 name="item-idNV-{{ index }}"
+                                 type="checkbox"
+                                 class="custom-control-input"
+                                 [ngModel]="item$.selected" />
+                          <label class="custom-control-label"
+                                 for="item-idNV-{{ index }}"> {{ item.value }}</label>
+                        </div>
+                      </ng-template>
+                    </ng-select>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <label class="d-block">&nbsp;</label>
+                <button type="submit"
+                        (click)="search()"
+                        class="{{classButton.SEARCH}}"
+                        [disabled]="!mainForm.valid">
+                  <i class="{{iconButton.SEARCH}}"></i> Xem Báo Cáo
+                </button>
+                <button type="button"
+                        (click)="clear()"
+                        class="{{classButton.CLEAR}}">
+                  <i class="{{iconButton.CLEAR}}"></i> Xóa
+                </button>
+                <button type="submit"
+                        class="{{classButton.EXCEL}}"
+                        id="excel"
+                        (click)="excel()"
+                        [disabled]="!mainForm.valid">
+                  <i class="{{iconButton.EXCEL}}"></i> Xuất dữ liệu
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="card-body">
+          <div class="row justify-content-md-center">
+            <div class="col-12 text-center"
+                 *ngIf="data.result?.length > 0">
+              <h5>TỔNG HỢP BÁN HÀNG THEO MẶT HÀNG VÀ NHÂN VIÊN</h5>
+              <h6>Nhân viên : {{data.nVs}}, từ ngày {{data.fromDate_Str}} đến ngày {{data.toDate_Str}}</h6>
+            </div>
+            <div class="col-12">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th class="text-center">Tên Nhân Viên</th>
+                      <th class="text-center">Số Điện Thoại</th>
+                      <th class=" text-center">Đvt</th>
+                      <th class=" text-center">Số Lượng Bán</th>
+                      <th class=" text-center">Doanh Số Bán</th>
+                    </tr>
+                  </thead>
+                  <tbody *ngFor="let product of data.result">
+                    <tr class="group-header"
+                        (click)="product.isExpanded = product.isExpanded === false ? true : false"
+                        style="cursor: pointer;">
+                      <td colspan="3">
+                        <i class="fa"
+                           [ngClass]="product.isExpanded !== false ? 'fa fa-caret-down' : 'fa fa-caret-right'"
+                           class="mr-2"></i>
+                        <b>Tên hàng: {{ product.ten_SP }} ({{ product.nV_List.length }})</b>
+                      </td>
+                      <td class="text-right"><b>{{ product.sL_Ban | number:'1.0-0' }}</b></td>
+                      <td class="text-right"><b>{{ product.dS_Ban | number:'1.0-0' }}</b></td>
+                    </tr>
+                    <ng-container *ngIf="product.isExpanded !== false">
+                      <tr *ngFor="let nv of product.nV_List">
+                        <td>{{ nv.ten_NV }}</td>
+                        <td>{{ nv.sdT_NV }}</td>
+                        <td>{{ nv.dvt }}</td>
+                        <td class="text-right">{{ nv.sL_Ban | number:'1.0-0' }}</td>
+                        <td class="text-right">{{ nv.dS_Ban | number:'1.0-0' }}</td>
+                      </tr>
+                    </ng-container>
+                  </tbody>
+                  <tbody *ngIf="data.result?.length == 0">
+                    <tr>
+                      <td colspan="100%"
+                          class="table-warning text-center font-weight-bold">
+                        Không có dữ liệu!
+                      </td>
+                    </tr>
+                  </tbody>
+                  <tfoot class="total-row"
+                         *ngIf="data.result?.length > 0">
+                    <tr>
+                      <td colspan="3"
+                          class="text-center font-bold">
+                        <span>TỔNG CỘNG</span>
+                      </td>
+                      <td class="text-right font-bold">
+                        {{ data.tong_SL_Ban | number:'1.0-0' }}
+                      </td>
+                      <td class="text-right font-bold">
+                        {{ data.tong_DS_Ban | number:'1.0-0' }}
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+              <div class="row">
+                <div class="col-8">
+                  <div class="d-flex"
+                       *ngIf="data.result?.length > 0 && data.pagination?.totalPage > 1">
+                    <pagination [boundaryLinks]="true"
+                                [totalItems]="data.pagination?.totalCount"
+                                [itemsPerPage]="data.pagination?.pageSize"
+                                previousText="&lsaquo;"
+                                nextText="&rsaquo;"
+                                firstText="&laquo;"
+                                lastText="&raquo;"
+                                [maxSize]="5"
+                                [(ngModel)]="data.pagination.pageNumber"
+                                (pageChanged)="pageChanged($event)"
+                                [ngModelOptions]="{standalone: true}">
+                    </pagination>
+                    <span class="cs-page ml-2"> Page - {{ data.pagination?.pageNumber }} / {{ data.pagination?.totalPage }}</span>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <span class="cs-page float-right">Tổng số bảng ghi: {{data.pagination?.totalCount ?? 0}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

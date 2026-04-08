@@ -6,6 +6,8 @@ import { ModalService } from "@services/modal.service";
 import { SanPhamService } from "@services/san-pham.service";
 import { InjectBase } from "@utilities/inject-base-app";
 import { PageChangedEvent } from 'ngx-bootstrap/pagination';
+import { ClassButton } from '@constants/common.constants';
+import { FileResultModel } from 'src/app/views/_shared/file-upload-component/file-upload.component';
 
 @Component({
   selector: 'app-main',
@@ -20,9 +22,11 @@ export class MainComponent extends InjectBase implements OnInit {
   };
   name: string = '';
 
+  acceptFormat: string = '.xls, .xlsx, .xlsm';
   editData: SanPham = <SanPham>{};
   type: string = 'add';
   modalRef?: BsModalRef;
+  classButton = ClassButton;
   constructor(private modalService: ModalService, private spService: SanPhamService) {
     super();
   }
@@ -58,7 +62,32 @@ export class MainComponent extends InjectBase implements OnInit {
   changeData(e: any) {
     this.search();
   }
-
+  template() {
+    this.spinnerService.show();
+    this.spService.template().subscribe({
+      next: (result) => {
+        this.spinnerService.hide();
+        this.functionUtility.exportExcel(result.data, 'Mẫu upload sản phẩm')
+      },
+    });
+  }
+  upload(event: FileResultModel) {
+    this.spinnerService.show();
+    this.spService.upload(event.formData).subscribe({
+      next: async (res) => {
+        this.spinnerService.hide();
+        if (res.isSuccess) {
+          this.search()
+          this.snotifyService.success('Dữ liệu đã được tải lên thành công', 'Thành công');
+        } else {
+          if (!this.functionUtility.checkEmpty(res.data)) {
+            this.functionUtility.exportExcel(res.data, `Báo cáo lỗi dữ liệu`);
+          }
+          this.snotifyService.error( res.error, 'Lỗi');
+        }
+      }
+    });
+  }
   delete(id: number) {
     this.snotifyService.confirm('Bạn có chắc chắn muốn xóa sản phẩm', 'Xóa',
       () => {

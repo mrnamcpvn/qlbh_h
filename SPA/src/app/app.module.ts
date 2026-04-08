@@ -49,6 +49,7 @@ import {P500Component} from './views/error/500.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ModalService } from '@services/modal.service';
+import { SharedModule } from './views/_shared/shared.module';
 export function tokenGetter() {
   return localStorage.getItem(LocalStorageConstants.TOKEN);
 }
@@ -67,6 +68,7 @@ export function tokenGetter() {
     AppHeaderModule,
     AppSidebarModule,
     PerfectScrollbarModule,
+    SharedModule,
     BsDropdownModule.forRoot(),
     TabsModule.forRoot(),
     ChartsModule,
