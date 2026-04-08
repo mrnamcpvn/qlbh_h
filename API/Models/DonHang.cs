@@ -19,5 +19,6 @@ namespace API.Models
         public DateTime? Date { get; set; }
         public bool? Status { get; set; }
         public int? ID_NV { get; set; }
+        public string Ma_DH { get; set; }
     }
 }

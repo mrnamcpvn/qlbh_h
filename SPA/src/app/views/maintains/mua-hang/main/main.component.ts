@@ -180,7 +180,9 @@ export class MainComponent extends InjectBase implements OnInit {
         this.toDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0);
         break;
       case '4': // Tuần
-        this.toDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + 6);
+        const day = startDate.getDay();
+        const diff = startDate.getDate() + (day === 0 ? 0 : 7 - day);
+        this.toDate = new Date(startDate.getFullYear(), startDate.getMonth(), diff);
         break;
       case '5': // Ngày
         this.toDate = new Date(startDate);

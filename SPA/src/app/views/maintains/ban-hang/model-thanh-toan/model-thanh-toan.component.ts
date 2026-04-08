@@ -6,26 +6,26 @@ import { DonHangService } from '@services/don-hang.service';
 import { DonHang } from '@models/maintains/don-hang';
 
 @Component({
-	standalone: false,
-	selector: 'app-model-thanh-toan',
-	templateUrl: './model-thanh-toan.component.html',
-	styleUrls: ['./model-thanh-toan.component.scss']
+  standalone: false,
+  selector: 'app-model-thanh-toan',
+  templateUrl: './model-thanh-toan.component.html',
+  styleUrls: ['./model-thanh-toan.component.scss']
 })
 export class ModelThanhToanComponent extends InjectBase implements OnInit, OnDestroy {
-	@ViewChild('modalAdd', { static: false }) modalAdd?: ModalDirective;
-	@Input() id: string = '';
-	@Input() data: DonHang = <DonHang>{};
-	@Output() changeData = new EventEmitter<boolean>();
-	private element: any;
-	constructor(
-		private modalService: ModalService,
-		private el: ElementRef,
-		private donHang: DonHangService
-	){
-		super();
-		this.element = el.nativeElement;
-	}
-	ngOnInit() {
+  @ViewChild('modalAdd', { static: false }) modalAdd?: ModalDirective;
+  @Input() id: string = '';
+  @Input() data: DonHang = <DonHang>{};
+  @Output() changeData = new EventEmitter<boolean>();
+  private element: any;
+  constructor(
+    private modalService: ModalService,
+    private el: ElementRef,
+    private donHang: DonHangService
+  ) {
+    super();
+    this.element = el.nativeElement;
+  }
+  ngOnInit() {
     // ensure id attribute exists
     if (!this.id) {
       console.error('modal must have an id');
@@ -41,12 +41,6 @@ export class ModelThanhToanComponent extends InjectBase implements OnInit, OnDes
     this.element.remove();
   }
   save() {
-    const total = (this.data.chuyenKhoan || 0) + (this.data.tienMat || 0);
-    if (total > this.data.tongTien) {
-      this.snotifyService.warning('Tổng tiền thanh toán lớn hơn tổng tiền đơn hàng', 'Cảnh báo');
-      return;
-    }
-
     this.donHang.updatePayment(this.data).subscribe({
       next: (res: any) => {
         if (res) {
@@ -75,5 +69,17 @@ export class ModelThanhToanComponent extends InjectBase implements OnInit, OnDes
 
   cancel() {
     this.modalAdd.hide();
+  }
+
+  formatCurrency(value: number | string | undefined): string {
+    if (value === null || value === undefined || value === '') return '';
+    const numericStr = value.toString().replace(/\D/g, '');
+    if (!numericStr) return '';
+    return numericStr.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  parseCurrency(value: string): number {
+    if (!value) return 0;
+    return parseInt(value.toString().replace(/,/g, ''), 10) || 0;
   }
 }
