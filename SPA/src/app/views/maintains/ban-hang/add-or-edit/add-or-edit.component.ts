@@ -121,7 +121,6 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
     this.spService.getAll().subscribe({
       next: (res) => {
         this.sanPhams = res;
-        console.log(res)
       }
     })
   }
@@ -139,7 +138,6 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
       this.chiTiet.gia = this.giaSP;
       this.chiTiet.dvt = this.dvt;
       this.chiTiet.thanhTien = this.chiTiet.soLuong * this.chiTiet.gia;
-      console.log(this.listChiTiet.some(x => x.iD_SP == this.chiTiet.iD_SP));
 
       if (this.listChiTiet.some(x => x.iD_SP == this.chiTiet.iD_SP))
 
@@ -171,7 +169,6 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
     this.data.chitiet = this.listChiTiet;
     this.donHangService.create(this.data).subscribe({
       next: (res) => {
-        console.log("Thêm đh: ", res);
         if (res) {
           this.snotifyService.success('Thêm đơn hàng thành công', 'Thành công');
           this.donHangService.changeSDonHang(this.data);

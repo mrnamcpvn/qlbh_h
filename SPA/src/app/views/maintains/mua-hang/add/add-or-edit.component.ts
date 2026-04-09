@@ -105,8 +105,6 @@ clearSP(){
     this.chiTiet.gia = this.giaSP;
     this.chiTiet.dvt = this.dvt;
     this.chiTiet.thanhTien = this.chiTiet.soLuong * this.chiTiet.gia;
-    console.log(this.listChiTiet.some(x => x.iD_SP == this.chiTiet.iD_SP));
-
     if(this.listChiTiet.some(x => x.iD_SP == this.chiTiet.iD_SP))
 
       this.listChiTiet.map(x => {
@@ -134,7 +132,6 @@ clearSP(){
     this.data.chitiet = this.listChiTiet;
     this.donHangService.create(this.data).subscribe({
       next: (res) => {
-        console.log("Thêm đh: ",res);
         if (res) {
           this.snotifyService.success('Thêm đơn hàng thành công', 'Thành công');
           this.donHangService.changeSDonHang(res);

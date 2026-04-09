@@ -30,10 +30,7 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
       next: res => {
         if(res){
           this.donHang = res
-          console.log("Tại chi Tiết: ", this.donHang);
-
         }
-
         else this.router.navigate(['/maintain/mua-hang'])
       },
       error: err => this.router.navigate(['/maintain/mua-hang'])

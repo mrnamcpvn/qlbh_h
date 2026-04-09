@@ -65,8 +65,6 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
           this.data.iD_NV = res.iD_NV;
           this.data.ma_DH = res.ma_DH;
           this.tongTien = res.tongTien;
-          console.log(" Trang Edit:", this.donHang);
-
         }
 
         else this.router.navigate(['/maintain/ban-hang'])
@@ -141,8 +139,6 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
     this.chiTiet.gia = this.giaSP;
     this.chiTiet.dvt = this.dvt;
     this.chiTiet.thanhTien = this.chiTiet.soLuong * this.chiTiet.gia;
-    console.log(this.listChiTiet.some(x => x.iD_SP == this.chiTiet.iD_SP));
-
     if(this.listChiTiet.some(x => x.iD_SP == this.chiTiet.iD_SP))
 
       this.listChiTiet.map(x => {
@@ -175,7 +171,6 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
     this.data.chitiet = this.listChiTiet;
     this.donHangService.update(this.data).subscribe({
       next: (res) => {
-        console.log("Thêm đh: ",res);
         if (res) {
           this.snotifyService.success('Sửa đơn hàng thành công', 'Thành công');
           this.donHangService.changeSDonHang(this.data);

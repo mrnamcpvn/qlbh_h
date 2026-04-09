@@ -108,7 +108,7 @@ export class MainComponent extends InjectBase implements OnInit {
           if (!result)
             this.snotifyService.warning('Không có dử liệu', 'Cảnh báo!');
           else {
-            this.functionUtility.exportExcel(result.data, 'Download_DonHang');
+            this.functionUtility.exportExcel(result.data, 'Dữ liệu xuất hàng');
           }
         }
       });
