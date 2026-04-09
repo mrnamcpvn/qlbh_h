@@ -66,12 +66,12 @@
                     </thead>
                     <tbody>
                       <tr *ngFor="let item of data; let i = index">
-                        <td>{{ ((pagination.pageNumber - 1) * pagination.pageSize) + i + 1 }}</td>
+                      <td class="col-stt">{{ ((pagination.pageNumber - 1) * pagination.pageSize) + i + 1 }}</td>
                         <td>{{item.maSP}}</td>
                         <td>{{item.ten}}</td>
                         <td class="text-right">{{item.gia | number}}</td>
                         <td class="text-right">{{item.soLuong | number}}</td>
-                        <td style="width: 10rem;">
+                        <td class="col-action">
                           <button type="button"
                                   (click)="delete(item.id)"
                                   class="btn btn-danger btn-sm">

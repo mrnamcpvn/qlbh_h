@@ -26,20 +26,3 @@
 .group-header td:last-child {
   border-right: 1px dotted #ccc;
 }
-/* Trong file CSS */
-.total-row tr td {
-  background-color: #f2f2f2;
-  /* Có thể dùng màu đỏ cho số tổng giống hình nếu cần */
-  padding: 10px 8px;
-  border-top: 2px solid #ccc;
-  /* Đường kẻ trên dày hơn một chút */
-  border-right: 1px dotted #ccc;
-}
-.total-row .font-bold {
-  font-weight: 700;
-  text-transform: uppercase;
-}
-.total-row .text-center {
-  text-align: center;
-  letter-spacing: 1px;
-}

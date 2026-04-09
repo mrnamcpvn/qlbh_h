@@ -237,21 +237,19 @@
                       </td>
                     </tr>
                   </tbody>
-                  <tfoot class="total-row"
-                         *ngIf="data.result?.length > 0">
-                    <tr>
-                      <td colspan="3"
-                          class="text-center font-bold">
-                        <span>TỔNG CỘNG</span>
+                  <tbody *ngIf="data.result?.length > 0">
+                    <tr class="row-total">
+                      <td colspan="3">
+                        <b>Tổng cộng:</b>
                       </td>
-                      <td class="text-right font-bold">
-                        {{ data.tong_SL_Ban | number:'1.0-0' }}
+                      <td class="text-right">
+                        <b>{{ data.tong_SL_Ban | number:'1.0-0' }}</b>
                       </td>
-                      <td class="text-right font-bold">
-                        {{ data.tong_DS_Ban | number:'1.0-0' }}
+                      <td class="text-right">
+                        <b>{{ data.tong_DS_Ban | number:'1.0-0' }}</b>
                       </td>
                     </tr>
-                  </tfoot>
+                  </tbody>
                 </table>
               </div>
               <div class="row">
