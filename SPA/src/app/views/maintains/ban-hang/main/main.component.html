@@ -180,12 +180,10 @@
                   </thead>
                   <tbody>
                     <tr *ngFor="let item of data; let i = index">
-                      <td class="align-middle"
-                          style="width: 2rem;">{{ ((pagination.pageNumber - 1) * pagination.pageSize) + i + 1 }}</td>
-                      <td class="align-middle"
-                          style="width: 10rem;">{{item.date | date: 'dd/MM/YYYY hh:mm:ss'}}</td>
+                      <td class="col-stt">{{ ((pagination.pageNumber - 1) * pagination.pageSize) + i + 1 }}</td>
+                      <td class="col-date">{{item.date | date: 'dd/MM/YYYY hh:mm:ss'}}</td>
                       <td class="align-middle">{{item.ten_KH}}</td>
-                      <td class="col-2 align-middle">{{item.tongTien | number}} VNĐ</td>
+                      <td class="text-right">{{item.tongTien | number}} VNĐ</td>
 
                       <td class="align-middle">
                         <ng-container *ngIf="(item.tienMat + item.chuyenKhoan) > 0">
@@ -211,8 +209,7 @@
                           <span class="badge badge-danger px-2 py-1">Chưa thanh toán</span>
                         </ng-template>
                       </td>
-                      <td class="align-middle"
-                          style="width: 17rem;">
+                      <td class="col-action">
                         <button type="button"
                                 class="btn btn-success btn-sm"
                                 (click)="openModal('add-modal', item)">
@@ -227,9 +224,10 @@
                           <i class="fa fa-trash-o"></i>&nbsp;Xóa </button>
                       </td>
                     </tr>
-                    <tr *ngIf="data?.length > 0">
+                    <tr *ngIf="data?.length > 0"
+                        class="row-total">
                       <td colspan="3"> <b>Tổng tiền: </b> </td>
-                      <td><b>{{tongTien | number}} VNĐ</b></td>
+                      <td class="text-right"><b>{{tongTien | number}} VNĐ</b></td>
                       <td colspan="3"></td>
                     </tr>
                     <tr *ngIf="data?.length === 0">
