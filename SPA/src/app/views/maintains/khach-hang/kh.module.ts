@@ -7,6 +7,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { MainComponent } from './main/main.component';
 import { ModalAddEditComponent } from './modal-add-edit/modal-add-edit.component';
+import { SharedModule } from '../../_shared/shared.module';
 
 
 @NgModule({
@@ -19,6 +20,7 @@ import { ModalAddEditComponent } from './modal-add-edit/modal-add-edit.component
     FormsModule,
     ModalModule.forRoot(),
     PaginationModule.forRoot(),
+    SharedModule,
     KhachHangRoutingModule
   ]
 })

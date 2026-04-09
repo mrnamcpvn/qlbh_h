@@ -34,31 +34,6 @@ namespace API._Services.Services
             return result;
         }
 
-        // public async Task<PaginationUtility<SanPhamDTO>> GetDataPagination(PaginationParams pagination, string name)
-        // {
-        //     var predicateUser = PredicateBuilder.New<SanPham>(true);
-
-        //     if (!string.IsNullOrEmpty(name))
-        //     {
-        //         predicateUser.And(x => x.Name.Trim().Contains(name));
-        //     }
-        //     var data = _repoAccessor.SanPham.FindAll(predicateUser)
-        //         .Join(_repoAccessor.MaHang.FindAll(),
-        //             x => x.IDMaHang,
-        //             y => y.ID,
-        //             (x, y) => new { SanPham = x, maHang = y }
-        //         ).Select(x => new SanPhamDTO
-        //         {
-        //             ID = x.SanPham.ID,
-        //             IDMaHang = x.SanPham.IDMaHang,
-        //             MaHang = x.maHang.Name,
-        //             Money = x.SanPham.Money,
-        //             Name = x.SanPham.Name
-        //         }).OrderBy(x => x.MaHang);
-        //     var result = await PaginationUtility<SanPhamDTO>.CreateAsync(data, pagination.PageNumber, pagination.PageSize);
-        //     return result;
-        // }
-
         public async Task<bool> Create(SanPham model)
         {
             _repoAccessor.SanPham.Add(model);
@@ -154,19 +129,14 @@ namespace API._Services.Services
                     Error = ""
                 };
                 excelReportList.Add(report);
-                //MaSP
                 if (!string.IsNullOrWhiteSpace(report.MaSP) && report.MaSP.Length > 100)
                     report.Error += $"Cột [Mã Sản Phẩm] vượt số lượng kí tự cho phép.\n";
-                //Ten
                 if (!string.IsNullOrWhiteSpace(report.Ten) && report.Ten.Length > 250)
                     report.Error += $"Cột [Tên Sản Phẩm] vượt số lượng kí tự cho phép.\n";
-                // Gia
                 if (!string.IsNullOrWhiteSpace(report.Gia) && !decimal.TryParse(report.Gia, out _))
                     report.Error += $"Giá trị cột [Giá] phải là số nguyên.\n";
-                //Dvt
                 if (!string.IsNullOrWhiteSpace(report.Dvt) && report.Dvt.Length > 50)
                     report.Error += $"Cột [Đơn Vị Tính] vượt số lượng kí tự cho phép.\n";
-                // SoLuong
                 if (!string.IsNullOrWhiteSpace(report.SoLuong) && !int.TryParse(report.SoLuong, out _))
                     report.Error += $"Giá trị cột [Số Lượng] phải là số nguyên.\n";
                 if (string.IsNullOrWhiteSpace(report.Error))
@@ -189,10 +159,5 @@ namespace API._Services.Services
             }
             return (isPassed, excelDataList, excelReportList);
         }
-        // public async Task<List<KeyValuePair<int, string>>> GetAllByCommodityCodeId(int id)
-        // {
-        //     var data = await _repoAccessor.SanPham.FindAll(x => x.IDMaHang == id).Select(x => new KeyValuePair<int, string>(x.ID, x.Name)).ToListAsync();
-        //     return data;
-        // }
     }
 }

@@ -11,5 +11,7 @@ namespace API._Services.Interfaces
         Task<bool> Update(KhachHang model);
         Task<bool> Delete(int id);
         Task<List<KhachHang>> GetAll();
+        Task<OperationResult> Template();
+        Task<OperationResult> Upload(IFormFile file);
     }
 }
