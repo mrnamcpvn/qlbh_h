@@ -16,4 +16,23 @@
 
 }
 
+.order-info {
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid #e8ecef;
 
+  .fa {
+    font-size: 1.25rem;
+    width: 1.5rem;
+    text-align: center;
+  }
+
+  small {
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+  }
+
+  strong {
+    font-size: 0.9rem;
+  }
+}

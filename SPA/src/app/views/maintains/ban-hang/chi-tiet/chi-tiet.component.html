@@ -20,22 +20,40 @@
                   Trờ về</button>
               </div>
             </div>
-            <form class="form-group row" autocomplete="off">
-              <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                <p>
-                  Ngày lập: {{donHang.date | date: 'dd/MM/YYYY hh:mm:ss' }}
-                </p>
-                <p>
-                  Tên khách hàng: {{donHang.ten_KH}}
-                </p>
-                <p>
-                  Nhân viên bán hàng: {{ten_NV}}
-                </p>
-              </div>
-            </form>
           </div>
         </form>
         <div class="card-body">
+          <div class="order-info">
+            <div class="row">
+              <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-2">
+                <div class="d-flex align-items-center">
+                  <i class="fa fa-calendar-o text-primary mr-2"></i>
+                  <div>
+                    <small class="text-muted d-block">Ngày lập</small>
+                    <strong>{{donHang.date | date: 'dd/MM/YYYY HH:mm:ss' }}</strong>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-2">
+                <div class="d-flex align-items-center">
+                  <i class="fa fa-user text-primary mr-2"></i>
+                  <div>
+                    <small class="text-muted d-block">Khách hàng</small>
+                    <strong>{{donHang.ten_KH}}</strong>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-2">
+                <div class="d-flex align-items-center">
+                  <i class="fa fa-id-badge text-primary mr-2"></i>
+                  <div>
+                    <small class="text-muted d-block">Nhân viên bán hàng</small>
+                    <strong>{{ten_NV}}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="row justify-content-md-center">
             <div class="col-12">
               <div class="table-responsive">
