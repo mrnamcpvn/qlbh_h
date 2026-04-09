@@ -24,7 +24,7 @@ namespace API.DTOs.Maintain
         public string ToDate { get; set; }
         public int Loai { get; set; }
         public string TinhTrang { get; set; }
-        public string? Ma_DH { get; set; }
+        public string Ma_DH { get; set; }
         public int? PayType { get; set; }
     }
 
@@ -33,4 +33,10 @@ namespace API.DTOs.Maintain
         public PaginationUtility<DonHangO> Pagination { get; set; }
         public decimal TotalAmount { get; set; }
     }
+    public class ChiTietDonHangDTO : ChiTietDonHang
+    {
+        public string Ten_SP { get; set; }
+        public string Dvt { get; set; }
+    }
+    
 }

@@ -100,9 +100,26 @@ namespace API._Services.Services
                             }).OrderByDescending(x => x.Date);
             return donHangs;
         }
-        public async Task<List<ChiTietDonHang>> GetDetail(int id)
+        public async Task<List<ChiTietDonHangDTO>> GetDetail(int id)
         {
-            var data = await _repoAccessor.ChiTietDonHang.FindAll(x => x.ID_DH == id).ToListAsync();
+            var data = await _repoAccessor.ChiTietDonHang.FindAll(x => x.ID_DH == id)
+            .Join(_repoAccessor.SanPham.FindAll(),
+                ct => ct.ID_SP,
+                sp => sp.ID,
+                (ct, sp) => new ChiTietDonHangDTO
+                {
+                    ID = ct.ID,
+                    ID_DH = ct.ID_DH,
+                    ID_SP = ct.ID_SP,
+                    Ten_SP = sp.Ten,
+                    Dvt = sp.Dvt,
+                    SoLuong = ct.SoLuong,
+                    Gia = ct.Gia,
+                    ThanhTien = ct.ThanhTien,
+                    Updated_Time = ct.Updated_Time,
+                    SL_Ton_Dau = ct.SL_Ton_Dau,
+                    SL_Ton_Cuoi = ct.SL_Ton_Cuoi,
+                }).AsNoTracking().ToListAsync();
             return data;
         }
         #endregion
@@ -131,7 +148,6 @@ namespace API._Services.Services
                 else sp.SoLuong = (sp.SoLuong ?? 0) - item.SoLuong;
                 item.ID_DH = idDH;
                 item.SL_Ton_Cuoi = sp.SoLuong;
-                item.Dvt = sp.Dvt;
                 item.Updated_Time = DateTime.Now;
                 _repoAccessor.ChiTietDonHang.Add(item);
                 _repoAccessor.SanPham.Update(sp);
@@ -185,7 +201,6 @@ namespace API._Services.Services
                     else sp.SoLuong = (sp.SoLuong ?? 0) - item.SoLuong;
                     item.ID_DH = model.ID;
                     item.SL_Ton_Cuoi = sp.SoLuong;
-                    item.Dvt = sp.Dvt;
                     item.Updated_Time = DateTime.Now;
                     _repoAccessor.ChiTietDonHang.Add(item);
                 }
@@ -204,32 +219,49 @@ namespace API._Services.Services
 
         public async Task<bool> Delete(int id)
         {
+            // 1. Lấy đơn hàng và chi tiết đơn hàng cần xóa
             var dh = await _repoAccessor.DonHang.FindSingle(x => x.ID == id);
+            if (dh == null) return true; // Đơn hàng đã không tồn tại, coi như đã xóa thành công
             var listChitiet = await _repoAccessor.ChiTietDonHang.FindAll(x => x.ID_DH == id).ToListAsync();
-
-            if (dh != null)
+            if (!listChitiet.Any())
             {
-                foreach (var item in listChitiet)
+                _repoAccessor.DonHang.Remove(dh); // Xóa đơn trống
+                return await _repoAccessor.Save();
+            }
+            // 3. Lấy tất cả Sản phẩm cần cập nhật trong 1 lần duy nhất
+            var productIds = listChitiet.Select(x => x.ID_SP).Distinct().ToList();
+            var listSanPham = await _repoAccessor.SanPham.FindAll(x => productIds.Contains(x.ID)).ToListAsync();
+
+            // 4. Lấy các bản ghi lịch sử mới nhất của các sản phẩm này (Loại trừ đơn hàng đang xóa)
+            // Dùng GroupBy để lấy ID lớn nhất của từng SP trong 1 query
+            var latestCTs = await _repoAccessor.ChiTietDonHang
+                .FindAll(x => productIds.Contains(x.ID_SP) && x.ID_DH != id)
+                .GroupBy(x => x.ID_SP)
+                .Select(g => g.OrderByDescending(x => x.ID).FirstOrDefault())
+                .ToListAsync();
+            // 5. Xử lý logic in-memory
+            foreach (var item in listChitiet)
+            {
+                var sp = listSanPham.FirstOrDefault(x => x.ID == item.ID_SP);
+                if (sp != null)
                 {
-                    var sp = await _repoAccessor.SanPham.FindById(item.ID_SP);
-                    if (dh.Loai == 1) sp.SoLuong -= item.SoLuong;
-                    else sp.SoLuong += item.SoLuong;
-                    _repoAccessor.ChiTietDonHang.Remove(item);
-                    var newestCT = _repoAccessor.ChiTietDonHang.FindAll(x => x.ID_SP == item.ID_SP).OrderByDescending(x => x.ID).FirstOrDefault();
-                    newestCT.SL_Ton_Cuoi = sp.SoLuong;
-                    _repoAccessor.ChiTietDonHang.Update(newestCT);
-                }
-                _repoAccessor.DonHang.Remove(dh);
-                try
-                {
-                    return await _repoAccessor.Save();
-                }
-                catch
-                {
-                    return false;
+                    // Cập nhật tồn kho
+                    if (dh.Loai == 1) sp.SoLuong -= item.SoLuong;   // Nếu là đơn nhập thì trừ bớt
+                    else sp.SoLuong += item.SoLuong;                // Nếu là đơn xuất thì cộng lại
+                    // Cập nhật SL_Ton_Cuoi cho bản ghi lịch sử mới nhất của SP đó
+                    var lastRecord = latestCTs.FirstOrDefault(x => x.ID_SP == item.ID_SP);
+                    if (lastRecord != null)
+                        lastRecord.SL_Ton_Cuoi = sp.SoLuong;
                 }
             }
-            else
+            try
+            {
+                // 6. Xóa hàng loạt
+                _repoAccessor.ChiTietDonHang.RemoveMultiple(listChitiet);
+                _repoAccessor.DonHang.Remove(dh);
+                return await _repoAccessor.Save();
+            }
+            catch
             {
                 return false;
             }

@@ -61,39 +61,44 @@ namespace API._Services.Services
                 .Join(_repoAccessor.ChiTietDonHang.FindAll(predicateChiTiet),
                     x => x.ID,
                     y => y.ID_DH,
-                    (x, y) => new { donHang = x, chiTiet = y }
-                ).Select(x => new Report
+                    (x, y) => new { dh = x, ct = y })
+                .Join(_repoAccessor.SanPham.FindAll(),
+                    cb => cb.ct.ID_SP,
+                    sp => sp.ID,
+                    (cb, sp) => new { cb.dh, cb.ct, sp })
+                .Select(x => new Report
                 {
-                    ID_SP = x.chiTiet.ID_SP,
-                    Ten_SP = x.chiTiet.Ten_SP,
-                    DVT = x.chiTiet.Dvt,
-                    Gia = x.chiTiet.Gia,
-                    SoLuong = x.chiTiet.SoLuong,
-                    SLTonDau = x.chiTiet.SL_Ton_Dau,
-                    SLTonCuoi = x.chiTiet.SL_Ton_Cuoi,
-                    Loai = x.donHang.Loai,
-                    Updated_time = x.chiTiet.Updated_Time
+                    ID_SP = x.ct.ID_SP,
+                    Ten_SP = x.sp.Ten,
+                    DVT = x.sp.Dvt,
+                    Gia = x.ct.Gia,
+                    SoLuong = x.ct.SoLuong,
+                    SLTonDau = x.ct.SL_Ton_Dau,
+                    SLTonCuoi = x.ct.SL_Ton_Cuoi,
+                    Loai = x.dh.Loai,
+                    Updated_time = x.ct.Updated_Time,
+                    SoLuongTrongKho = x.sp.SoLuong ?? 0
                 }).AsNoTracking().OrderByDescending(x => x.ID_SP).ToListAsync();
             List<ReportDTO> reports = data.GroupBy(x => x.ID_SP)
                 .Select((item, i) =>
                 {
+                    var firstItem = item.FirstOrDefault();
                     var t = item.OrderByDescending(x => x.Updated_time).FirstOrDefault(x => x.Loai == 1);
-                    var sp = _repoAccessor.SanPham.FindAll(x => x.ID == item.Key).FirstOrDefault();
                     var itemRP = new ReportDTO
                     {
                         Stt = i + 1,
                         ID_SP = item.Key,
-                        Ten_SP = item.FirstOrDefault().Ten_SP,
-                        DVT = item.FirstOrDefault().DVT,
+                        Ten_SP = firstItem?.Ten_SP ?? "",
+                        DVT = firstItem?.DVT ?? "",
                         GiaTon = t != null ? t.Gia : 0,
-                        SoLuongNhap = item.Filter(x => x.Loai == 1).Sum(x => x.SoLuong),
-                        SoLuongXuat = item.Filter(x => x.Loai == 2).Sum(x => x.SoLuong),
-                        TongTienNhap = item.Filter(x => x.Loai == 1).Sum(x => x.SoLuong * x.Gia),
-                        TongTienXuat = item.Filter(x => x.Loai == 2).Sum(x => x.SoLuong * x.Gia),
-                        SoLuongTonDau = item.OrderBy(x => x.Updated_time).FirstOrDefault().SLTonDau ?? 0,
-                        SoLuongTonCuoi = sp.SoLuong
+                        SoLuongNhap = item.Where(x => x.Loai == 1).Sum(x => x.SoLuong),
+                        SoLuongXuat = item.Where(x => x.Loai == 2).Sum(x => x.SoLuong),
+                        TongTienNhap = item.Where(x => x.Loai == 1).Sum(x => x.SoLuong * x.Gia),
+                        TongTienXuat = item.Where(x => x.Loai == 2).Sum(x => x.SoLuong * x.Gia),
+                        SoLuongTonDau = item.OrderBy(x => x.Updated_time).FirstOrDefault()?.SLTonDau ?? 0,
+                        SoLuongTonCuoi = firstItem?.SoLuongTrongKho ?? 0
                     };
-                    itemRP.DoanhThu = itemRP.TongTienXuat - itemRP.TongTienNhap;
+                    itemRP.DoanhThu = (itemRP.TongTienXuat ?? 0) - (itemRP.TongTienNhap ?? 0);
                     return itemRP;
                 }).ToList();
             var resutl = new Report_Data

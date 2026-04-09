@@ -12,6 +12,7 @@ namespace API.DTOs.Report
         public decimal? Gia { get; set; }
         public int? Loai { get; set; }
         public DateTime? Updated_time { get; set; }
+        public int SoLuongTrongKho { get; set; }
     }
     public class Report_Data
     {
