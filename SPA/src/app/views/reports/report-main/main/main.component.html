@@ -128,16 +128,16 @@
                   </thead>
                   <tbody>
                     <tr *ngFor="let item of data.result">
-                      <td>{{item?.ten_SP}}</td>
-                      <td>{{item?.dvt}}</td>
-                      <td class="text-right">{{item?.soLuongTonDau }}</td>
-                      <td class="text-right">{{item?.giaTon | number}}</td>
-                      <td class="text-right">{{item?.soLuongNhap}}</td>
-                      <td class="text-right">{{item?.tongTienNhap | number}}</td>
-                      <td class="text-right">{{item?.soLuongXuat}}</td>
-                      <td class="text-right">{{item?.tongTienXuat | number}}</td>
-                      <td class="text-right slTon">{{item?.soLuongTonCuoi}}</td>
-                      <td class="text-right doanhthu">{{item?.doanhThu | number}}</td>
+                      <td class="align-middle">{{item?.ten_SP}}</td>
+                      <td class="align-middle">{{item?.dvt}}</td>
+                      <td class="text-right align-middle">{{item?.soLuongTonDau }}</td>
+                      <td class="text-right align-middle">{{item?.giaTon | number}}</td>
+                      <td class="text-right align-middle">{{item?.soLuongNhap}}</td>
+                      <td class="text-right align-middle">{{item?.tongTienNhap | number}}</td>
+                      <td class="text-right align-middle">{{item?.soLuongXuat}}</td>
+                      <td class="text-right align-middle">{{item?.tongTienXuat | number}}</td>
+                      <td class="text-right align-middle slTon">{{item?.soLuongTonCuoi}}</td>
+                      <td class="text-right align-middle doanhthu">{{item?.doanhThu | number}}</td>
                     </tr>
                     <tr *ngIf="!data || data.result?.length === 0">
                       <td colspan="100%"
@@ -150,31 +150,31 @@
                          *ngIf="data.result?.length > 0">
                     <tr>
                       <td colspan="2"
-                          class="text-center font-bold">
+                          class="text-center align-middle font-bold">
                         <span>TỔNG CỘNG</span>
                       </td>
-                      <td class="text-right font-bold">
+                      <td class="text-right align-middle font-bold">
                         {{ data.tong_SoLuongTonDau | number:'1.0-0' }}
                       </td>
-                      <td class="text-right font-bold">
+                      <td class="text-right align-middle font-bold">
                         {{ data.tong_GiaTon | number:'1.0-0' }}
                       </td>
-                      <td class="text-right font-bold">
+                      <td class="text-right align-middle font-bold">
                         {{ data.tong_SoLuongNhap | number:'1.0-0' }}
                       </td>
-                      <td class="text-right font-bold">
+                      <td class="text-right align-middle font-bold">
                         {{ data.tong_TongTienNhap | number:'1.0-0' }}
                       </td>
-                      <td class="text-right font-bold">
+                      <td class="text-right align-middle font-bold">
                         {{ data.tong_SoLuongXuat | number:'1.0-0' }}
                       </td>
-                      <td class="text-right font-bold">
+                      <td class="text-right align-middle font-bold">
                         {{ data.tong_TongTienXuat | number:'1.0-0' }}
                       </td>
-                      <td class="text-right slTon">
+                      <td class="text-right align-middle slTon">
                         {{ data.tong_SoLuongTonCuoi | number:'1.0-0' }}
                       </td>
-                      <td class="text-right doanhthu">
+                      <td class="text-right align-middle doanhthu">
                         {{ data.tong_DoanhThu | number:'1.0-0' }}
                       </td>
                     </tr>

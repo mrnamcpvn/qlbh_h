@@ -6,7 +6,9 @@ namespace API.DTOs.Maintain
 {
     public class DonHangO: DonHang
     {
+
         public string DiaChi { get; set; }
+        public bool Status { get; set; }
         public string StatusName { get; set; }
     }
     public class DonHangDTO : DonHangO
@@ -20,6 +22,7 @@ namespace API.DTOs.Maintain
         public string FromDate { get; set; }
         public string ToDate { get; set; }
         public int Loai { get; set; }
+        public string TinhTrang { get; set; }
         public int? SoHoaDon { get; set; }
         public int? PayType { get; set; }
     }

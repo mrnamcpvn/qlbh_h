@@ -30,6 +30,7 @@ export class DonHangService {
       .append('loai', filter.loai);
     if (filter.soHoaDon) params = params.append('soHoaDon', filter.soHoaDon);
     if (filter.payType) params = params.append('payType', filter.payType);
+    if (filter.tinhTrang) params = params.append('tinhTrang', filter.tinhTrang);
     return this.http.get<PaginationResult<DonHang>>(`${this.apiUrl}/GetDonHangPagination`, { params });
   }
 
@@ -42,6 +43,7 @@ export class DonHangService {
       .append('loai', filter.loai);
     if (filter.soHoaDon) params = params.append('soHoaDon', filter.soHoaDon);
     if (filter.payType) params = params.append('payType', filter.payType);
+    if (filter.tinhTrang) params = params.append('tinhTrang', filter.tinhTrang);
     return this.http.get<OperationResult>(`${this.apiUrl}/ExcelExport`, { params });
   }
 
@@ -63,10 +65,6 @@ export class DonHangService {
 
   getDetail(id: number) {
     return this.http.get<ChiTietDonHang[]>(`${this.apiUrl}/GetDetail`, { params: { id } });
-  }
-
-  changeStatus(model: DonHang) {
-    return this.http.post<boolean>(`${this.apiUrl}/ChangeStatus`, model);
   }
 
   updatePayment(model: DonHang) {

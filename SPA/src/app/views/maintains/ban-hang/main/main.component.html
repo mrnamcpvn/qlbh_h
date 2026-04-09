@@ -18,7 +18,7 @@
             </div>
             <form class="form-group row"
                   autocomplete="off">
-              <div class="col-xl-2 col-lg-3 col-md-3 col-sm-6">
+              <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
                 <label class="badge badge-warning">Kỳ Báo Cáo:</label>
                 <ng-select name="filterBy"
                            [(ngModel)]="param.filterBy"
@@ -68,8 +68,7 @@
                   </div>
                 </div>
               </div>
-
-              <div class="col-xl-2 col-lg-3 col-md-3 col-sm-6">
+              <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
                 <label class="badge badge-warning">
                   Số Hóa Đơn:
                 </label>
@@ -82,36 +81,64 @@
                          [(ngModel)]="param.soHoaDon">
                 </div>
               </div>
-              <div class="col-auto">
-                <label class="badge badge-warning">
-                  Thanh Toán:
-                </label>
-                <div class="row pl-4 pr-4">
-                  <div *ngFor="let item of thanhToanList; index as i">
-                    <label class="container">
-                      <div class="row">
-                        <div [ngClass]="{'mr-2': i != thanhToanList.length - 1}"
-                             class="custom-control custom-radio pt-2">
-                          <input [id]="'payType' + i"
-                                 class="custom-control-input"
-                                 type="radio"
-                                 name="payType"
-                                 [(ngModel)]="param.payType"
-                                 [value]="item.key"
-                                 required />
-                          <p class="custom-control-label"
-                             [for]="'payType' + i">
-                            <strong>
-                              {{ item.value }}
-                            </strong>
-                          </p>
-                        </div>
+              <div class="col-12">
+                <div class="row">
+                  <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+                    <label class="badge badge-warning"> Thanh Toán: </label>
+                    <div class="row pl-4 pr-4">
+                      <div *ngFor="let item of thanhToanList; index as i">
+                        <label class="container">
+                          <div class="row">
+                            <div [ngClass]="{'mr-2': i != thanhToanList.length - 1}"
+                                 class="custom-control custom-radio pt-2">
+                              <input [id]="'payType' + i"
+                                     class="custom-control-input"
+                                     type="radio"
+                                     name="payType"
+                                     [(ngModel)]="param.payType"
+                                     [value]="item.key"
+                                     required />
+                              <p class="custom-control-label"
+                                 [for]="'payType' + i">
+                                <strong>
+                                  {{ item.value }}
+                                </strong>
+                              </p>
+                            </div>
+                          </div>
+                        </label>
                       </div>
-                    </label>
+                    </div>
+                  </div>
+                  <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                    <label class="badge badge-warning"> Tình Trạng: </label>
+                    <div class="row pl-4 pr-4">
+                      <div *ngFor="let item of tinhTrangList; index as i">
+                        <label class="container">
+                          <div class="row">
+                            <div [ngClass]="{'mr-2': i != thanhToanList.length - 1}"
+                                 class="custom-control custom-radio pt-2">
+                              <input [id]="'tinhTrang' + i"
+                                     class="custom-control-input"
+                                     type="radio"
+                                     name="tinhTrang"
+                                     [(ngModel)]="param.tinhTrang"
+                                     [value]="item.key"
+                                     required />
+                              <p class="custom-control-label"
+                                 [for]="'tinhTrang' + i">
+                                <strong>
+                                  {{ item.value }}
+                                </strong>
+                              </p>
+                            </div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-
               <div class="col-12">
                 <label class="d-block">&nbsp;</label>
                 <button type="submit"

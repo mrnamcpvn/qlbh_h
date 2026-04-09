@@ -13,7 +13,6 @@ namespace API._Services.Interfaces
         Task<bool> Delete(int id);
         Task<bool> DeleteItem(int id);
         Task<DonHang> Update(DonHangDTO model);
-        Task<bool> ChangeStatus(DonHang model);
         Task<bool> UpdatePayment(DonHang model);
         Task<List<ChiTietDonHang>> GetDetail(int id);
     }

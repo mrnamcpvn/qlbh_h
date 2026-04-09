@@ -20,6 +20,7 @@ export interface DonHangFilter {
   fromDate: string | Date;
   toDate: string | Date;
   loai: number;
+  tinhTrang: string
   soHoaDon?: number;
   payType?: number;
 }

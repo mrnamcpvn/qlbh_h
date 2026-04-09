@@ -30,8 +30,14 @@ export class MainComponent extends InjectBase implements OnInit {
   param: any = {
     filterBy: '0',
     soHoaDon: null,
+    tinhTrang:'3',
     payType: '3'
   };
+  tinhTrangList: KeyValuePair[] = [
+    { key: '1', value: 'Đã Thanh Toán' },
+    { key: '2', value: 'Chưa Thanh Toán' },
+    { key: '3', value: 'Tất cả' },
+  ];
   thanhToanList: KeyValuePair[] = [
     { key: '1', value: 'Tiền Mặt' },
     { key: '2', value: 'Chuyển Khoản' },
@@ -69,7 +75,8 @@ export class MainComponent extends InjectBase implements OnInit {
       toDate: this.toDate,
       loai: 2,
       soHoaDon: this.param.soHoaDon,
-      payType: this.param.payType
+      payType: this.param.payType,
+      tinhTrang: this.param.tinhTrang
     };
     this.donHangService.getDataPagination(filter).subscribe({
       next: (res) => {
@@ -88,7 +95,8 @@ export class MainComponent extends InjectBase implements OnInit {
       toDate: this.toDate,
       loai: 2,
       soHoaDon: this.param.soHoaDon,
-      payType: this.param.payType
+      payType: this.param.payType,
+      tinhTrang: this.param.tinhTrang
     };
     this.donHangService.excelExport(filter)
       .subscribe({

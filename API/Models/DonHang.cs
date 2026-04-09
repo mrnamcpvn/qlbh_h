@@ -17,7 +17,6 @@ namespace API.Models
         [Column(TypeName = "decimal(18, 0)")]
         public decimal? ChuyenKhoan { get; set; }
         public DateTime? Date { get; set; }
-        public bool? Status { get; set; }
         public int? ID_NV { get; set; }
         public string Ma_DH { get; set; }
     }

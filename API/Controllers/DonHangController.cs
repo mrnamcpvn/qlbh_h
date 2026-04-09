@@ -57,13 +57,6 @@ namespace API.Controllers
             return Ok(result);
         }
 
-        [HttpPost("ChangeStatus")]
-        public async Task<IActionResult> ChangeStatus(DonHang model)
-        {
-            var result = await _service.ChangeStatus(model);
-            return Ok(result);
-        }
-
         [HttpPost("UpdatePayment")]
         public async Task<IActionResult> UpdatePayment(DonHang model)
         {

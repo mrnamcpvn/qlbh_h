@@ -32,7 +32,7 @@ namespace API._Services.Services
 
             foreach (var item in data)
             {
-                item.StatusName = item.Status == true ? "Đã thanh toán" : "Chưa thanh toán";
+                item.StatusName = (item.TienMat ?? 0) + (item.ChuyenKhoan ?? 0) >= (item.TongTien ?? 0) ? "Đã thanh toán" : "Chưa thanh toán";
             }
             var excelResult = ExcelUtility.DownloadExcel(data, "Resources\\Template\\DonHang\\Download.xlsx");
             return new OperationResult(excelResult.IsSuccess, excelResult.Error, excelResult.Result);
@@ -71,6 +71,10 @@ namespace API._Services.Services
                 predicateUser.And(x => x.TienMat > 0);
             else if (payType == 2)
                 predicateUser.And(x => x.ChuyenKhoan > 0);
+            if (filter.TinhTrang == "1")
+                predicateUser.And(x => (x.ChuyenKhoan ?? 0) + (x.TienMat ?? 0) >= (x.TongTien ?? 0));
+            else if (filter.TinhTrang == "2")
+                predicateUser.And(x => (x.ChuyenKhoan ?? 0) + (x.TienMat ?? 0) < (x.TongTien ?? 0));
 
             var donHangs = _repoAccessor.DonHang.FindAll(predicateUser)
                             .Join(_repoAccessor.KhachHang.FindAll(),
@@ -89,7 +93,7 @@ namespace API._Services.Services
                                 TienMat = x.donHang.TienMat,
                                 ChuyenKhoan = x.donHang.ChuyenKhoan,
                                 ID_NV = x.donHang.ID_NV,
-                                Status = x.donHang.Status
+                                Status = (x.donHang.ChuyenKhoan ?? 0) + (x.donHang.TienMat ?? 0) >= (x.donHang.TongTien ?? 0)
                             }).OrderByDescending(x => x.Date);
             return donHangs;
         }
@@ -102,14 +106,15 @@ namespace API._Services.Services
         #region CUD
         public async Task<DonHang> Create(DonHangDTO model)
         {
-            DonHang dh = new DonHang();
-            dh.Date = model.Date ?? DateTime.Now;
-            dh.ID_KH = model.ID_KH;
-            dh.Ten_KH = model.Ten_KH;
-            dh.TongTien = model.TongTien;
-            dh.Loai = model.Loai;
-            dh.ID_NV = model.ID_NV;
-            dh.Status = false;
+            DonHang dh = new()
+            {
+                Date = model.Date ?? DateTime.Now,
+                ID_KH = model.ID_KH,
+                Ten_KH = model.Ten_KH,
+                TongTien = model.TongTien,
+                Loai = model.Loai,
+                ID_NV = model.ID_NV
+            };
             _repoAccessor.DonHang.Add(dh);
             await _repoAccessor.Save();
             var idDH = dh.ID;
@@ -248,18 +253,6 @@ namespace API._Services.Services
         }
         #endregion
 
-
-        public async Task<bool> ChangeStatus(DonHang model)
-        {
-            var item = await _repoAccessor.DonHang.FindById(model.ID);
-            if (item != null)
-            {
-                item.Status = !item.Status;
-                _repoAccessor.DonHang.Update(item);
-                return await _repoAccessor.Save();
-            }
-            else return false;
-        }
         #region Payment
         public async Task<bool> UpdatePayment(DonHang model)
         {
@@ -268,7 +261,6 @@ namespace API._Services.Services
             {
                 item.TienMat = model.TienMat;
                 item.ChuyenKhoan = model.ChuyenKhoan;
-                item.Status = (item.TienMat ?? 0) + (item.ChuyenKhoan ?? 0) >= item.TongTien;
                 _repoAccessor.DonHang.Update(item);
                 return await _repoAccessor.Save();
             }
