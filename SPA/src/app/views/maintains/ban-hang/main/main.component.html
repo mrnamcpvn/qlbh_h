@@ -70,11 +70,11 @@
               </div>
               <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
                 <label class="badge badge-warning">
-                  Số Hóa Đơn:
+                  Mã hóa đơn:
                 </label>
                 <div class="input-group">
                   <input type="text"
-                         placeholder="Số hóa đơn..."
+                         placeholder="Mã hóa đơn..."
                          id="ma_DH"
                          name="ma_DH"
                          class="form-control"
@@ -170,9 +170,9 @@
                   <thead>
                     <tr>
                       <th class="text-center">Stt</th>
+                      <th class=" text-center">Mã hóa đơn</th>
                       <th class="text-center">Ngày lập</th>
                       <th class=" text-center">Khách hàng</th>
-                      <th class=" text-center">Số hóa đơn</th>
                       <th class=" text-center">Tổng tiền</th>
                       <th class=" text-center">Thanh toán</th>
                       <th class=" text-center">Tình trạng</th>
@@ -182,9 +182,9 @@
                   <tbody>
                     <tr *ngFor="let item of data; let i = index">
                       <td class="col-stt">{{ ((pagination.pageNumber - 1) * pagination.pageSize) + i + 1 }}</td>
+                      <td class="text-center align-middle">{{item.ma_DH}}</td>
                       <td class="col-date">{{item.date | date: 'dd/MM/YYYY hh:mm:ss'}}</td>
                       <td class="align-middle">{{item.ten_KH}}</td>
-                      <td class="text-center align-middle">{{item.ma_DH}}</td>
                       <td class="text-right">{{item.tongTien | number}} VNĐ</td>
 
                       <td class="align-middle">
