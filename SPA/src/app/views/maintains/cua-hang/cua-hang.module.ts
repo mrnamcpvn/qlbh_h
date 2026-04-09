@@ -5,11 +5,10 @@ import { MainComponent } from './main/main.component';
 import { FormsModule } from '@angular/forms';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { ModalModule } from 'ngx-bootstrap/modal';
-import { ModalAddEditComponent } from './modal-add-edit/modal-add-edit.component';
 
 @NgModule({
 	declarations: [
-		MainComponent, ModalAddEditComponent
+		MainComponent
 	],
 	imports: [
 		CommonModule,

@@ -22,7 +22,7 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
   donHang: DonHang;
   listChiTiet: ChiTietDonHang[] = [];
   nhanViens: NhanVien[] = [];
-  cuaHangs: CuaHang[]= [];
+  cuaHang: CuaHang = <CuaHang>{};
   tongSL: number;
   printDate = new Date();
   get ten_NV() {
@@ -50,7 +50,7 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
       error: err => this.router.navigate(['/maintain/ban-hang'])
     })
     this.getAllNV();
-    this.getAll_Shop();
+    this.getShop();
     this.tienChu = this.toVNService.toVietnamese(this.donHang.tongTien)
     this.tienChu = this.tienChu.charAt(0).toUpperCase() + this.tienChu.slice(1);
   }
@@ -83,10 +83,10 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
       }
     })
   }
-  getAll_Shop() {
-    this.shopService.getAll().subscribe({
+  getShop() {
+    this.shopService.getFirst().subscribe({
       next: (res) => {
-        this.cuaHangs = res;
+        this.cuaHang = res || <CuaHang>{};
       }
     })
   }

@@ -1,5 +1,4 @@
 using API._Services.Interfaces;
-using API.Helpers.Params;
 using API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,37 +13,17 @@ namespace API.Controllers
             _service = service;
         }
 
-        [HttpGet("GetDataPagination")]
-        public async Task<IActionResult> GetDataPagination([FromQuery] PaginationParams pagination, string name)
+        [HttpGet("GetFirst")]
+        public async Task<IActionResult> GetFirst()
         {
-            var result = await _service.GetDataPagination(pagination, name);
+            var result = await _service.GetFirst();
             return Ok(result);
         }
 
-        [HttpPost("Create")]
-        public async Task<IActionResult> Create(CuaHang model)
+        [HttpPost("Save")]
+        public async Task<IActionResult> Save(CuaHang model)
         {
-            var result = await _service.Create(model);
-            return Ok(result);
-        }
-
-        [HttpDelete("Delete")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var result = await _service.Delete(id);
-            return Ok(result);
-        }
-
-        [HttpPut("Update")]
-        public async Task<IActionResult> Update(CuaHang model)
-        {
-            var result = await _service.Update(model);
-            return Ok(result);
-        }
-        [HttpGet("GetAll")]
-        public async Task<IActionResult> GetAll()
-        {
-            var result = await _service.GetAll();
+            var result = await _service.Save(model);
             return Ok(result);
         }
     }

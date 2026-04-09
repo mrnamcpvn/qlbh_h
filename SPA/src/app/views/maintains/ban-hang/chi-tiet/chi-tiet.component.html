@@ -85,10 +85,10 @@
   <div class="padding-print">
     <div class="row">
       <div class="col-8">
-        <ng-container *ngIf="cuaHangs && cuaHangs.length > 0">
-          <h3>{{cuaHangs[0].ten}}</h3>
+        <ng-container *ngIf="cuaHang.id">
+          <h3>{{cuaHang.ten}}</h3>
           <span class="font-big">
-            {{cuaHangs[0].diaChi}} - Điện thoại: {{cuaHangs[0].sdt}}
+            {{cuaHang.diaChi}} - Điện thoại: {{cuaHang.sdt}}
           </span>
         </ng-container>
       </div>

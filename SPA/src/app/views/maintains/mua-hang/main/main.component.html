@@ -229,7 +229,7 @@
                 </table>
               </div>
               <div class="d-flex">
-                <pagination *ngIf="data.length > 0"
+                <pagination *ngIf="data.length > 0 && pagination?.totalPage > 1"
                             [boundaryLinks]="true"
                             [totalItems]="pagination.totalCount"
                             [itemsPerPage]="pagination.pageSize"

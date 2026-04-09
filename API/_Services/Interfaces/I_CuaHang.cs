@@ -10,10 +10,7 @@ namespace API._Services.Interfaces
 {
     public interface I_CuaHang
     {
-        Task<PaginationUtility<CuaHang>> GetDataPagination(PaginationParams pagination, string name);
-        Task<bool> Create(CuaHang model);
-        Task<bool> Update(CuaHang model);
-        Task<bool> Delete(int id);
-        Task<List<CuaHang>> GetAll();
+        Task<CuaHang> GetFirst();
+        Task<bool> Save(CuaHang model);
     }
 }

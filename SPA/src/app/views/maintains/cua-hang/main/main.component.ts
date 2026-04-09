@@ -1,14 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalService } from '@services/modal.service';
-import { BsModalRef } from 'ngx-bootstrap/modal';
-import { KhachHangService } from '@services/khach-hang.service';
-import { Pagination } from '@utilities/pagination-utility';
-import { KhachHang } from '@models/maintains/khach-hang';
-import { PageChangedEvent } from "ngx-bootstrap/pagination";
 import { InjectBase } from "@utilities/inject-base-app";
 import { IconButton } from '@constants/common.constants';
-import { NhanVien } from '@models/maintains/nhan-vien';
-import { NhanVienService } from '@services/nhan-vien.service';
 import { CuaHang } from '@models/maintains/cua-hang';
 import { CuaHangService } from '@services/cua-hang.service';
 
@@ -18,77 +10,53 @@ import { CuaHangService } from '@services/cua-hang.service';
   styleUrls: ['./main.component.scss']
 })
 export class MainComponent extends InjectBase implements OnInit {
-  pagination: Pagination = <Pagination>{
-	pageNumber: 1,
-pageSize: 10
-  };
-  ten: string = '';
-  data: CuaHang[] = [];
-  editData: CuaHang = <CuaHang>{};
-  type: string = 'add';
-  modalRef?: BsModalRef;
+  cuaHang: CuaHang = <CuaHang>{};
   iconButton = IconButton;
-  constructor(private modalService: ModalService, private chService: CuaHangService) {
+
+  constructor(private chService: CuaHangService) {
 	super();
   }
 
   ngOnInit(): void {
-	this.search();
-  }
-
-  openModal(id: string, nv?: NhanVien) {
-	this.type = nv ? 'edit' : 'add';
-	this.editData = nv ? { ...nv } : <NhanVien>{};
-	this.modalService.open(id);
-  }
-
-  changeData($event) {
-	this.search();
+	this.getData();
   }
 
   getData() {
 	this.spinnerService.show();
-	this.chService.getDataPagination(this.pagination, this.ten).subscribe({
+	// Gọi API GetFirst được tối ưu
+	this.chService.getFirst().subscribe({
 	  next: (res) => {
-		this.data = res.result;
-		this.pagination = res.pagination;
+		this.cuaHang = res || <CuaHang>{};
+		this.spinnerService.hide();
+	  },
+	  error: () => {
 		this.spinnerService.hide();
 	  }
 	});
   }
 
-  search() {
-	this.pagination.pageNumber !== 1 ? this.pagination.pageNumber = 1 : this.getData();
-  }
+  save() {
+	if (!this.cuaHang.ten) {
+	  this.snotifyService.warning('Vui lòng nhập tên cửa hàng', 'Cảnh báo');
+	  return;
+	}
 
-  pageChanged(e: PageChangedEvent) {
-	this.pagination.pageNumber = e.page;
-	this.getData();
-  }
-
-  delete(id: number) {
-	this.snotifyService.confirm('Bạn có chắc chắn muốn xóa cửa hàng?', 'Xóa',
-	  () => {
-		this.spinnerService.show();
-		this.chService.delete(id).subscribe({
-		  next: (res) => {
-			if (res) {
-			  this.snotifyService.success('Xóa Cửa Hàng Thành Công', 'Thành Công');
-			  this.data = this.data.filter(x => x.id !== id);
-			  this.spinnerService.hide();
-			}
-		  },
-		  error: () => {
-			this.snotifyService.error('Xóa Cửa Hàng Thất bại', 'Lỗi');
-			this.spinnerService.hide();
-		  }
-		})
-	  });
+	this.spinnerService.show();
+	// Sử dụng API Save chung để xử lý cả Create và Update
+	this.chService.save(this.cuaHang).subscribe({
+	  next: () => {
+		this.snotifyService.success('Lưu thông tin cửa hàng thành công', 'Thành công');
+		this.getData();
+	  },
+	  error: () => {
+		this.snotifyService.error('Lưu thất bại', 'Lỗi');
+		this.spinnerService.hide();
+	  }
+	});
   }
 
   clear() {
-	this.ten = '';
-	this.search();
+	this.getData();
   }
 
 }
