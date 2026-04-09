@@ -175,9 +175,9 @@ namespace API._Services.Services
                     {
                         MaSP = report.MaSP,
                         Ten = report.Ten,
-                        Gia = decimal.Parse(report.Gia),
+                        Gia = decimal.TryParse(report.Gia, out decimal _gia) ? _gia : null,
                         Dvt = report.Dvt,
-                        SoLuong = int.Parse(report.SoLuong),
+                        SoLuong = int.TryParse(report.SoLuong, out int _soluong) ? _soluong : null,
                     };
                     excelDataList.Add(excelData);
                 }
