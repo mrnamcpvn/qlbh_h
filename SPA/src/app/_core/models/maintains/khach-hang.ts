@@ -4,4 +4,5 @@ export interface KhachHang {
   sdt: string;
   diaChi: string;
   email: string;
+  ma_KH: string;
 }

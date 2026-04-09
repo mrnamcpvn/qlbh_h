@@ -34,16 +34,26 @@ namespace API._Services.Services
             return result;
         }
 
-        public async Task<bool> Create(KhachHang model)
+        public async Task<OperationResult> Create(KhachHang model)
         {
+            var isExist = await _repoAccessor.KhachHang.FindAll(x => x.Ma_KH == model.Ma_KH).AnyAsync();
+            if (isExist)
+                return new OperationResult(false, "Mã khách hàng này đã tồn tại trong hệ thống.");
+
             _repoAccessor.KhachHang.Add(model);
-            return await _repoAccessor.Save();
+            await _repoAccessor.Save();
+            return new OperationResult(true);
         }
 
-        public async Task<bool> Update(KhachHang model)
+        public async Task<OperationResult> Update(KhachHang model)
         {
+            var isDuplicate = await _repoAccessor.KhachHang.FindAll(x => x.Ma_KH == model.Ma_KH && x.ID != model.ID).AnyAsync();
+            if (isDuplicate)
+                return new OperationResult(false, "Mã khách hàng đã được sử dụng bởi một khách hàng khác.");
+
             _repoAccessor.KhachHang.Update(model);
-            return await _repoAccessor.Save();
+            await _repoAccessor.Save();
+            return new OperationResult(true);
         }
 
         public async Task<bool> Delete(int id)
@@ -99,7 +109,26 @@ namespace API._Services.Services
             {
                 if (excelDataList.Any())
                 {
-                    _repoAccessor.KhachHang.AddMultiple(excelDataList);
+                    var _maKH = excelDataList.Select(x => x.Ma_KH).ToList();
+                    var existingKHs = await _repoAccessor.KhachHang.FindAll(x => _maKH.Contains(x.Ma_KH)).ToListAsync();
+                    var toAdd = new List<KhachHang>();
+                    var distinctExcelData = excelDataList.GroupBy(x => x.Ma_KH).Select(g => g.Last()).ToList();
+                    foreach (var item in distinctExcelData)
+                    {
+                        var dbItem = existingKHs.FirstOrDefault(x => x.Ma_KH == item.Ma_KH);
+                        if (dbItem != null)
+                        {
+                            dbItem.Ten = item.Ten;
+                            dbItem.SDT = item.SDT;
+                            dbItem.DiaChi = item.DiaChi;
+                            dbItem.Email = item.Email;
+                            _repoAccessor.KhachHang.Update(dbItem);
+                        }
+                        else
+                            toAdd.Add(item);
+                    }
+                    if (toAdd.Any())
+                        _repoAccessor.KhachHang.AddMultiple(toAdd);
                     await _repoAccessor.Save();
                     string path = "uploaded\\KhachHang";
                     await FilesUtility.SaveFile(file, path, $"KhachHang_{DateTime.Now:yyyyMMddHHmmss}");
@@ -120,15 +149,24 @@ namespace API._Services.Services
             {
                 KhachHangDTO report = new()
                 {
-                    Ten = resp.Ws.Cells[i, 0].StringValue.Trim(),
-                    SDT = resp.Ws.Cells[i, 1].StringValue.Trim(),
-                    DiaChi = resp.Ws.Cells[i, 2].StringValue.Trim(),
-                    Email = resp.Ws.Cells[i, 3].StringValue.Trim(),
+                    Ma_KH = resp.Ws.Cells[i, 0].StringValue.Trim(),
+                    Ten = resp.Ws.Cells[i, 1].StringValue.Trim(),
+                    SDT = resp.Ws.Cells[i, 2].StringValue.Trim(),
+                    DiaChi = resp.Ws.Cells[i, 3].StringValue.Trim(),
+                    Email = resp.Ws.Cells[i, 4].StringValue.Trim(),
                     Error = ""
                 };
                 excelReportList.Add(report);
+                if (string.IsNullOrWhiteSpace(report.Ma_KH))
+                    report.Error += $"Cột [Mã Khách Hàng] không có giá trị.\n";
+                if (!string.IsNullOrWhiteSpace(report.Ma_KH) && report.Ten.Length > 250)
+                    report.Error += $"Cột [Mã Khách Hàng] vượt số lượng kí tự cho phép.\n";
+
+                if (string.IsNullOrWhiteSpace(report.Ten))
+                    report.Error += $"Cột [Tên Khách Hàng] không có giá trị.\n";
                 if (!string.IsNullOrWhiteSpace(report.Ten) && report.Ten.Length > 250)
                     report.Error += $"Cột [Tên Khách Hàng] vượt số lượng kí tự cho phép.\n";
+
                 if (!string.IsNullOrWhiteSpace(report.SDT) && report.SDT.Length > 20)
                     report.Error += $"Cột [Số Điện Thoại] vượt số lượng kí tự cho phép.\n";
                 if (!string.IsNullOrWhiteSpace(report.DiaChi) && report.DiaChi.Length > 500)
@@ -139,6 +177,7 @@ namespace API._Services.Services
                 {
                     KhachHang excelData = new()
                     {
+                        Ma_KH = report.Ma_KH,
                         Ten = report.Ten,
                         SDT = report.SDT,
                         DiaChi = report.DiaChi,

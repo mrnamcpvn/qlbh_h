@@ -60,10 +60,14 @@ export class ModalAddEditComponent extends InjectBase implements OnInit, OnDestr
 
   add() {
     this.khService.create(this.data).subscribe({
-      next: () => {
-        this.snotifyService.success('Thêm khách hàng thành công', 'Thành công');
-        this.changeData.emit(true);
-        this.modalAdd.hide();
+      next: (res) => {
+        if (res.isSuccess) {
+          this.snotifyService.success('Thêm khách hàng thành công', 'Thành công');
+          this.changeData.emit(true);
+          this.modalAdd.hide();
+        } else {
+          this.snotifyService.error(res.error, 'Lỗi');
+        }
       },
       error: (e) => {
         this.snotifyService.error('Thêm khách hàng thất bại', 'Lỗi');
@@ -73,10 +77,14 @@ export class ModalAddEditComponent extends InjectBase implements OnInit, OnDestr
 
   update() {
     this.khService.update(this.data).subscribe({
-      next: () => {
-        this.snotifyService.success('Sửa khách hàng thành công', 'Thành công');
-        this.changeData.emit(true);
-        this.modalAdd.hide();
+      next: (res) => {
+        if (res.isSuccess) {
+          this.snotifyService.success('Sửa khách hàng thành công', 'Thành công');
+          this.changeData.emit(true);
+          this.modalAdd.hide();
+        } else {
+          this.snotifyService.error(res.error, 'Lỗi');
+        }
       },
       error: (e) => {
         this.snotifyService.error('Sửa khách hàng thất bại', 'Lỗi');

@@ -17,7 +17,7 @@ export class SanPhamService {
   }
 
   create(model: SanPham) {
-    return this.http.post<boolean>(`${this.apiUrl}/Create`, model);
+    return this.http.post<OperationResult>(`${this.apiUrl}/Create`, model);
   }
 
   delete(id: number) {
@@ -25,7 +25,7 @@ export class SanPhamService {
   }
 
   update(model: SanPham) {
-    return this.http.put<boolean>(`${this.apiUrl}/Update`, model);
+    return this.http.put<OperationResult>(`${this.apiUrl}/Update`, model);
   }
 
   getAll() {

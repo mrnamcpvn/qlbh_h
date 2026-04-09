@@ -8,9 +8,9 @@ namespace API._Services.Interfaces
     public interface I_SanPham
     {
        Task<PaginationUtility<SanPham>> GetDataPagination(PaginationParams pagination, string name);
-        Task<bool> Create(SanPham model);
+        Task<OperationResult> Create(SanPham model);
         Task<bool> Delete(int id);
-        Task<bool> Update(SanPham model);
+        Task<OperationResult> Update(SanPham model);
         Task<List<SanPham>> GetAll();
         Task<OperationResult> Template();
         Task<OperationResult> Upload(IFormFile file);

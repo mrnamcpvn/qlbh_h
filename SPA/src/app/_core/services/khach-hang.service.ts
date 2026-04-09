@@ -19,7 +19,7 @@ export class KhachHangService {
   }
 
   create(model: KhachHang) {
-    return this.http.post<boolean>(`${this.apiUrl}/Create`, model);
+    return this.http.post<OperationResult>(`${this.apiUrl}/Create`, model);
   }
 
   delete(id: number) {
@@ -27,7 +27,7 @@ export class KhachHangService {
   }
 
   update(model: KhachHang) {
-    return this.http.put<boolean>(`${this.apiUrl}/Update`, model);
+    return this.http.put<OperationResult>(`${this.apiUrl}/Update`, model);
   }
 
   getAll() {

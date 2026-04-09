@@ -53,12 +53,13 @@
         </form>
         <div class="card-body">
           <div class="row justify-content-md-center">
-            <div class="col-xl-8 col-lg-10 col-md-12">
+            <div class="col-12">
               <div class="table-responsive">
                 <table class="table table-bordered">
                   <thead>
                     <tr>
                       <th class="text-center">Stt</th>
+                      <th class="text-center">Mã Khách Hàng</th>
                       <th class="text-center">Họ và tên</th>
                       <th class="text-center">Địa chỉ</th>
                       <th class="text-center">Số điện thoại</th>
@@ -70,6 +71,7 @@
                   <tbody>
                     <tr *ngFor="let item of data; let i = index">
                       <td class="col-stt">{{ ((pagination.pageNumber - 1) * pagination.pageSize) + i + 1 }}</td>
+                      <td>{{item.ma_KH}}</td>
                       <td>{{item.ten}}</td>
                       <td>{{item.diaChi}}</td>
                       <td>{{item.sdt}}</td>

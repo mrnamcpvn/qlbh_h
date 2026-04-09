@@ -58,11 +58,15 @@ export class ModalAddEditComponent extends InjectBase implements OnInit, OnChang
 
   add() {
     this.spService.create(this.data).subscribe({
-      next: () => {
-        this.snotifyService.success('Thêm sản phẩm thành công', 'Thành công');
-        this.changeData.emit(true);
-        this.modalAdd.hide();
-        this.maHangs = [];
+      next: (res) => {
+        if (res.isSuccess) {
+          this.snotifyService.success('Thêm sản phẩm thành công', 'Thành công');
+          this.changeData.emit(true);
+          this.modalAdd.hide();
+          this.maHangs = [];
+        } else {
+          this.snotifyService.error(res.error, 'Lỗi');
+        }
       },
       error: (e) => {
         this.snotifyService.error('Thêm sản phẩm thất bại', 'Lỗi');
@@ -72,11 +76,15 @@ export class ModalAddEditComponent extends InjectBase implements OnInit, OnChang
 
   update() {
     this.spService.update(this.data).subscribe({
-      next: () => {
-        this.snotifyService.success('Sửa sản phẩm thành công', 'Thành công');
-        this.changeData.emit(true);
-        this.modalAdd.hide();
-        this.maHangs = [];
+      next: (res) => {
+        if (res.isSuccess) {
+          this.snotifyService.success('Sửa sản phẩm thành công', 'Thành công');
+          this.changeData.emit(true);
+          this.modalAdd.hide();
+          this.maHangs = [];
+        } else {
+          this.snotifyService.error(res.error, 'Lỗi');
+        }
       },
       error: (e) => {
         this.snotifyService.error('Sửa sản phẩm thất bại', 'Lỗi');

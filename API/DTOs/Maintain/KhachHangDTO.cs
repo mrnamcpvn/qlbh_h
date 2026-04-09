@@ -7,5 +7,6 @@ namespace API.DTOs.Maintain
         public string DiaChi { get; set; }
         public string Email { get; set; }
         public string Error { get; set; }
+        public string Ma_KH { get; set; }
     }
 }
