@@ -55,7 +55,7 @@ namespace API._Services.Services
             string fromDate = filter.FromDate;
             string toDate = filter.ToDate;
             int type = filter.Loai;
-            string? ma_DH = filter.Ma_DH;
+            string ma_DH = filter.Ma_DH;
             int? payType = filter.PayType;
             var predicateUser = PredicateBuilder.New<DonHang>(true);
 
