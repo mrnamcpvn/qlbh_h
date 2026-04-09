@@ -102,6 +102,8 @@ export class MainComponent extends InjectBase implements OnInit {
   }
   excel() {
     this.spinnerService.show();
+    this.param.fromDate_Str = this.functionUtility.getDateFormat(this.fromDate)
+    this.param.toDate_Str = this.functionUtility.getDateFormat(this.toDate)
     this.service.excel(this.param).subscribe({
       next: (result) => {
         this.spinnerService.hide();
