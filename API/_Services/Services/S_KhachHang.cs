@@ -159,7 +159,7 @@ namespace API._Services.Services
                 excelReportList.Add(report);
                 if (string.IsNullOrWhiteSpace(report.Ma_KH))
                     report.Error += $"Cột [Mã Khách Hàng] không có giá trị.\n";
-                if (!string.IsNullOrWhiteSpace(report.Ma_KH) && report.Ten.Length > 250)
+                if (!string.IsNullOrWhiteSpace(report.Ma_KH) && report.Ma_KH.Length > 20)
                     report.Error += $"Cột [Mã Khách Hàng] vượt số lượng kí tự cho phép.\n";
 
                 if (string.IsNullOrWhiteSpace(report.Ten))

@@ -93,10 +93,12 @@
   <div class="padding-print">
     <div class="row">
       <div class="col-8">
-        <h3>NPP BIA NGK - THANH TÚ - STK: T7878 VIETINBANK</h3>
-        <span class="font-big">
-          156/3B THUẬN AN - BÌNH DƯƠNG - Điện thoại: 0933290890
-        </span>
+        <ng-container *ngIf="cuaHang.id">
+          <h3>{{cuaHang.ten}}</h3>
+          <span class="font-big">
+            {{cuaHang.diaChi}} - Điện thoại: {{cuaHang.sdt}}
+          </span>
+        </ng-container>
       </div>
       <div class="col-4">
         <h3>PHIẾU NHẬP HÀNG</h3>

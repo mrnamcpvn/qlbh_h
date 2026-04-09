@@ -27,7 +27,7 @@ namespace API._Services.Services
             var excel = new TheoDoiNhanVienBanHang_Data
             {
                 FromDate_Str = Convert.ToDateTime(param.FromDate_Str).ToString("dd/MM/yyyy"),
-                ToDate_Str = Convert.ToDateTime(param.FromDate_Str).ToString("dd/MM/yyyy"),
+                ToDate_Str = Convert.ToDateTime(param.ToDate_Str).ToString("dd/MM/yyyy"),
                 Result = data,
                 Tong_SL_Ban = data.Sum(x => x.SL_Ban),
                 Tong_DS_Ban = data.Sum(x => x.DS_Ban),

@@ -61,11 +61,25 @@ namespace API._Services.Services
 
         public async Task<OperationResult> Update(SanPham model)
         {
-            var isDuplicate = await _repoAccessor.SanPham.FindAll(x => x.MaSP == model.MaSP && x.ID != model.ID).AnyAsync();
+            var check = await _repoAccessor.SanPham
+                .FindAll(x => x.ID == model.ID || x.MaSP == model.MaSP)
+                .ToListAsync();
+
+            var existing = check.FirstOrDefault(x => x.ID == model.ID);
+            if (existing == null)
+                return new OperationResult(false, "Sản phẩm không tồn tại.");
+
+            var isDuplicate = check.Any(x => x.MaSP == model.MaSP && x.ID != model.ID);
             if (isDuplicate)
                 return new OperationResult(false, "Mã sản phẩm đã được sử dụng bởi một sản phẩm khác.");
 
-            _repoAccessor.SanPham.Update(model);
+            existing.Ten = model.Ten;
+            existing.Gia = model.Gia;
+            existing.Dvt = model.Dvt;
+            existing.SoLuong = model.SoLuong;
+            existing.MaSP = model.MaSP;
+
+            _repoAccessor.SanPham.Update(existing);
             await _repoAccessor.Save();
             return new OperationResult(true);
         }

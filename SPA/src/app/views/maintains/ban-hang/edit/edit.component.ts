@@ -173,7 +173,7 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
       next: (res) => {
         if (res) {
           this.snotifyService.success('Sửa đơn hàng thành công', 'Thành công');
-          this.donHangService.changeSDonHang(this.data);
+          this.donHangService.changeSDonHang(res);
           this.router.navigate(['/maintain/ban-hang/detail', res.id]);
         }
         else

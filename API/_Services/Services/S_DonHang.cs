@@ -160,7 +160,9 @@ namespace API._Services.Services
             }
             catch
             {
+                // Rollback: remove the main DonHang and all ChiTietDonHang added
                 _repoAccessor.DonHang.Remove(dh);
+                _repoAccessor.ChiTietDonHang.RemoveMultiple(model.ChiTiet);
                 await _repoAccessor.Save();
                 throw; // or return null, but better throw to let controller handle
             }
@@ -170,6 +172,8 @@ namespace API._Services.Services
         public async Task<DonHang> Update(DonHangDTO model)
         {
             var dh = await _repoAccessor.DonHang.FindById(model.ID);
+            if (dh == null)
+                throw new Exception("Đơn hàng không tồn tại.");
             dh.ID_KH = model.ID_KH;
             dh.Ten_KH = model.Ten_KH;
             dh.TongTien = model.TongTien;
@@ -270,23 +274,27 @@ namespace API._Services.Services
         public async Task<bool> DeleteItem(int id)
         {
             var chitietDH = await _repoAccessor.ChiTietDonHang.FindById(id);
+            if (chitietDH == null)
+                return false;
             var dh = await _repoAccessor.DonHang.FindById(chitietDH.ID_DH);
-            if (chitietDH != null)
+            if (dh == null)
+                return false;
+            var sp = await _repoAccessor.SanPham.FindById(chitietDH.ID_SP);
+            if (sp != null)
             {
-                var sp = await _repoAccessor.SanPham.FindById(chitietDH.ID_SP);
                 if (dh.Loai == 1) sp.SoLuong -= chitietDH.SoLuong;
                 else sp.SoLuong += chitietDH.SoLuong;
-                _repoAccessor.ChiTietDonHang.Remove(chitietDH);
-                try
-                {
-                    return await _repoAccessor.Save();
-                }
-                catch
-                {
-                    return false;
-                }
+                _repoAccessor.SanPham.Update(sp);
             }
-            else return false;
+            _repoAccessor.ChiTietDonHang.Remove(chitietDH);
+            try
+            {
+                return await _repoAccessor.Save();
+            }
+            catch
+            {
+                return false;
+            }
         }
         #endregion
 
