@@ -15,6 +15,7 @@ namespace API.Models
         public string DiaChi { get; set; }
         [StringLength(100)]
         public string Email { get; set; }
+        public string Ma_KH { get; set; }
        
     }
 }

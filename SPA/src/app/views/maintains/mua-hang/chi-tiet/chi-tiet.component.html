@@ -19,19 +19,31 @@
                                 Trờ về</button>
               </div>
             </div>
-            <form class="form-group row" autocomplete="off">
-              <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                <p>
-                  Ngày lập: {{donHang.date | date: 'dd/MM/YYYY hh:mm:ss' }}
-                </p>
-                <p>
-                  Tên khách hàng: {{donHang.ten_KH}}
-                </p>
-              </div>
-            </form>
           </div>
         </form>
         <div class="card-body">
+          <div class="order-info">
+            <div class="row">
+              <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-2">
+                <div class="d-flex align-items-center">
+                  <i class="fa fa-calendar-o text-primary mr-2"></i>
+                  <div>
+                    <small class="text-muted d-block">Ngày lập</small>
+                    <strong>{{donHang.date | date: 'dd/MM/YYYY HH:mm:ss' }}</strong>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-2">
+                <div class="d-flex align-items-center">
+                  <i class="fa fa-user text-primary mr-2"></i>
+                  <div>
+                    <small class="text-muted d-block">Khách hàng</small>
+                    <strong>{{donHang.ten_KH}}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="row justify-content-md-center">
             <div class="col-12">
               <div class="table-responsive">
@@ -81,10 +93,12 @@
   <div class="padding-print">
     <div class="row">
       <div class="col-8">
-        <h3>NPP BIA NGK - THANH TÚ - STK: T7878 VIETINBANK</h3>
-        <span class="font-big">
-          156/3B THUẬN AN - BÌNH DƯƠNG - Điện thoại: 0933290890
-        </span>
+        <ng-container *ngIf="cuaHang.id">
+          <h3>{{cuaHang.ten}}</h3>
+          <span class="font-big">
+            {{cuaHang.diaChi}} - Điện thoại: {{cuaHang.sdt}}
+          </span>
+        </ng-container>
       </div>
       <div class="col-4">
         <h3>PHIẾU NHẬP HÀNG</h3>

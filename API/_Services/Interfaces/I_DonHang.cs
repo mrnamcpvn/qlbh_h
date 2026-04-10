@@ -7,12 +7,13 @@ namespace API._Services.Interfaces
 {
     public interface I_DonHang
     {
-        Task<PaginationUtility<DonHangO>> GetDataPagination(PaginationParams pagination,string fromDate, string toDate, int type);
+        Task<DonHangPaginationResult> GetDataPagination(DonHangRequestDTO filter);
+        Task<OperationResult> DownloadExcel(DonHangRequestDTO filter);
         Task<DonHang> Create(DonHangDTO model);
         Task<bool> Delete(int id);
         Task<bool> DeleteItem(int id);
         Task<DonHang> Update(DonHangDTO model);
-        Task<bool> ChangeStatus(DonHang model);
-        Task<List<ChiTietDonHang>> GetDetail(int id);
+        Task<bool> UpdatePayment(DonHang model);
+        Task<List<ChiTietDonHangDTO>> GetDetail(int id);
     }
 }

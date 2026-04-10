@@ -5,6 +5,14 @@ export const navItems: INavData[] = [
     name: 'Quản lý quản trị',
     url: '/maintain/nguoi-dung',
     icon: 'fa fa-cogs',
+  },{
+      name: 'Quản lý cửa hàng',
+    url: '/maintain/cua-hang',
+    icon: 'fa fa-home',
+  },{
+    name: 'Quản lý nhân viên',
+    url: '/maintain/nhan-vien',
+    icon: 'fa fa-user',
   },
   {
     name: 'Quản lý khách hàng',
@@ -25,6 +33,11 @@ export const navItems: INavData[] = [
     name: 'Xuất hàng',
     url: '/maintain/ban-hang',
     icon: 'fa fa-steam-square',
+  },
+  {
+    name: 'Theo dõi nhân viên bán hàng',
+    url: '/maintain/theo-doi-nhan-vien-ban-hang',
+    icon: 'fa fa-users',
   },
   {
     name: 'Báo cáo tồn kho',

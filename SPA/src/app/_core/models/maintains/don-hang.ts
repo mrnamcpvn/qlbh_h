@@ -1,3 +1,5 @@
+import { Pagination, PaginationResult } from '@utilities/pagination-utility';
+
 export interface DonHang {
   id: number;
   iD_KH: number;
@@ -7,6 +9,21 @@ export interface DonHang {
   date: string | Date;
   loai: number;
   status: boolean;
+  tienMat?: number;
+  chuyenKhoan?: number;
+  iD_NV: number;
+  ma_DH: string;
+  paymentSummary?: { key: string; value: number }[];
+}
+
+export interface DonHangFilter {
+  pagination?: Pagination;
+  fromDate: string | Date;
+  toDate: string | Date;
+  loai: number;
+  tinhTrang: string
+  ma_DH?: string;
+  payType?: number;
 }
 
 export interface ChiTietDonHang {
@@ -25,4 +42,9 @@ export interface ChiTietDonHang {
 
 export interface DonHangDTO extends DonHang{
   chitiet: ChiTietDonHang[];
+}
+
+export interface DonHangPaginationResult {
+  pagination: PaginationResult<DonHang>;
+  totalAmount: number;
 }

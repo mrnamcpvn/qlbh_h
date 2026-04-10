@@ -57,8 +57,6 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
           this.donHang = res;
           this.data.iD_KH = res.iD_KH;
           this.tongTien = res.tongTien;
-          console.log(" Trang Edit:", this.donHang);
-
         }
 
         else this.router.navigate(['/maintain/mua-hang'])
@@ -114,7 +112,6 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
     this.chiTiet.gia = this.giaSP;
     this.chiTiet.dvt = this.dvt;
     this.chiTiet.thanhTien = this.chiTiet.soLuong * this.chiTiet.gia;
-    console.log(this.listChiTiet.some(x => x.iD_SP == this.chiTiet.iD_SP));
 
     if(this.listChiTiet.some(x => x.iD_SP == this.chiTiet.iD_SP))
 
@@ -145,10 +142,9 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
     this.data.chitiet = this.listChiTiet;
     this.donHangService.update(this.data).subscribe({
       next: (res) => {
-        console.log("Thêm đh: ",res);
         if (res) {
           this.snotifyService.success('Sửa đơn hàng thành công', 'Thành công');
-          this.donHangService.changeSDonHang(this.data);
+          this.donHangService.changeSDonHang(res);
           this.router.navigate(['/maintain/mua-hang/detail', res.id]);
         }
         else
@@ -186,7 +182,7 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
   }
 
   openModal(template: TemplateRef<void>, item: ChiTietDonHang) {
-    this.chiTiet = item;
+    this.chiTiet = { ...item };
     this.modalRef = this.modalService.show(template);
   }
   cancel(){

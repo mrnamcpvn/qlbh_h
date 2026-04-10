@@ -2,34 +2,65 @@
   <div class="row pt-4">
     <div class="col-lg-12">
       <div class="card">
-        <form class="form-horizontal" autocomplete="off">
+        <form class="form-horizontal"
+              autocomplete="off">
           <div class="card-header">
             <div class="row">
               <div class="col-md-6 col-sm-12">
                 <h5>Nhập Hàng</h5>
               </div>
               <div class="col-md-6 col-sm-12">
-                <button type="button" class="btn btn-sm btn-primary float-right" (click)="add()">
+                <button type="button"
+                        class="btn btn-sm btn-primary float-right"
+                        (click)="add()">
                   <i class="fa fa-plus"></i>&nbsp; Nhập</button>
               </div>
             </div>
-            <form class="form-group row" autocomplete="off">
-              <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+            <form class="form-group row"
+                  autocomplete="off">
+              <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+                <label class="badge badge-warning">Lọc theo:</label>
+                <ng-select name="filterBy"
+                           [(ngModel)]="param.filterBy"
+                           (ngModelChange)="onFilterByChange()"
+                           (clear)="param.filterBy = '0'"
+                           [clearable]="param.filterBy != '0'">
+                  <ng-option *ngFor="let item of filterByList"
+                             [value]="item.key">{{ item.value }}</ng-option>
+                </ng-select>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                 <label class="badge badge-warning">
                   Ngày:
                 </label>
                 <div class="full-width">
                   <div class="container_date">
                     <div class="input-group mr-1">
-                      <input type="text" placeholder="Từ ngày..." [maxDate]="toDate" name="date_start"
-                        [bsConfig]="bsConfig" class="form-control" bsDatepicker [(ngModel)]="fromDate">
+                      <input type="text"
+                             placeholder="Từ ngày..."
+                             [maxDate]="param.filterBy == '0' ? toDate : null"
+                             name="date_start"
+                             [bsConfig]="bsConfig"
+                             class="form-control"
+                             bsDatepicker
+                             [(ngModel)]="fromDate"
+                             (ngModelChange)="onFromDateChange()"
+                             required>
                       <div class="input-group-append">
                         <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
                       </div>
                     </div>
                     <div class="input-group ml-1">
-                      <input type="text" placeholder="Đến ngày..." [minDate]="fromDate" name="date_end"
-                        [bsConfig]="bsConfig" class="form-control" bsDatepicker [(ngModel)]="toDate">
+                      <input type="text"
+                             placeholder="Đến ngày..."
+                             [minDate]="param.filterBy == '0' ? fromDate : null"
+                             name="date_end"
+                             [bsConfig]="bsConfig"
+                             class="form-control"
+                             bsDatepicker
+                             [(ngModel)]="toDate"
+                             (ngModelChange)="onToDateChange()"
+                             required>
                       <div class="input-group-append">
                         <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
                       </div>
@@ -37,13 +68,82 @@
                   </div>
                 </div>
               </div>
-              <div class="col">
+              <div class="col-12">
+                <div class="row">
+                  <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+                    <label class="badge badge-warning"> Thanh Toán: </label>
+                    <div class="row pl-4 pr-4">
+                      <div *ngFor="let item of thanhToanList; index as i">
+                        <label class="container">
+                          <div class="row">
+                            <div [ngClass]="{'mr-2': i != thanhToanList.length - 1}"
+                                 class="custom-control custom-radio pt-2">
+                              <input [id]="'payType' + i"
+                                     class="custom-control-input"
+                                     type="radio"
+                                     name="payType"
+                                     [(ngModel)]="param.payType"
+                                     [value]="item.key"
+                                     required />
+                              <p class="custom-control-label"
+                                 [for]="'payType' + i">
+                                <strong>
+                                  {{ item.value }}
+                                </strong>
+                              </p>
+                            </div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                    <label class="badge badge-warning"> Tình Trạng: </label>
+                    <div class="row pl-4 pr-4">
+                      <div *ngFor="let item of tinhTrangList; index as i">
+                        <label class="container">
+                          <div class="row">
+                            <div [ngClass]="{'mr-2': i != thanhToanList.length - 1}"
+                                 class="custom-control custom-radio pt-2">
+                              <input [id]="'tinhTrang' + i"
+                                     class="custom-control-input"
+                                     type="radio"
+                                     name="tinhTrang"
+                                     [(ngModel)]="param.tinhTrang"
+                                     [value]="item.key"
+                                     required />
+                              <p class="custom-control-label"
+                                 [for]="'tinhTrang' + i">
+                                <strong>
+                                  {{ item.value }}
+                                </strong>
+                              </p>
+                            </div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
                 <label class="d-block">&nbsp;</label>
-                <button type="submit" (click)="search()" class="btn btn-primary" [disabled]="!fromDate || !toDate">
+                <button type="submit"
+                        (click)="search()"
+                        class="btn btn-primary"
+                        [disabled]="!fromDate || !toDate">
                   <i class="{{iconButton.SEARCH}}"></i> Tìm kiếm
                 </button>
-                <button type="button" (click)="clear()" class="btn btn-danger ml-1">
+                <button type="button"
+                        (click)="clear()"
+                        class="btn btn-danger ml-1">
                   <i class="{{iconButton.CLEAR}}"></i> Xóa
+                </button>
+                <button type="submit"
+                        (click)="excel()"
+                        class="btn btn-success ml-1"
+                        [disabled]="!fromDate || !toDate">
+                  <i class="{{iconButton.EXCEL}}"></i> Xuất dữ liệu
                 </button>
               </div>
             </form>
@@ -60,24 +160,66 @@
                       <th class="text-center">Ngày lập</th>
                       <th class=" text-center">Khách hàng</th>
                       <th class=" text-center">Tổng tiền</th>
+                      <th class=" text-center">Thanh toán</th>
+                      <th class=" text-center">Tình trạng</th>
                       <th class=" text-center">Hành động</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr *ngFor="let item of data; let i = index">
-                      <td>{{ ((pagination.pageNumber - 1) * pagination.pageSize) + i + 1 }}</td>
-                      <td>{{item.date | date: 'dd/MM/YYYY hh:mm:ss'}}</td>
-                      <td>{{item.ten_KH}}</td>
-                      <td>{{item.tongTien | number}} - VNĐ</td>
-                      <td style="width: 10rem;">
-                        <button type="button" class="btn btn-primary btn-sm " (click)="detail(item)">
+                      <td class="col-stt">{{ ((pagination.pageNumber - 1) * pagination.pageSize) + i + 1 }}</td>
+                      <td class="col-date">{{item.date | date: 'dd/MM/YYYY hh:mm:ss'}}</td>
+                      <td class="align-middle">{{item.ten_KH}}</td>
+                      <td class="text-right">{{item.tongTien | number}} VNĐ</td>
+
+                      <td class="align-middle">
+                        <ng-container *ngIf="(item.tienMat + item.chuyenKhoan) > 0">
+                          <div class="d-flex justify-content-between mb-1"
+                               *ngIf="item.tienMat > 0"
+                               title="Tiền mặt">
+                            <span class="text-muted"><i class="fa fa-money"> Tiền mặt</i></span>
+                            <strong>{{item.tienMat | number}} VNĐ</strong>
+                          </div>
+                          <div class="d-flex justify-content-between"
+                               *ngIf="item.chuyenKhoan > 0"
+                               title="Chuyển khoản">
+                            <span class="text-muted "><i class="fa fa-university"> Chuyển khoản</i></span>
+                            <strong>{{item.chuyenKhoan | number}} VNĐ</strong>
+                          </div>
+                        </ng-container>
+                      </td>
+                      <td class="text-center align-middle">
+                        <span *ngIf="item.tienMat + item.chuyenKhoan >= item.tongTien; else unpaid"
+                              class="badge badge-success px-2 py-1"> Đã thanh toán
+                        </span>
+                        <ng-template #unpaid>
+                          <span class="badge badge-danger px-2 py-1">Chưa thanh toán</span>
+                        </ng-template>
+                      </td>
+                      <td class="col-action">
+                        <button type="button"
+                                class="btn btn-success btn-sm"
+                                (click)="openModal('add-modal', item)">
+                          <i class="fa fa-usd"></i>&nbsp;Thanh Toán </button>
+                        <button type="button"
+                                class="btn btn-primary btn-sm ml-2"
+                                (click)="detail(item)">
                           <i class="fa fa-edit"></i>&nbsp;Chi tiết </button>
-                          <button type="button" (click)="delete(item.id)" class="btn btn-danger btn-sm ml-2">
-                            <i class="fa fa-trash-o"></i>&nbsp;Xóa </button>
+                        <button type="button"
+                                class="btn btn-danger btn-sm ml-2"
+                                (click)="delete(item.id)">
+                          <i class="fa fa-trash-o"></i>&nbsp;Xóa </button>
                       </td>
                     </tr>
+                    <tr *ngIf="data?.length > 0"
+                        class="row-total">
+                      <td colspan="3"> <b>Tổng tiền: </b> </td>
+                      <td class="text-right"><b>{{tongTien | number}} VNĐ</b></td>
+                      <td colspan="3"></td>
+                    </tr>
                     <tr *ngIf="data?.length === 0">
-                      <td colspan="100%" class="table-warning text-center font-weight-bold">
+                      <td colspan="100%"
+                          class="table-warning text-center font-weight-bold">
                         Không có dữ liệu!
                       </td>
                     </tr>
@@ -85,10 +227,16 @@
                 </table>
               </div>
               <div class="d-flex">
-                <pagination *ngIf="data.length > 0" [boundaryLinks]="true" [totalItems]="pagination.totalCount"
-                  [itemsPerPage]="pagination.pageSize" (pageChanged)="pageChanged($event)"
-                  [(ngModel)]="pagination.pageNumber" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
-                  lastText="&raquo;">
+                <pagination *ngIf="data.length > 0 && pagination?.totalPage > 1"
+                            [boundaryLinks]="true"
+                            [totalItems]="pagination.totalCount"
+                            [itemsPerPage]="pagination.pageSize"
+                            (pageChanged)="pageChanged($event)"
+                            [(ngModel)]="pagination.pageNumber"
+                            previousText="&lsaquo;"
+                            nextText="&rsaquo;"
+                            firstText="&laquo;"
+                            lastText="&raquo;">
                 </pagination>
               </div>
             </div>
@@ -98,3 +246,8 @@
     </div>
   </div>
 </div>
+<app-model-thanh-toan id="add-modal"
+                      [data]="editData"
+                      (changeData)="changeData($event)">
+
+</app-model-thanh-toan>

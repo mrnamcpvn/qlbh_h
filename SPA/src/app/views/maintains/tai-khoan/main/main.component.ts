@@ -33,7 +33,7 @@ export class MainComponent extends InjectBase implements OnInit {
 
   openModal(id: string, taiKhoan?: NguoiDung) {
     this.type = taiKhoan ? 'edit' : 'add';
-    this.editData = taiKhoan ? taiKhoan : <NguoiDung>{};
+    this.editData = taiKhoan ? { ...taiKhoan } : <NguoiDung>{};
     this.modalService.open(id);
   }
 

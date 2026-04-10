@@ -1,16 +1,27 @@
 export interface Report {
   iD_SP: number;
   ten_SP: string;
-  soLuongNhap: number;
-  soLuongXuat: number;
+  dvt: string;
   soLuongTonDau: number;
-  soLuongTonCuoi: number;
-  tongTienNhap: number;
   giaTon: number;
+  soLuongNhap: number;
+  tongTienNhap: number;
+  soLuongXuat: number;
   tongTienXuat: number;
+  soLuongTonCuoi: number;
   doanhThu: number;
 }
-
+export interface Report_Data {
+  tong_SoLuongTonDau: number;
+  tong_GiaTon: number;
+  tong_SoLuongNhap: number;
+  tong_TongTienNhap: number;
+  tong_SoLuongXuat: number;
+  tong_TongTienXuat: number;
+  tong_SoLuongTonCuoi: number;
+  tong_DoanhThu: number;
+  result: Report[];
+}
 export interface ReportExport {
   mH_Name: string;
   details: ReportExportDetail[];

@@ -10,6 +10,8 @@ namespace API._Repositories
         IRepository<DonHang> DonHang { get; }
         IRepository<ChiTietDonHang> ChiTietDonHang { get; }
         IRepository<NguoiDung> NguoiDung { get; }
+        IRepository<NhanVien> NhanVien { get; }
+        IRepository<CuaHang> CuaHang { get; }
         Task<bool> Save();
     }
 }

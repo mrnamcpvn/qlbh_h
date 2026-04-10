@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { Pagination } from "./pagination-utility";
 import { NgSnotifyService } from "../services/ng-snotify.service";
 import { NgxSpinnerService } from "ngx-spinner";
+import { KeyValuePair } from "./key-value-pair";
 
 @Injectable({
   providedIn: "root",
@@ -163,17 +164,29 @@ export class FunctionUtility {
     return params;
   }
 
-  exportExcel(result: Blob, fileName: string, type?: string) {
-    if(!type)
-      type = 'xlsx';
-
+  exportExcel(result: Blob | string, fileName: string, type?: string): void {
+    if (!type) type = 'xlsx';
+    if (typeof result === "string") {
+      let byteCharacters = atob(result);
+      let byteArrays = [];
+      for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+        let slice = byteCharacters.slice(offset, offset + 512);
+        let byteNumbers = new Array(slice.length);
+        for (var i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+        let byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+      result = new Blob(byteArrays, { type: `application/${type}` });
+    }
     if (result.size == 0) {
       this.spinnerService.hide();
-      return this.snotify.warning('No Data', "Warning")
+      return this.snotify.warning('Không có dữ liệu', 'Cảnh báo');
     }
     if (result.type !== `application/${type}`) {
       this.spinnerService.hide();
-      return this.snotify.error(result.type.toString(), "Error");
+      return this.snotify.error(result.type.toString(), 'Lỗi');
     }
     const blob = new Blob([result]);
     const url = window.URL.createObjectURL(blob);
@@ -208,5 +221,17 @@ export class FunctionUtility {
       valueStr += /[A-Z]/.test(character) ? `-${character.toLowerCase()}` : character;
     });
     return `${routerParents[parentId]}/${valueStr.substring(1)}`;
+  }
+
+  /**
+  * @function getNgSelectAllCheckbox
+  * @description Gán thuộc tính 'allGroup' cho tất cả các phần tử trong mảng KeyValuePair để hỗ trợ select all cho ng-select.
+  * @param {KeyValuePair[]} items - Mảng các đối tượng KeyValuePair.
+  * @returns {void} Không trả về giá trị.
+  * @description Thêm thuộc tính `allGroup` vào element để đánh dấu select all
+  */
+  getNgSelectAllCheckbox(items: KeyValuePair[]): void {
+    let allSelect = (items: KeyValuePair[]) => items.forEach(element => element['allGroup'] = 'allGroup');
+    allSelect(items);
   }
 }

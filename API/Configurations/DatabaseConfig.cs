@@ -8,7 +8,7 @@ namespace API.Configurations
          public static void AddDatabaseConfiguration(this IServiceCollection services, IConfiguration configuration) {
             if (services == null) throw new ArgumentNullException(nameof(services));
 
-            services.AddDbContext<DBContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContextPool<DBContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
         }
     }
 }

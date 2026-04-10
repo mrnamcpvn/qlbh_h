@@ -48,5 +48,17 @@ namespace API.Controllers
             var result = await _service.GetAll();
             return Ok(result);
         }
+
+        [HttpGet("Template")]
+        public async Task<IActionResult> Template()
+        {
+            return Ok(await _service.Template());
+        }
+
+        [HttpPost("Upload")]
+        public async Task<IActionResult> Upload(IFormFile file)
+        {
+            return Ok(await _service.Upload(file));
+        }
     }
 }

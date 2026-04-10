@@ -2,7 +2,8 @@
   <div class="row">
     <div class="col-lg-12">
       <div class="card">
-        <form class="form-horizontal" autocomplete="off">
+        <form class="form-horizontal"
+              autocomplete="off">
           <div class="card-header">
 
             <div class="row">
@@ -10,30 +11,47 @@
                 <h5>Quản lý Sản phẩm</h5>
               </div>
               <div class="col-md-6 col-sm-12">
-                <button type="button" class="btn btn-sm btn-primary float-right" (click)="openModal('add-modal')">
+                <button type="button"
+                        class="btn btn-sm btn-primary float-right"
+                        (click)="openModal('add-modal')">
                   <i class="fa fa-plus"></i>&nbsp; Thêm mới</button>
               </div>
             </div>
             <div class="row">
               <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                 <label class="badge badge-warning">Nhập tên hoặc mã sản phẩm:</label>
-                <input type="text" name="ten" class="form-control " [(ngModel)]="name" autocomplete="off"
-                  placeholder="Nhập tên hoặc mã sản phẩm" />
+                <input type="text"
+                       name="ten"
+                       class="form-control "
+                       [(ngModel)]="name"
+                       autocomplete="off"
+                       placeholder="Nhập tên hoặc mã sản phẩm" />
               </div>
               <div class="col-6">
                 <label class="d-block">&nbsp;</label>
-                <button type="submit" (click)="search()" class="btn btn-primary">
+                <button type="submit"
+                        (click)="search()"
+                        class="btn btn-primary mr-1">
                   <i class="fa fa-search"></i> Tìm kiếm
                 </button>
-                <button type="button" (click)="clear()" class="btn btn-danger ml-1">
+                <button type="button"
+                        (click)="clear()"
+                        class="btn btn-danger mr-1">
                   <i class="fa fa-ban"> </i> Xóa
+                </button>
+                <file-upload [allowExtensions]="acceptFormat"
+                             label="Tải Lên"
+                             (filesChange)="upload($event)"></file-upload>
+                <button type="button"
+                        class="{{ classButton.SEARCH}}"
+                        (click)="template()"> Tải Xuống File Mẫu
                 </button>
               </div>
             </div>
           </div>
           <div class="card-body">
             <div class="row justify-content-md-center">
-              <div class="col-xl-8 col-lg-10 col-md-12">
+              <div class="col-12">
                 <div class="table-responsive">
                   <table class="table table-bordered">
                     <thead>
@@ -48,21 +66,25 @@
                     </thead>
                     <tbody>
                       <tr *ngFor="let item of data; let i = index">
-                        <td>{{ ((pagination.pageNumber - 1) * pagination.pageSize) + i + 1 }}</td>
+                      <td class="col-stt">{{ ((pagination.pageNumber - 1) * pagination.pageSize) + i + 1 }}</td>
                         <td>{{item.maSP}}</td>
                         <td>{{item.ten}}</td>
                         <td class="text-right">{{item.gia | number}}</td>
                         <td class="text-right">{{item.soLuong | number}}</td>
-                        <td style="width: 10rem;">
-                          <button type="button" (click)="delete(item.id)" class="btn btn-danger btn-sm">
+                        <td class="col-action">
+                          <button type="button"
+                                  (click)="delete(item.id)"
+                                  class="btn btn-danger btn-sm">
                             <i class="fa fa-trash-o"></i>&nbsp;Xóa </button>
-                          <button type="button" (click)="openModal('add-modal', item)"
-                            class="btn btn-warning btn-sm ml-2">
+                          <button type="button"
+                                  (click)="openModal('add-modal', item)"
+                                  class="btn btn-warning btn-sm ml-2">
                             <i class="fa fa-edit"></i>&nbsp;Sửa </button>
                         </td>
                       </tr>
                       <tr *ngIf="data?.length === 0">
-                        <td colspan="100%" class="table-warning text-center font-weight-bold">
+                        <td colspan="100%"
+                            class="table-warning text-center font-weight-bold">
                           Không có dữ liệu!
                         </td>
                       </tr>
@@ -71,10 +93,17 @@
                   </table>
                 </div>
                 <div class="d-flex">
-                  <pagination *ngIf="data.length > 0" [boundaryLinks]="true" name="pagination"
-                    [totalItems]="pagination.totalCount" [itemsPerPage]="pagination.pageSize"
-                    (pageChanged)="pageChanged($event)" [(ngModel)]="pagination.pageNumber" previousText="&lsaquo;"
-                    nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;">
+                  <pagination *ngIf="data.length > 0 && pagination?.totalPage > 1"
+                              [boundaryLinks]="true"
+                              name="pagination"
+                              [totalItems]="pagination.totalCount"
+                              [itemsPerPage]="pagination.pageSize"
+                              (pageChanged)="pageChanged($event)"
+                              [(ngModel)]="pagination.pageNumber"
+                              previousText="&lsaquo;"
+                              nextText="&rsaquo;"
+                              firstText="&laquo;"
+                              lastText="&raquo;">
                   </pagination>
                 </div>
               </div>
@@ -86,5 +115,7 @@
     </div>
   </div>
 </div>
-<app-modal-add-edit id="add-modal" [data]="editData" type={{type}}
-  (changeData)="changeData($event)"></app-modal-add-edit>
+<app-modal-add-edit id="add-modal"
+                    [data]="editData"
+                    type={{type}}
+                    (changeData)="changeData($event)"></app-modal-add-edit>

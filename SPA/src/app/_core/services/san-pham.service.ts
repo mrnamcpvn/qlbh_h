@@ -3,6 +3,7 @@ import { environment } from "@env/environment";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { PaginationParam, PaginationResult } from '@utilities/pagination-utility';
 import { SanPham } from "@models/maintains/san-pham";
+import { OperationResult } from '@utilities/operation-result';
 @Injectable({
   providedIn: 'root'
 })
@@ -16,7 +17,7 @@ export class SanPhamService {
   }
 
   create(model: SanPham) {
-    return this.http.post<boolean>(`${this.apiUrl}/Create`, model);
+    return this.http.post<OperationResult>(`${this.apiUrl}/Create`, model);
   }
 
   delete(id: number) {
@@ -24,7 +25,7 @@ export class SanPhamService {
   }
 
   update(model: SanPham) {
-    return this.http.put<boolean>(`${this.apiUrl}/Update`, model);
+    return this.http.put<OperationResult>(`${this.apiUrl}/Update`, model);
   }
 
   getAll() {
@@ -33,5 +34,11 @@ export class SanPhamService {
 
   getAllByCommodityCodeId(id: number) {
     return this.http.get<SanPham[]>(`${this.apiUrl}/GetAllByCommodityCodeId`, { params: { id } });
+  }
+  template() {
+    return this.http.get<OperationResult>(`${this.apiUrl}/Template`);
+  }
+  upload(file: FormData) {
+    return this.http.post<OperationResult>(`${this.apiUrl}/Upload`, file)
   }
 }

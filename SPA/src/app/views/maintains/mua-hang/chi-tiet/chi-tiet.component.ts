@@ -5,6 +5,8 @@ import { DonHangService } from '@services/don-hang.service';
 import { ToVietnameseService } from '@services/to-vietnamese.service';
 import { InjectBase } from "@utilities/inject-base-app";
 import { IconButton } from '@constants/common.constants';
+import { CuaHang } from '@models/maintains/cua-hang';
+import { CuaHangService } from '@services/cua-hang.service';
 
 @Component({
   selector: 'app-chi-tiet',
@@ -18,9 +20,11 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
   tongSL: number;
   donHang: DonHang;
   listChiTiet: ChiTietDonHang[] = [];
+  cuaHang: CuaHang = <CuaHang>{};
   printDate = new Date();
   constructor(
     private donHangService: DonHangService,
+    private shopService: CuaHangService,
     private route: ActivatedRoute,
     private toVNService: ToVietnameseService
     ) { super() }
@@ -30,15 +34,12 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
       next: res => {
         if(res){
           this.donHang = res
-          console.log("Tại chi Tiết: ", this.donHang);
-
         }
-
         else this.router.navigate(['/maintain/mua-hang'])
       },
       error: err => this.router.navigate(['/maintain/mua-hang'])
     })
-
+    this.getShop();
     this.tienChu = this.toVNService.toVietnamese(this.donHang.tongTien)
     this.tienChu = this.tienChu.charAt(0).toUpperCase() + this.tienChu.slice(1);
   }
@@ -65,5 +66,12 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
     this.router.navigate(['/maintain/mua-hang']);
   }
 
+  getShop() {
+    this.shopService.getFirst().subscribe({
+      next: (res) => {
+        this.cuaHang = res || <CuaHang>{};
+      }
+    })
+  }
 }
 

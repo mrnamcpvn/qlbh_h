@@ -1,11 +1,14 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, Inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { IconButton } from '@constants/common.constants';
 import { ChiTietDonHang, DonHang } from '@models/maintains/don-hang';
 import { DonHangService } from '@services/don-hang.service';
 import { ToVietnameseService } from '@services/to-vietnamese.service';
 import { InjectBase } from "@utilities/inject-base-app";
-
+import { NhanVienService } from '@services/nhan-vien.service';
+import { NhanVien } from '@models/maintains/nhan-vien';
+import { CuaHangService } from '@services/cua-hang.service';
+import { CuaHang } from '@models/maintains/cua-hang';
 
 @Component({
   selector: 'app-chi-tiet',
@@ -18,10 +21,21 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
   tienChu: string = '';
   donHang: DonHang;
   listChiTiet: ChiTietDonHang[] = [];
+  nhanViens: NhanVien[] = [];
+  cuaHang: CuaHang = <CuaHang>{};
   tongSL: number;
   printDate = new Date();
+  get ten_NV() {
+    if (this.donHang.iD_NV != null && this.nhanViens.length > 0) {
+      const nvId = this.donHang.iD_NV;
+      return this.nhanViens.find(x => x.id === nvId)?.ten || '';
+    }
+    return '';
+  }
   constructor(
     private donHangService: DonHangService,
+    private nvService: NhanVienService,
+    private shopService: CuaHangService,
     private route: ActivatedRoute,
     private toVNService: ToVietnameseService
     ) { super() }
@@ -35,7 +49,8 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
       },
       error: err => this.router.navigate(['/maintain/ban-hang'])
     })
-
+    this.getAllNV();
+    this.getShop();
     this.tienChu = this.toVNService.toVietnamese(this.donHang.tongTien)
     this.tienChu = this.tienChu.charAt(0).toUpperCase() + this.tienChu.slice(1);
   }
@@ -49,7 +64,7 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
     this.donHangService.getDetail(this.id).subscribe({
       next: res => {
         this.listChiTiet = res;
-        this.tongSL = this.listChiTiet.reduce((x, y)=> x + y.soLuong, 0)
+        this.tongSL = this.listChiTiet.reduce((x, y) => x + y.soLuong, 0);
       }
     })
   }
@@ -61,6 +76,19 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
   update() {
     this.router.navigate(['/maintain/ban-hang/edit', this.donHang.id]);
   }
-
+  getAllNV() {
+    this.nvService.getAll().subscribe({
+      next: (res) => {
+        this.nhanViens = res;
+      }
+    })
+  }
+  getShop() {
+    this.shopService.getFirst().subscribe({
+      next: (res) => {
+        this.cuaHang = res || <CuaHang>{};
+      }
+    })
+  }
 }
 

@@ -6,7 +6,7 @@
                   <div class="row">
                       <div class="col-6">
                           <strong class="title-card-cs">
-                              Nhập hàng
+                              Xuất hàng
                           </strong>
                       </div>
                       <div class="col-6">
@@ -20,7 +20,14 @@
               <div class="card-body">
                   <div class="row justify-content-center">
                       <div class="col-xl-10 col-lg-12">
-                          <form class="form-group row p-2" autocomplete="off">
+                          <form class="form-group row p-2" autocomplete="off" #AddBHForm="ngForm">
+                              <label for="ma_DH"
+                                  class="col-sm-2 col-form-label lb form-group required control-label">Mã hóa đơn
+                                  <i class="i-required">*</i></label>
+                              <div class="col-sm-4">
+                                  <input class="form-control" name="ma_DH" type="text" [(ngModel)]="data.ma_DH" placeholder="Mã hóa đơn" [maxLength]="20" required>
+                              </div>
+                              <div class="col-sm-6"></div>
                               <label for="khach-hang"
                                   class="col-sm-2 col-form-label lb form-group required control-label">Khách hàng
                                   <i class="i-required">*</i></label>
@@ -29,8 +36,14 @@
                                       bindValue="id" [(ngModel)]="data.iD_KH" placeholder="Chọn Khách Hàng">
                                   </ng-select>
                               </div>
-                              <div class="col-sm-6"></div>
-                              <hr>
+                              <label for="nhan-vien"
+                                    class="col-sm-2 col-form-label lb form-group required control-label">Nhân Viên BH
+                                    <i class="i-required">*</i></label>
+                                <div class="col-sm-4">
+                                    <ng-select name="nhan-vien" required [items]="nhanViens" bindLabel="ten"
+                                        bindValue="id" [(ngModel)]="data.iD_NV" placeholder="Chọn Nhân Viên">
+                                    </ng-select>
+                                </div>
                               <label for="mahang"
                                   class="col-sm-2 col-form-label lb form-group required control-label">Mã sản phẩm
                                   <i class="i-required">*</i></label>
@@ -52,6 +65,7 @@
                                   <input type="number" class="form-control" id="quantity" [(ngModel)]="chiTiet.soLuong"
                                       name="quantity" autocomplete="off" min="0"
                                       onkeypress="return /[0-9]/i.test(event.key)" placeholder="Số lượng" required>
+                                    <span *ngIf="slMax" class="slmax">Số lượng tồn trong kho: {{slMax}} {{dvt}}</span>
                               </div>
                               <label for="gia"
                                   class="col-sm-2 col-form-label lb form-group required control-label">Giá bán
@@ -64,14 +78,12 @@
                               <div class="col-sm-12">
                                 <div class="add-sp">
                                   <button type="button" class="btn btn-success" (click)="add()"
-                                [disabled]="">
+                                [disabled]="!AddBHForm.valid">
                                 <i class="{{iconButton.ADD}}"></i>
                                 Thêm
                                 </button>
                                 </div>
                               </div>
-
-
                           </form>
                           <div class="table-responsive">
                             <table class="table table-bordered">
@@ -108,7 +120,6 @@
                                   <td></td>
                                 </tr>
                                 <tr>
-
                                 </tr>
                               </tbody>
                             </table>

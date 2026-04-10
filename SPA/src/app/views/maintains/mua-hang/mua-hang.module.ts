@@ -12,14 +12,15 @@ import {BsDatepickerModule} from "ngx-bootstrap/datepicker";
 import { AddOrEditComponent } from './add/add-or-edit.component';
 import { ChiTietComponent } from './chi-tiet/chi-tiet.component';
 import { EditComponent} from './edit/edit.component';
-
+import { ModelThanhToanComponent } from './model-thanh-toan/model-thanh-toan.component';
 
 @NgModule({
   declarations: [
     MainComponent,
     AddOrEditComponent,
     ChiTietComponent,
-    EditComponent,  ],
+    EditComponent,  
+    ModelThanhToanComponent],
   imports: [
     CommonModule,
     FormsModule,

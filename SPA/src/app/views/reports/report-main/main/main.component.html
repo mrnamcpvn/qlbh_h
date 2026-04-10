@@ -2,7 +2,8 @@
   <div class="row pt-4">
     <div class="col-lg-12">
       <div class="card">
-        <form class="form-horizontal" autocomplete="off">
+        <form class="form-horizontal"
+              autocomplete="off">
           <div class="card-header">
             <!-- Title -->
             <div class="row border-title">
@@ -12,15 +13,21 @@
                 </strong>
               </div>
             </div>
-            <form class="form-group row" autocomplete="off">
+            <form class="form-group row"
+                  autocomplete="off">
               <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
                 <label class="badge badge-warning">
                   Sản phẩm:
                 </label>
                 <div class="full-width">
-                  <ng-select name="san-pham" [items]="listSP" bindLabel="ten" bindValue="id"
-                    [(ngModel)]="param.id_sp" placeholder="Chọn sản phẩm" [clearable]="param.id_sp != 0"
-                    (clear)="param.id_sp = 0">
+                  <ng-select name="san-pham"
+                             [items]="listSP"
+                             bindLabel="ten"
+                             bindValue="id"
+                             [(ngModel)]="param.id_sp"
+                             placeholder="Chọn sản phẩm"
+                             [clearable]="param.id_sp != 0"
+                             (clear)="param.id_sp = 0">
                   </ng-select>
                 </div>
               </div>
@@ -32,15 +39,27 @@
                 <div class="full-width">
                   <div class="container_date">
                     <div class="input-group mr-1">
-                      <input type="text" placeholder="Từ ngày..." [maxDate]="param.toDate" name="date_start"
-                        [bsConfig]="bsConfig" class="form-control" bsDatepicker [(ngModel)]="param.fromDate">
+                      <input type="text"
+                             placeholder="Từ ngày..."
+                             [maxDate]="param.toDate"
+                             name="date_start"
+                             [bsConfig]="bsConfig"
+                             class="form-control"
+                             bsDatepicker
+                             [(ngModel)]="param.fromDate">
                       <div class="input-group-append">
                         <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
                       </div>
                     </div>
                     <div class="input-group ml-1">
-                      <input type="text" placeholder="Đến ngày..." [minDate]="param.fromDate" name="date_end"
-                        [bsConfig]="bsConfig" class="form-control" bsDatepicker [(ngModel)]="param.toDate">
+                      <input type="text"
+                             placeholder="Đến ngày..."
+                             [minDate]="param.fromDate"
+                             name="date_end"
+                             [bsConfig]="bsConfig"
+                             class="form-control"
+                             bsDatepicker
+                             [(ngModel)]="param.toDate">
                       <div class="input-group-append">
                         <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
                       </div>
@@ -52,15 +71,23 @@
               <!-- Button function-->
               <div class="col-xl-5 col-lg-6 col-md-6 mt-4 pt-1">
                 <div>
-                  <button type="submit" class="btn btn-primary" (click)="search()">
+                  <button type="submit"
+                          class="{{classButton.SEARCH}}"
+                          (click)="getData()">
                     <i class="{{iconButton.SEARCH}}"></i> Tìm kiếm
                   </button>
-                  <button type="submit" class="btn btn-danger ml-2" (click)="clearSearch()" [disabled]="param.id_sp == 0">
+                  <button type="submit"
+                          class="{{classButton.CLEAR}}"
+                          (click)="clearSearch()"
+                          [disabled]="param.id_sp == 0">
                     <i class="{{iconButton.CLEAR}}"></i> Xóa
                   </button>
-                  <!-- <button type="button" class="btn btn-success ml-2" (click)="exportExcel()">
+                  <button type="submit"
+                          class="{{classButton.EXCEL}}"
+                          id="excel"
+                          (click)="excel()">
                     <i class="{{iconButton.EXCEL}}"></i> Xuất dữ liệu
-                  </button> -->
+                  </button>
                 </div>
               </div>
             </form>
@@ -71,50 +98,91 @@
           <!-- table content -->
           <div class="row justify-content-md-center">
             <div class="col-12">
-              <div id="table-order-main" class="table-responsive mb-3">
+              <div class="table-responsive">
                 <table class="table table-bordered">
                   <thead>
                     <tr>
-                      <th>Tên sản phẩm</th>
-                      <th>Số lượng nhập</th>
-                      <th>Tổng tiền nhập</th>
-                      <th>Số lượng xuất</th>
-                      <th>Tổng tiền xuất</th>
-                      <th>Số lượng tồn ban đầu</th>
-                      <th>Giá tồn</th>
-                      <th>Số lượng tồn cuối</th>
-                      <th>Doanh thu</th>
+                      <th class="text-center"
+                          rowSpan="2">Tên sản phẩm</th>
+                      <th class="text-center"
+                          rowSpan="2">ĐVT</th>
+                      <th class="text-center"
+                          colspan="2">Đầu kỳ</th>
+                      <th class="text-center"
+                          colspan="2">Nhập kho</th>
+                      <th class="text-center"
+                          colspan="2">Xuất kho</th>
+                      <th class="text-center"
+                          colspan="2">Cuối kỳ</th>
+                    </tr>
+                    <tr>
+                      <th class="text-center">Số lượng tồn</th>
+                      <th class="text-center">Giá tồn</th>
+                      <th class="text-center">Số lượng</th>
+                      <th class="text-center">Tổng tiền</th>
+                      <th class="text-center">Số lượng</th>
+                      <th class="text-center">Tổng tiền</th>
+                      <th class="text-center">Số lượng tồn</th>
+                      <th class="text-center">Doanh thu</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr *ngFor="let item of data">
-                      <td>{{item?.ten_SP}}</td>
-                      <td class="text-right">{{item?.soLuongNhap}}</td>
-                      <td class="text-right">{{item?.tongTienNhap | number}}</td>
-                      <td class="text-right">{{item?.soLuongXuat}}</td>
-                      <td class="text-right">{{item?.tongTienXuat | number}}</td>
-                      <td class="text-right">{{item?.soLuongTonDau }}</td>
-                      <td class="text-right">{{item?.giaTon | number}}</td>
-                      <td class="text-right slTon">{{item?.soLuongTonCuoi}}</td>
-                      <td class="text-right doanhthu">{{item?.doanhThu | number}}</td>
+                    <tr *ngFor="let item of data.result">
+                      <td class="align-middle">{{item?.ten_SP}}</td>
+                      <td class="align-middle">{{item?.dvt}}</td>
+                      <td class="text-right align-middle">{{item?.soLuongTonDau | number:'1.0-0' }}</td>
+                      <td class="text-right align-middle">{{item?.giaTon | number:'1.0-0'}}</td>
+                      <td class="text-right align-middle">{{item?.soLuongNhap | number:'1.0-0'}}</td>
+                      <td class="text-right align-middle">{{item?.tongTienNhap | number:'1.0-0'}}</td>
+                      <td class="text-right align-middle">{{item?.soLuongXuat | number:'1.0-0'}}</td>
+                      <td class="text-right align-middle">{{item?.tongTienXuat | number:'1.0-0'}}</td>
+                      <td class="text-right align-middle slTon">{{item?.soLuongTonCuoi | number:'1.0-0'}}</td>
+                      <td class="text-right align-middle doanhthu">{{item?.doanhThu | number:'1.0-0'}}</td>
                     </tr>
-                    <tr *ngIf="!data || data?.length === 0">
-                      <td colspan="100%" class="table-warning text-center font-weight-bold">
+                    <tr *ngIf="!data || data.result?.length === 0">
+                      <td colspan="100%"
+                          class="table-warning text-center font-weight-bold">
                         Không có dữ liệu!
                       </td>
                     </tr>
                   </tbody>
-
+                  <tbody *ngIf="data.result?.length > 0">
+                    <tr class="row-total">
+                      <td colspan="2">
+                        <b>Tổng cộng:</b>
+                      </td>
+                      <td class="text-right">
+                        <b>{{ data.tong_SoLuongTonDau | number:'1.0-0' }}</b>
+                      </td>
+                      <td class="text-right">
+                        <b>{{ data.tong_GiaTon | number:'1.0-0' }}</b>
+                      </td>
+                      <td class="text-right">
+                        <b>{{ data.tong_SoLuongNhap | number:'1.0-0' }}</b>
+                      </td>
+                      <td class="text-right">
+                        <b>{{ data.tong_TongTienNhap | number:'1.0-0' }}</b>
+                      </td>
+                      <td class="text-right">
+                        <b>{{ data.tong_SoLuongXuat | number:'1.0-0' }}</b>
+                      </td>
+                      <td class="text-right">
+                        <b>{{ data.tong_TongTienXuat | number:'1.0-0' }}</b>
+                      </td>
+                      <td class="text-right slTon">
+                        <b>{{ data.tong_SoLuongTonCuoi | number:'1.0-0' }}</b>
+                      </td>
+                      <td class="text-right doanhthu">
+                        <b>{{ data.tong_DoanhThu | number:'1.0-0' }}</b>
+                      </td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
-              <div class="d-flex" *ngIf="data && data?.length > 0">
-                <!-- <pagination [totalItems]="pagination.totalCount" [itemsPerPage]="pagination.pageSize" [maxSize]="5"
-                  previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"
-                  [(ngModel)]="pagination.pageNumber" (pageChanged)="pageChanged($event)" [boundaryLinks]="true">
-                </pagination>
-                <span class="cs-page ml-2">
-                  Page - {{pagination.pageNumber}} / {{pagination.totalPage}}
-                </span> -->
+              <div class="row">
+                <div class="col-12">
+                  <span class="cs-page float-right">Tổng số bảng ghi: {{data.result?.length ?? 0}}</span>
+                </div>
               </div>
             </div>
           </div>

@@ -1,0 +1,66 @@
+<div class="animated fadeIn">
+  <div class="row pt-4 justify-content-center">
+    <div class="col-xl-6 col-lg-8 col-md-10 col-sm-12">
+      <div class="card">
+        <div class="card-header bg-primary">
+          <h5 class="text-white mb-0"><i class="fa fa-home"></i> Thông tin cửa hàng</h5>
+        </div>
+        <form #StoreForm="ngForm"
+              autocomplete="off"
+              (ngSubmit)="save()">
+          <div class="card-body">
+            <div class="form-group row">
+              <label for="ten"
+                     class="col-sm-3 col-form-label font-weight-bold">Tên cửa hàng <span class="text-danger">*</span></label>
+              <div class="col-sm-9">
+                <input type="text"
+                       id="ten"
+                       name="ten"
+                       [(ngModel)]="cuaHang.ten"
+                       class="form-control"
+                       placeholder="Nhập tên cửa hàng"
+                       required
+                       maxlength="200" />
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="diaChi"
+                     class="col-sm-3 col-form-label font-weight-bold">Địa chỉ</label>
+              <div class="col-sm-9">
+                <input type="text"
+                       id="diaChi"
+                       name="diaChi"
+                       [(ngModel)]="cuaHang.diaChi"
+                       class="form-control"
+                       placeholder="Nhập địa chỉ"
+                       maxlength="200" />
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label for="sdt"
+                     class="col-sm-3 col-form-label font-weight-bold">Số điện thoại</label>
+              <div class="col-sm-9">
+                <input type="text"
+                       id="sdt"
+                       name="sdt"
+                       [(ngModel)]="cuaHang.sdt"
+                       class="form-control"
+                       placeholder="Nhập số điện thoại"
+                       maxlength="20" />
+              </div>
+            </div>
+          </div>
+          <div class="card-footer text-right">
+            <button type="submit"
+                    class="btn btn-success"
+                    [disabled]="!StoreForm.valid">
+              <i class="fa fa-check"></i> Lưu lại
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
