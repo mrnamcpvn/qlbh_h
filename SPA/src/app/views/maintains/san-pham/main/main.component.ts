@@ -97,8 +97,10 @@ export class MainComponent extends InjectBase implements OnInit {
             if (res) {
               this.snotifyService.success('Xóa sản phẩm Thành Công', 'Thành công');
               this.data = this.data.filter(x => x.id !== id);
-              this.spinnerService.hide();
+            } else {
+              this.snotifyService.error('Xóa sản phẩm Thất bại', 'Lỗi');
             }
+            this.spinnerService.hide();
           },
           error: () => {
             this.snotifyService.error('Xóa sản phẩm thất bại', 'Lỗi');
