@@ -6,7 +6,7 @@
               autocomplete="off">
           <div class="card-header">
             <!-- Title -->
-            <div class="row border-title">
+            <div class="row mb-3">
               <div class="col-md-12">
                 <strong class="title-card-cs">
                   <h5>Báo cáo tồn kho</h5>
@@ -139,15 +139,7 @@
                       <td class="text-right align-middle slTon">{{item?.soLuongTonCuoi | number:'1.0-0'}}</td>
                       <td class="text-right align-middle doanhthu">{{item?.doanhThu | number:'1.0-0'}}</td>
                     </tr>
-                    <tr *ngIf="!data || data.result?.length === 0">
-                      <td colspan="100%"
-                          class="table-warning text-center font-weight-bold">
-                        Không có dữ liệu!
-                      </td>
-                    </tr>
-                  </tbody>
-                  <tbody *ngIf="data.result?.length > 0">
-                    <tr class="row-total">
+                    <tr *ngIf="data.result?.length > 0" class="row-total">
                       <td colspan="2">
                         <b>Tổng cộng:</b>
                       </td>
@@ -174,6 +166,12 @@
                       </td>
                       <td class="text-right doanhthu">
                         <b>{{ data.tong_DoanhThu | number:'1.0-0' }}</b>
+                      </td>
+                    </tr>
+                    <tr *ngIf="!data || data.result?.length === 0">
+                      <td colspan="100%"
+                          class="table-warning text-center font-weight-bold">
+                        Không có dữ liệu!
                       </td>
                     </tr>
                   </tbody>
