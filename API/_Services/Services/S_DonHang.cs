@@ -219,7 +219,7 @@ namespace API._Services.Services
 
         public async Task<bool> Delete(int id)
         {
-            // 1. Lấy đơn hàng và chi tiết đơn hàng cần xóa
+            // 1. Lấy đơn hàng và chi tiết
             var dh = await _repoAccessor.DonHang.FindSingle(x => x.ID == id);
             if (dh == null) return true; // Đơn hàng đã không tồn tại, coi như đã xóa thành công
             var listChitiet = await _repoAccessor.ChiTietDonHang.FindAll(x => x.ID_DH == id).ToListAsync();
@@ -228,10 +228,11 @@ namespace API._Services.Services
                 _repoAccessor.DonHang.Remove(dh); // Xóa đơn trống
                 return await _repoAccessor.Save();
             }
+            var productDeltas = listChitiet.GroupBy(x => x.ID_SP)
+                .ToDictionary(g => g.Key, g => g.Sum(x => x.SoLuong));
             // 3. Lấy tất cả Sản phẩm cần cập nhật trong 1 lần duy nhất
-            var productIds = listChitiet.Select(x => x.ID_SP).Distinct().ToList();
+            var productIds = productDeltas.Keys.ToList();
             var listSanPham = await _repoAccessor.SanPham.FindAll(x => productIds.Contains(x.ID)).ToListAsync();
-
             // 4. Lấy các bản ghi lịch sử mới nhất của các sản phẩm này (Loại trừ đơn hàng đang xóa)
             // Dùng GroupBy để lấy ID lớn nhất của từng SP trong 1 query
             var latestCTs = await _repoAccessor.ChiTietDonHang
@@ -239,24 +240,27 @@ namespace API._Services.Services
                 .GroupBy(x => x.ID_SP)
                 .Select(g => g.OrderByDescending(x => x.ID).FirstOrDefault())
                 .ToListAsync();
-            // 5. Xử lý logic in-memory
-            foreach (var item in listChitiet)
+            var validLatestCTs = latestCTs.Where(x => x != null).ToList();
+            // 5. Tạo Dictionary, Xử lý logic in-memory
+            var spDict = listSanPham.ToDictionary(x => x.ID);
+            var lastRecordDict = validLatestCTs.ToDictionary(x => x.ID_SP);
+            int multiplier = (dh.Loai == 1) ? -1 : 1; // Nhập (1) => Trừ, Xuất (2) => Cộng
+            foreach (var delta in productDeltas)
             {
-                var sp = listSanPham.FirstOrDefault(x => x.ID == item.ID_SP);
-                if (sp != null)
+                if (spDict.TryGetValue(delta.Key, out var sp))
                 {
                     // Cập nhật tồn kho
-                    if (dh.Loai == 1) sp.SoLuong -= item.SoLuong;   // Nếu là đơn nhập thì trừ bớt
-                    else sp.SoLuong += item.SoLuong;                // Nếu là đơn xuất thì cộng lại
+                    sp.SoLuong = (sp.SoLuong ?? 0) + (multiplier * delta.Value);
                     // Cập nhật SL_Ton_Cuoi cho bản ghi lịch sử mới nhất của SP đó
-                    var lastRecord = latestCTs.FirstOrDefault(x => x.ID_SP == item.ID_SP);
-                    if (lastRecord != null)
+                    if (lastRecordDict.TryGetValue(delta.Key, out var lastRecord))
                         lastRecord.SL_Ton_Cuoi = sp.SoLuong;
                 }
             }
             try
             {
-                // 6. Xóa hàng loạt
+                // 6. Thực thi cập nhật và xóa hàng loạt
+                _repoAccessor.SanPham.UpdateMultiple(listSanPham);
+                _repoAccessor.ChiTietDonHang.UpdateMultiple(validLatestCTs);
                 _repoAccessor.ChiTietDonHang.RemoveMultiple(listChitiet);
                 _repoAccessor.DonHang.Remove(dh);
                 return await _repoAccessor.Save();
