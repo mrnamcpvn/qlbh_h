@@ -1,280 +1,646 @@
-// Here you can add other styles
-*:hover,
-*:focus,
-*:active {
-    outline: none;
-    box-shadow: none !important;
-    appearance: none;
-    -webkit-appearance: none;
+// --- Regency Professional Design Tokens (Twilight Version) ---
+$primary: #5c4d9b; // Muted Regency Purple
+$primary-light: #dadbed;
+$success: #10b981;
+$danger: #ef4444;
+
+$bg-app: #d0d4db; // Sunset/Twilight Grey (Low luminance)
+$bg-card: #e5e9f0; // Muted surface
+$border-soft: #b8bfc7;
+$text-main: #2d3436;
+$text-secondary: #5a6366;
+
+// Base Reset
+html,
+body,
+app-root {
+  height: 100%;
+  margin: 0;
 }
 
+body {
+  background-color: $bg-app;
+  color: $text-main;
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+}
+
+// Header Refinements (Restoring spread-out layout)
 app-header {
-    background-color: #364150 !important;
-    color: #fff;
+  background: #eceef1 !important; // Slightly brighter twilight grey
+  border-bottom: 2px solid $primary !important;
+  height: 52px; // Tightened header
 
-    .app-title {
-        font-weight: unset;
-        margin-bottom: unset;
-        margin-left: 1rem;
-        margin-right: 1rem;
+  .app-title {
+    color: $primary;
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: -0.03em;
+    margin-left: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    img,
+    .icon-brand,
+    i {
+      height: 28px !important;
+      width: 28px !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      object-fit: contain;
+    }
+  }
+
+  .navbar-nav {
+    display: flex;
+    align-items: center;
+
+    // Push the right-side content far right
+    &.ml-auto {
+      margin-left: auto !important;
+      margin-right: 1.5rem;
     }
 
-    .navbar-nav .nav-link {
-        color: #fff;
+    .nav-link {
+      color: $text-main;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      &:hover {
+        color: $primary;
+      }
     }
-}
+  }
 
-app-sidebar-nav {
-    app-sidebar-nav-items {
-        background-color: #364150 !important;
-    }
-}
-
-.sidebar .nav-link:hover {
-    background: #000;
-}
-
-.pt-30 {
-    padding-top: 30px !important;
-}
-
-h6.username {
-    display: inline-block;
-    text-decoration: none;
+  h6.username {
+    color: $text-main;
+    font-weight: 700;
+    font-size: 0.825rem;
+    margin: 0 0.75rem;
     cursor: pointer;
-    color: #fff;
-}
-
-.menu-margin a {
-  padding-left: 23px !important;
-}
-
-table {
-    &.table {
-        font-size: 0.875rem;
-        margin-bottom: 0;
-
-        thead {
-            background-color: $primary;
-            color: $white;
-
-            th {
-                padding: 0.65rem 0.75rem;
-                font-weight: 600;
-                font-size: 0.8125rem;
-                text-transform: uppercase;
-                letter-spacing: 0.03em;
-                white-space: nowrap;
-                vertical-align: middle;
-                border-bottom: 2px solid darken($primary, 8%);
-            }
-        }
-
-        tbody {
-            tr {
-                transition: background-color 0.15s ease;
-
-                &:nth-child(even) {
-                    background-color: rgba(0, 0, 0, 0.018);
-                }
-
-                &:hover {
-                    background-color: rgba($primary, 0.04);
-                }
-            }
-
-            td {
-                padding: 0.55rem 0.75rem;
-                vertical-align: middle;
-                border-color: #e8ecef;
-                color: #3a3f51;
-            }
-        }
-
-        &.table-bordered {
-            border-color: #e0e4e8;
-
-            th, td {
-                border-color: #e0e4e8;
-            }
-        }
+    &:hover {
+      color: $primary;
     }
+  }
+
+  .img-avatar,
+  .avatar-img,
+  [class*="avatar"] {
+    height: 35px;
+    width: 35px;
+    border-radius: 50%;
+    border: 2px solid $primary-light;
+    object-fit: cover;
+  }
+
+  .navbar-toggler {
+    border: none;
+    .navbar-toggler-icon {
+      filter: brightness(0) saturate(100%) invert(31%) sepia(21%) saturate(2200%) hue-rotate(220deg);
+    }
+  }
+
+  .dropdown-menu {
+    border: 1px solid rgba($primary, 0.15);
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba($primary, 0.12), 0 5px 15px rgba(0, 0, 0, 0.05);
+    margin-top: 0.85rem !important;
+    padding: 0 !important;
+    background: rgba(255, 255, 255, 0.98);
+    -webkit-backdrop-filter: blur(10px); // Safari/iOS Support
+    backdrop-filter: blur(10px);
+    animation: dropdownFade 0.2s ease-out;
+    min-width: unset !important;
+    width: max-content !important;
+    overflow: hidden; // Ensures items clip to rounded corners
+
+    .dropdown-item {
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 12px 20px;
+      color: $text-main;
+      border-radius: 0;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0;
+      cursor: pointer;
+
+      &:hover {
+        background: $primary-light;
+        color: $primary;
+      }
+
+      i, .fa {
+        font-size: 1rem;
+        width: 20px;
+        text-align: center;
+        color: inherit;
+        opacity: 0.9;
+      }
+    }
+  }
 }
 
-// Column width utilities for tables
-.col-stt {
-    width: 3rem;
-    text-align: center;
+@keyframes dropdownFade {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.col-date {
-    width: 11rem;
-}
+// Sidebar
+app-sidebar,
+.sidebar {
+  background: #2a2d3e !important;
+  border-right: none !important;
 
-.col-action {
-    width: auto;
-    white-space: nowrap;
-    text-align: center;
-}
+  // Fix minimized brand symmetry & distortion
+  .sidebar-brand-minimized,
+  .brand-minimized,
+  .navbar-brand-minimized,
+  img.navbar-brand-minimized {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    max-width: 50px;
+    padding: 0.25rem 0 !important;
 
-// Refined action buttons inside tables
-.table .btn-sm {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    border-radius: 0.2rem;
+    &,
+    img,
+    i,
+    .icon-brand {
+      width: 30px !important;
+      height: 30px !important;
+      min-width: 30px !important;
+      min-height: 30px !important;
+      margin: 0 auto !important;
+      object-fit: contain !important;
+    }
+  }
+
+  .nav-link {
+    color: #b1b4c1;
+    padding: 0.75rem 1.25rem;
+    margin: 0.2rem 0.6rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: #fff !important;
+      background: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    &.active {
+      color: #fff !important;
+      background: linear-gradient(135deg, $primary 0%, darken($primary, 8%) 100%) !important;
+      box-shadow: 0 4px 12px rgba($primary, 0.2);
+
+      i,
+      .nav-icon {
+        color: #fff !important;
+        opacity: 1;
+      }
+    }
 
     i {
-        margin-right: 0.15rem;
+      margin-right: 10px;
+      font-size: 1.1rem;
+      opacity: 0.8;
+    }
+  }
+
+  // Comprehensive hover override for all sidebar states (Normal & Minimized)
+  .nav-item:hover > .nav-link,
+  .nav-link:hover {
+    background: rgba($primary, 0.8) !important;
+    color: #fff !important;
+  }
+}
+
+// Specific CoreUI Minimized Sidebar Popouts
+.sidebar-minimized .sidebar {
+  .nav-item:hover > .nav-link,
+  .nav-link:hover {
+    background: $primary !important;
+    width: 250px;
+  }
+}
+
+// Global brand icon reinforcement
+.navbar-brand-minimized,
+.sidebar-brand-minimized {
+  width: 30px !important;
+  height: 30px !important;
+  object-fit: contain !important;
+}
+
+
+// Cards
+.card {
+  background: $bg-card;
+  border: 1px solid $border-soft;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+  overflow: hidden; // Ensures all 4 corners are clipped perfectly
+
+  .card-header {
+    background: #f3f4f6;
+    border-bottom: 1px solid $border-soft;
+    padding: 0.7rem 1.25rem; // More compact header
+    h5 {
+      font-weight: 700;
+      color: $primary;
+      font-size: 0.95rem;
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  .card-footer {
+    background: #f3f4f6;
+    border-top: 1px solid $border-soft;
+    padding: 1rem 1.5rem;
+  }
+}
+
+// Modals: Premium Overlays
+.modal-content {
+  border: none !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+  background: $bg-card !important;
+
+  .modal-header {
+    background: #f1f0f7 !important; // Match the total row shade
+    border-bottom: 1px solid $border-soft;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+
+    .modal-title {
+      color: $primary !important;
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+    }
+
+    .close, .btn-close {
+        color: $primary !important;
+        opacity: 0.8;
+        padding: 1rem;
+        margin: -1rem -1rem -1rem auto;
+        text-shadow: none;
+        outline: none !important;
+        &:hover { opacity: 1; }
+    }
+  }
+
+  .modal-body {
+    padding: 1.5rem !important;
+  }
+
+  .modal-footer {
+    background: #f1f0f7 !important;
+    border-top: 1px solid $border-soft;
+    padding: 0.85rem 1.5rem;
+
+    .btn {
+        margin-left: 0.5rem;
+    }
+  }
+}
+
+// Ensure backdrop is cohesive
+.modal-backdrop {
+  background-color: rgba(black, 0.4) !important;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  &.show { opacity: 1 !important; }
+}
+
+// Input Groups in Modals
+.modal .input-group {
+    background: #fff;
+    border-radius: 8px;
+
+    .input-group-text {
+        background: #f8f9fa !important;
+        border-color: #adb5bd !important;
+        color: $text-main;
+        font-weight: 600;
+    }
+
+    .form-control {
+        border-color: #adb5bd !important;
     }
 }
 
-// Better badge sizing in tables
-.table .badge {
-    font-size: 0.75rem;
-    padding: 0.35em 0.65em;
-    font-weight: 500;
+// Inputs: Eye-friendly
+.form-control,
+.form-select,
+.bs-datepicker-input {
+  height: 38px !important; // More elegant height
+  padding: 0.4rem 0.75rem;
+  background-color: #ffffff !important; // Brighter for active input
+  border: 1px solid #adb5bd !important;
+  border-radius: 8px !important;
+  font-size: 0.85rem;
+  color: $text-main;
+  transition: all 0.2s ease;
+
+  &:focus {
+    border-color: $primary !important;
+    box-shadow: 0 0 0 3px rgba($primary, 0.15) !important;
+  }
+
+  // Muted for non-editable states
+  &:disabled,
+  &[readonly] {
+    background-color: #e9ecef !important;
+    opacity: 0.8;
+    cursor: not-allowed;
+  }
 }
 
-// Table summary/total row
-.table tbody tr.row-total td {
-    font-weight: 700;
-    background-color: rgba($primary, 0.05);
-    border-top: 2px solid #e0e4e8;
-    vertical-align: middle;
+
+// ng-select: Auto-expanding height for multiple mode
+.ng-select .ng-select-container {
+  min-height: 38px !important; // Refined height
+  height: auto !important;
+  background-color: #ffffff !important;
+  border: 1px solid #adb5bd !important;
+  border-radius: 8px !important;
+  cursor: pointer;
+  box-shadow: none !important;
+  outline: none !important; // Kill browser-default selector focus
+
+  .ng-value-container {
+    padding: 4px 8px !important;
+    gap: 4px;
+    align-items: center;
+    border: none !important; // Kill internal focus border
+  }
+
+  input {
+    border: none !important; // Kill default input border
+    box-shadow: none !important;
+    outline: none !important;
+  }
 }
 
-// Empty data row styling
-.table .table-warning {
-    font-size: 0.8125rem;
+// Global focus for ng-select
+.ng-select.ng-select-focused .ng-select-container {
+  border-color: $primary !important;
+  box-shadow: 0 0 0 3px rgba($primary, 0.15) !important;
 }
 
-.ng-select-disabled .ng-select-container {
-    background-color: #e4e7ea !important;
+
+// ng-select disabled state
+.ng-select.ng-select-disabled .ng-select-container {
+  background-color: #e9ecef !important;
+  cursor: not-allowed;
 }
 
-.cs-page {
-    padding-top: 8px;
-    margin-left: 10px !important;
-}
 
-.border-shadow {
-    box-shadow: 0 0.1rem 1rem #00000026 !important;
-    padding: 1rem;
-    border-radius: 0.3rem !important;
-    margin: 0px 0px 20px 0px;
-}
-
-// style col-xxl
-@media (min-width: 1400px) {
-    .col-xxl-1 {
-        flex: 0 0 auto;
-        width: 8.33333333%;
-    }
-
-    .col-xxl-2 {
-        flex: 0 0 auto;
-        width: 16.66666667%;
-    }
-
-    .col-xxl-3 {
-        flex: 0 0 auto;
-        width: 25%;
-    }
-
-    .col-xxl-4 {
-        flex: 0 0 auto;
-        width: 33.33333333%;
-    }
-
-    .col-xxl-5 {
-        flex: 0 0 auto;
-        width: 41.66666667%;
-    }
-
-    .col-xxl-6 {
-        flex: 0 0 auto;
-        width: 50%;
-    }
-
-    .col-xxl-7 {
-        flex: 0 0 auto;
-        width: 58.33333333%;
-    }
-
-    .col-xxl-8 {
-        flex: 0 0 auto;
-        width: 66.66666667%;
-    }
-
-    .col-xxl-9 {
-        flex: 0 0 auto;
-        width: 75%;
-    }
-
-    .col-xxl-10 {
-        flex: 0 0 auto;
-        width: 83.33333333%;
-    }
-
-    .col-xxl-11 {
-        flex: 0 0 auto;
-        width: 91.66666667%;
-    }
-
-    .col-xxl-12 {
-        flex: 0 0 auto;
-        width: 100%;
-    }
-}
-
-.checkAll .custom-control-input:checked~.custom-control-label::before {
-    border-color: #fff;
-}
-
-.dropdown-item {
+// Ensure clicking labels inside ng-option and headers works
+.ng-dropdown-panel {
+  .custom-control,
+  .custom-control-label {
     cursor: pointer;
+    pointer-events: none; // Let the click pass to the underlying interactive element
+  }
+
+  // Ensure the container itself can receive the click
+  .ng-option,
+  .ng-header,
+  .ng-footer {
+    cursor: pointer;
+  }
 }
 
+
+
+// Sophisticated Input Groups
+.input-group {
+  flex-wrap: nowrap;
+  align-items: stretch;
+
+  .form-control,
+  .form-select,
+  .input-group-text,
+  .input-group-append,
+  .input-group-prepend,
+  button {
+    border-radius: 0 !important;
+    margin-right: -1px;
+  }
+
+  .input-group-text,
+  .input-group-append button {
+    background-color: #f1f3f5;
+    border: 1px solid #ced4da;
+    color: $primary;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+  }
+
+  // Comprehensive rounding for first/last visible elements
+  & > :first-child,
+  & > .input-group-prepend > :first-child {
+    border-top-left-radius: 8px !important;
+    border-bottom-left-radius: 8px !important;
+  }
+
+  & > :last-child,
+  & > .input-group-append > :last-child,
+  & > .input-group-append > button {
+    border-top-right-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
+  }
+}
+
+
+
+// Tables: Calm & Balanced
+table.table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border: 1px solid $border-soft !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  background: #fff !important;
+  width: 100%;
+
+  // Force basic cell borders first
+  th,
+  td {
+    border-right: 1px solid $border-soft !important;
+    border-bottom: 1px solid $border-soft !important;
+    padding: 0.55rem 0.75rem !important; // Balanced table density
+    color: $text-main;
+    vertical-align: middle;
+    border-top: 0 !important; // Global kill for top borders
+    border-left: 0 !important; // Global kill for left borders
+  }
+
+  // Header styling
+  thead th {
+    background: $primary-light !important;
+    color: $primary !important;
+    font-weight: 800;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    border-bottom: 1px solid $border-soft !important;
+  }
+
+  // Alignment and boundary resets (Apply ONLY to edges)
+  thead th:last-child,
+  tbody td:last-child,
+  tfoot td:last-child,
+  tr td:last-child {
+    border-right: none !important;
+  }
+
+  // Only the absolute last row of the entire table has no bottom border
+  tr:last-child td,
+  tfoot tr:last-child td {
+    border-bottom: none !important;
+  }
+
+  // Specialized Total row styling
+  tfoot td,
+  .total-row td,
+  .row-total td {
+    font-weight: 700;
+    background-color: #f1f0f7; // More distinct Lavender-grey shade
+  }
+
+  tbody tr:hover {
+    background-color: rgba($primary, 0.03) !important;
+  }
+
+  // Column Utilities
+  .col-action {
+    width: 1%; // Minimal width that fits content
+    white-space: nowrap !important;
+    text-align: center;
+    min-width: 250px; // Ensure 3 buttons fit on one line
+  }
+
+  .col-stt { width: 40px; text-align: center; }
+  .col-date { width: 140px; text-align: center; }
+  .col-payment {
+    min-width: 220px;
+    white-space: nowrap !important;
+  }
+}
+
+
+
+
+
+
+
+
+
+// Buttons: Refined Dimensions
+.btn {
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    filter: brightness(1.05);
+  }
+
+}
+
+// Global Link & Focus override (No more default blue)
+a {
+  color: $primary;
+  text-decoration: none;
+  &:hover {
+    color: darken($primary, 10%);
+  }
+}
+
+::selection {
+  background: rgba($primary, 0.2);
+  color: $primary;
+}
+
+// Ensure focus rings are never blue
+*:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba($primary, 0.15) !important;
+}
+
+// Active states for common components
+.nav-pills .nav-link.active,
+.pagination .page-item.active .page-link {
+  background-color: $primary !important;
+  border-color: $primary !important;
+  color: #fff !important;
+}
+
+.page-link {
+  color: $primary;
+  &:hover {
+    color: darken($primary, 10%);
+  }
+}
+
+// Badges
+.badge {
+  padding: 0.4em 0.75rem;
+  border-radius: 6px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+
+  &-primary {
+    background-color: $primary;
+  }
+  &-info {
+    background-color: $primary;
+  }
+  // Remap info to purple
+}
+
+// slTon Utility
 .slTon {
-  color: crimson !important;
-  font-weight: 600 !important;
-  font-size: 20px !important;
+  color: $danger !important;
+  font-weight: 800 !important;
+  font-size: 1.2rem !important;
 }
-
 .doanhthu {
-  color: lightseagreen !important;
-  font-weight: 600 !important;
+  color: $success !important;
+  font-weight: 800 !important;
 }
 
-.padding-print {
-  padding: 10px;
-}
-
-.font-big {
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.font-big2 {
-  font-size: 24px;
-  font-weight: 700;
-}
-
-.font-20 {
-  font-size: 20px;
-}
-
-// #border-bold table,#border-bold table> th,#border-bold table> td {
-//   border: 2px solid #000;
-// }
-
-.print-txt-bold {
-  font-weight: 700;
-  font-size: 20px;
-}
-.checkAll .custom-control-input:checked ~ .custom-control-label::before {
-  border-color: #fff;
-}
-.pe-none {
-  pointer-events: none;
+@media (min-width: 1400px) {
+  @for $i from 1 through 12 {
+    .col-xxl-#{$i} {
+      flex: 0 0 auto;
+      width: (100% / 12) * $i;
+    }
+  }
 }
