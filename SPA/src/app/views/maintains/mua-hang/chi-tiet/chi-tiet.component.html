@@ -2,21 +2,30 @@
   <div class="row pt-4">
     <div class="col-lg-12">
       <div class="card">
-        <form class="form-horizontal" autocomplete="off">
+        <form class="form-horizontal"
+              autocomplete="off">
           <div class="card-header">
             <div class="row">
               <div class="col-md-6 col-sm-12">
                 <h5>Chi tiết đơn hàng
-                  <button type="button" class="btn btn-success"  [useExistingCss]="true" printSectionId="printMuaHang" ngxPrint>
+                  <button type="button"
+                          class="btn btn-success"
+                          [useExistingCss]="true"
+                          printSectionId="printMuaHang"
+                          ngxPrint>
                     <i class="fa fa-print"></i> In
                   </button>
-                  <button type="button" class="btn btn-warning ml-2" (click)="update()"><i class="fa fa-update"></i> Chỉnh sửa đơn hàng</button>
+                  <button type="button"
+                          class="btn btn-warning ml-2"
+                          (click)="update()"><i class="fa fa-update"></i> Chỉnh sửa đơn hàng</button>
                 </h5>
               </div>
               <div class="col-md-6 col-sm-12">
-                <button type="button" class="btn btn-sm btn-primary float-right" (click)="back()">
+                <button type="button"
+                        class="btn btn-sm btn-primary float-right"
+                        (click)="back()">
                   <i class="{{iconButton.BACK}}"></i>
-                                Trờ về</button>
+                  Trờ về</button>
               </div>
             </div>
           </div>
@@ -24,21 +33,30 @@
         <div class="card-body">
           <div class="order-info">
             <div class="row">
-              <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-2">
-                <div class="d-flex align-items-center">
-                  <i class="fa fa-calendar-o text-primary mr-2"></i>
-                  <div>
-                    <small class="text-muted d-block">Ngày lập</small>
-                    <strong>{{donHang.date | date: 'dd/MM/YYYY HH:mm:ss' }}</strong>
-                  </div>
-                </div>
-              </div>
-              <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-2">
+              <div class="col-xl-2 col-lg-3 col-md-6 col-sm-12 mb-2">
                 <div class="d-flex align-items-center">
                   <i class="fa fa-user text-primary mr-2"></i>
                   <div>
-                    <small class="text-muted d-block">Khách hàng</small>
-                    <strong>{{donHang.ten_KH}}</strong>
+                    <small class="text-muted d-block">Nhà Cung Cấp</small>
+                    <strong>{{donHang.ten_NCC}}</strong>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-2 col-lg-3 col-md-6 col-sm-12 mb-2">
+                <div class="d-flex align-items-center">
+                  <i class="fa fa-calendar-o text-primary mr-2"></i>
+                  <div>
+                    <small class="text-muted d-block">Ngày Nhập</small>
+                    <strong>{{donHang.date | date: 'dd/MM/YYYY' }}</strong>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-2 col-lg-3 col-md-6 col-sm-12 mb-2">
+                <div class="d-flex align-items-center">
+                  <i class="fa fa-calendar-o text-primary mr-2"></i>
+                  <div>
+                    <small class="text-muted d-block">Ngày Lập</small>
+                    <strong>{{donHang.create_Time | date: 'dd/MM/YYYY HH:mm:ss' }}</strong>
                   </div>
                 </div>
               </div>
@@ -60,21 +78,22 @@
                   </thead>
                   <tbody>
                     <tr *ngFor="let item of listChiTiet; let i = index">
-                      <td>{{ i + 1 }}</td>
+                      <td class="text-center">{{ i + 1 }}</td>
                       <td>{{item.ten_SP}}</td>
-                      <td>{{item.dvt}}</td>
-                      <td class="text-right">{{item.soLuong}}</td>
-                      <td class="text-right">{{item.gia  | number}}</td>
+                      <td class="text-center">{{item.dvt}}</td>
+                      <td class="text-center">{{item.soLuong}}</td>
+                      <td class="text-right">{{item.gia | number}}</td>
                       <td class="text-right">{{item.thanhTien | number}}</td>
                     </tr>
                     <tr class="font-20">
                       <td colspan="3"> <b>Tổng cộng: </b> </td>
-                      <td class="text-right"><b>{{tongSL}}</b></td>
+                      <td class="text-center"><b>{{tongSL}}</b></td>
                       <td></td>
                       <td class="text-right"><b>{{donHang.tongTien | number}}</b></td>
                     </tr>
                     <tr *ngIf="listChiTiet?.length === 0">
-                      <td colspan="100%" class="table-warning text-center font-weight-bold">
+                      <td colspan="100%"
+                          class="table-warning text-center font-weight-bold">
                         Không có dữ liệu!
                       </td>
                     </tr>
@@ -89,65 +108,68 @@
   </div>
 </div>
 
-<div id="printMuaHang" style="visibility: hidden;">
+<div id="printMuaHang"
+     style="visibility: hidden;">
   <div class="padding-print">
     <div class="row">
       <div class="col-8">
         <ng-container *ngIf="cuaHang.id">
-          <h3>{{cuaHang.ten}}</h3>
-          <span class="font-big">
+          <span class="brand-font">{{cuaHang.ten}}</span><br>
+          <span class="address-font">
             {{cuaHang.diaChi}} - Điện thoại: {{cuaHang.sdt}}
           </span>
         </ng-container>
       </div>
-      <div class="col-4">
-        <h3>PHIẾU NHẬP HÀNG</h3>
-        <p class="font-20">Ngày {{printDate | date: ("dd/MM/YYYY")}} </p>
+      <div class="col-4 text-center">
+        <span class="title-font">PHIẾU NHẬP HÀNG</span><br>
+        <span class="text-font">
+          Ngày {{printDate | date: 'dd/MM/YYYY'}}
+        </span>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-12">
+        <span class="info-font">
+          Nhà cung cấp: {{donHang.ten_NCC}}
+          <br> Địa chỉ: {{donHang.diaChi}}
+        </span>
       </div>
     </div>
     <div class="row">
       <div class="col-12">
-        <p class="font-big2">Khách Hàng: {{donHang.ten_KH}} <br>
-          Địa chỉ: {{donHang.diaChi}}
-        </p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-12" id="border-bold">
-        <table class="table table-bordered table-print font-20">
-          <thead >
-            <tr class="print-txt-bold">
+        <table class="custom-print-table">
+          <thead>
+            <tr>
               <th class="text-center">Stt</th>
               <th class="text-center">Tên sản phẩm</th>
-              <th class=" text-center">Đơn vị tính</th>
-              <th class=" text-center">Số lượng</th>
-              <th class=" text-center">Giá mua</th>
-              <th class=" text-center">Thành tiền</th>
+              <th class="text-center">Đơn vị tính</th>
+              <th class="text-center">Số lượng</th>
+              <th class="text-center">Giá mua</th>
+              <th class="text-center">Thành tiền</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of listChiTiet; let i = index" class="print-txt-bold">
-              <td style="border: 2px solid #000;">{{ i + 1 }}</td>
+            <tr *ngFor="let item of listChiTiet; let i = index">
+              <td class="text-center">{{ i + 1 }}</td>
               <td>{{item.ten_SP}}</td>
-              <td>{{item.dvt}}</td>
-              <td class="text-right">{{item.soLuong}}</td>
-              <td class="text-right">{{item.gia  | number}}</td>
+              <td class="text-center">{{item.dvt}}</td>
+              <td class="text-center">{{item.soLuong}}</td>
+              <td class="text-right">{{item.gia | number}}</td>
               <td class="text-right">{{item.thanhTien | number}}</td>
             </tr>
             <tr>
-              <td colspan="3"><b>Tổng cộng: </b></td>
-              <td class="text-right font-big2"><b>{{tongSL}}</b></td>
+              <td colspan="3">Tổng cộng: </td>
+              <td class="text-center total-font">{{tongSL}}</td>
               <td></td>
-              <td class="text-right font-big2"><b>{{donHang.tongTien | number}}</b> </td>
+              <td class="text-right total-font">{{donHang.tongTien | number}}</td>
             </tr>
           </tbody>
         </table>
-        <p class="font-20"><b>Bằng chữ: {{tienChu}}</b></p>
-        <i class="font-20">Lưu ý: Kiểm tra hàng trước khi thanh toán</i>
+        <p class="text-font"><b>Bằng chữ: {{tienChu}}</b></p>
+        <i class="text-font">Lưu ý: Kiểm tra hàng trước khi thanh toán</i>
       </div>
-
     </div>
   </div>
 
 </div>
-

@@ -115,14 +115,17 @@ namespace API._Services.Services
         }
         public async Task<List<TheoDoiNhanVienBanHang_SP>> GetData(TheoDoiNhanVienBanHang_Param param)
         {
+
             var predChiTietDonHang = PredicateBuilder.New<ChiTietDonHang>(true);
             var predSanPham = PredicateBuilder.New<SanPham>(true);
             var predNhanVien = PredicateBuilder.New<NhanVien>(true);
+            var fromDate = Convert.ToDateTime(param.FromDate_Str);
+            var toDate = Convert.ToDateTime(param.ToDate_Str);
             var donHang = await _repoAccessor.DonHang.FindAll(x =>
-                x.Loai.HasValue && x.Loai.Value == 2 && // Chỉ lấy đơn xuất hàng
+                x.Loai.HasValue &&
+                x.Loai.Value == 2 && // Chỉ lấy đơn xuất hàng
                 x.ID_NV.HasValue && param.IdNV.Contains(x.ID_NV.Value) &&
-                Convert.ToDateTime(param.FromDate_Str) <= x.Date &&
-                x.Date <= Convert.ToDateTime(param.ToDate_Str).AddDays(1)
+                x.Date.HasValue && fromDate.Date <= x.Date.Value.Date && x.Date.Value.Date <= toDate.Date
             ).AsNoTracking().ToListAsync();
             var donHang_ids = donHang.Select(x => x.ID);
             var chiTiet = await _repoAccessor.ChiTietDonHang.FindAll(x =>

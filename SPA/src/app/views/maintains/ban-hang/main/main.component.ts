@@ -31,12 +31,17 @@ export class MainComponent extends InjectBase implements OnInit {
     filterBy: '0',
     tinhTrang:'3',
     ma_DH: null,
-    payType: '3'
+    payType: '3',
+    dateType: '1'
   };
   tinhTrangList: KeyValuePair[] = [
     { key: '1', value: 'Đã Thanh Toán' },
     { key: '2', value: 'Chưa Thanh Toán' },
     { key: '3', value: 'Tất cả' },
+  ];
+  dateTypeList: KeyValuePair[] = [
+    { key: '1', value: 'Ngày Lập Đơn' },
+    { key: '2', value: 'Ngày Xuất Hàng' },
   ];
   thanhToanList: KeyValuePair[] = [
     { key: '1', value: 'Tiền Mặt' },
@@ -76,7 +81,8 @@ export class MainComponent extends InjectBase implements OnInit {
       loai: 2,
       payType: this.param.payType,
       tinhTrang: this.param.tinhTrang,
-      ma_DH: this.param.ma_DH
+      ma_DH: this.param.ma_DH,
+      dateType: this.param.dateType
       };
     this.donHangService.getDataPagination(filter).subscribe({
       next: (res) => {
@@ -99,7 +105,8 @@ export class MainComponent extends InjectBase implements OnInit {
       loai: 2,
       payType: this.param.payType,
       tinhTrang: this.param.tinhTrang,
-      ma_DH: this.param.ma_DH
+      ma_DH: this.param.ma_DH,
+      dateType: this.param.dateType
     };
     this.donHangService.excelExport(filter)
       .subscribe({
@@ -161,6 +168,7 @@ export class MainComponent extends InjectBase implements OnInit {
     this.param.ma_DH = null;
     this.param.filterBy = '0';
     this.param.tinhTrang = '3';
+    this.param.dateType = '1';
     this.search();
   }
 

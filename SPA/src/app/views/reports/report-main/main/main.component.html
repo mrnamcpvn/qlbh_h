@@ -103,6 +103,8 @@
                   <thead>
                     <tr>
                       <th class="text-center"
+                          rowSpan="2">Mã sản phẩm</th>
+                      <th class="text-center"
                           rowSpan="2">Tên sản phẩm</th>
                       <th class="text-center"
                           rowSpan="2">ĐVT</th>
@@ -128,8 +130,9 @@
                   </thead>
                   <tbody>
                     <tr *ngFor="let item of data.result">
+                      <td class="align-middle">{{item?.maSP}}</td>
                       <td class="align-middle">{{item?.ten_SP}}</td>
-                      <td class="align-middle">{{item?.dvt}}</td>
+                      <td class="text-right align-middle">{{item?.dvt}}</td>
                       <td class="text-right align-middle">{{item?.soLuongTonDau | number:'1.0-0' }}</td>
                       <td class="text-right align-middle">{{item?.giaTon | number:'1.0-0'}}</td>
                       <td class="text-right align-middle">{{item?.soLuongNhap | number:'1.0-0'}}</td>
@@ -140,7 +143,7 @@
                       <td class="text-right align-middle doanhthu">{{item?.doanhThu | number:'1.0-0'}}</td>
                     </tr>
                     <tr *ngIf="data.result?.length > 0" class="row-total">
-                      <td colspan="2">
+                      <td colspan="3">
                         <b>Tổng cộng:</b>
                       </td>
                       <td class="text-right">

@@ -16,11 +16,11 @@ import { NhanVien } from '@models/maintains/nhan-vien';
 import { NhanVienService } from '@services/nhan-vien.service';
 
 @Component({
-  selector: 'app-add-or-edit',
-  templateUrl: './add-or-edit.component.html',
-  styleUrls: ['./add-or-edit.component.scss']
+  selector: 'app-add',
+  templateUrl: './add.component.html',
+  styleUrls: ['./add.component.scss']
 })
-export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewInit {
+export class AddComponent extends InjectBase implements OnInit {
   iconButton = IconButton;
   bsConfig: Partial<BsDatepickerConfig> = <Partial<BsDatepickerConfig>>{
     dateInputFormat: 'DD/MM/YYYY'
@@ -40,7 +40,7 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
   idSP: number;
   tongTien: number;
   id: number;
-  type: string = 'add';
+  date: Date = new Date();
   dvt: string = '';
   constructor(
     private donHangService: DonHangService,
@@ -56,26 +56,6 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
     this.getAllNV();
     this.getAllSP();
     this.clear();
-  }
-
-  ngAfterViewInit(): void {
-    this.id = this.route.snapshot.params['id'];
-    if (this.id) {
-      this.type = 'edit';
-      this.getDetail();
-    }
-  }
-
-  getDetail() {
-    // this.chamcongService.getDetail(this.id)
-    //   .subscribe({
-    //     next: res => {
-    //       this.data = res;
-    //       this.data.date = new Date(res.date);
-    //       this.idMH = this.data.idMaHang;
-    //       this.getAllCD(this.idMH);
-    //     }
-    //   })
   }
 
   getAllKH() {
@@ -100,7 +80,7 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
 
   mhChanges(id) {
     this.clearSP();
-    let item = this.sanPhams.find(x=>x.id == id);
+    let item = this.sanPhams.find(x => x.id == id);
     this.giaSP = item.gia;
     this.tenSP = item.ten;
     this.chiTiet.ten_SP = item.ten;
@@ -108,7 +88,7 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
     this.slMax = item.soLuong;
     this.dvt = item.dvt;
   }
-  clearSP(){
+  clearSP() {
     this.giaSP = null;
     this.tenSP = '';
     this.chiTiet.ten_SP = '';
@@ -126,10 +106,6 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
   }
 
   add() {
-    if (!this.iD_NV) {
-      this.snotifyService.warning('Vui lòng chọn nhân viên!', 'Cảnh báo');
-      return;
-    }
     if (this.chiTiet.soLuong > this.slMax) {
       let text = '';
       this.slMax ? text += "Số lượng trong kho chỉ còn " + this.slMax + " " + this.dvt : text += "Không có trong kho"
@@ -139,16 +115,14 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
       this.chiTiet.dvt = this.dvt;
       this.chiTiet.thanhTien = this.chiTiet.soLuong * this.chiTiet.gia;
 
-      if (this.listChiTiet.some(x => x.iD_SP == this.chiTiet.iD_SP))
+      const existingItem = this.listChiTiet.find(x => x.iD_SP == this.chiTiet.iD_SP && x.gia == this.chiTiet.gia);
 
-        this.listChiTiet.map(x => {
-          if (x.iD_SP == this.chiTiet.iD_SP) {
-            x.soLuong += this.chiTiet.soLuong;
-            x.thanhTien = x.soLuong * x.gia;
-          }
-        })
-      else this.listChiTiet.push(this.chiTiet)
-
+      if (existingItem) {
+        existingItem.soLuong += this.chiTiet.soLuong;
+        existingItem.thanhTien = existingItem.soLuong * existingItem.gia;
+      } else {
+        this.listChiTiet.push({ ...this.chiTiet });
+      }
 
       this.tongTien = this.listChiTiet.reduce((tt, item) => {
         return tt + (item.gia * item.soLuong);
@@ -162,11 +136,12 @@ export class AddOrEditComponent extends InjectBase implements OnInit, AfterViewI
   }
 
   create(type: string) {
-    this.data.ten_KH = this.khachHangs.find(x => x.id == this.data.iD_KH).ten;
     this.data.tongTien = this.tongTien;
     this.data.loai = 2;
     this.data.iD_NV = this.iD_NV;
     this.data.chitiet = this.listChiTiet;
+    if (this.date)
+      this.data.date_Str = this.functionUtility.getDateFormat(this.date)
     this.donHangService.create(this.data).subscribe({
       next: (res) => {
         if (res) {

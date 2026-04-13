@@ -25,19 +25,6 @@
               <form class="form-group row p-2"
                     autocomplete="off"
                     #AddBHForm="ngForm">
-                <label for="ma_DH"
-                       class="col-sm-2 col-form-label lb form-group required control-label">Mã hóa đơn
-                  <i class="i-required">*</i></label>
-                <div class="col-sm-4">
-                  <input class="form-control"
-                         name="ma_DH"
-                         type="text"
-                         [(ngModel)]="data.ma_DH"
-                         placeholder="Mã hóa đơn"
-                         [maxLength]="20"
-                         required>
-                </div>
-                <div class="col-sm-6"></div>
                 <label for="khach-hang"
                        class="col-sm-2 col-form-label lb form-group required control-label">Khách hàng
                   <i class="i-required">*</i></label>
@@ -53,10 +40,9 @@
                 </div>
                 <label for="nhan-vien"
                        class="col-sm-2 col-form-label lb form-group required control-label">Nhân Viên BH
-                  <i class="i-required">*</i></label>
+                </label>
                 <div class="col-sm-4">
                   <ng-select name="nhan-vien"
-                             required
                              [items]="nhanViens"
                              bindLabel="ten"
                              bindValue="id"
@@ -77,6 +63,23 @@
                              bindValue="id"
                              placeholder="Chọn sản phẩm">
                   </ng-select>
+                </div>
+                <label for="date"
+                       class="col-sm-2 col-form-label lb form-group required control-label">Ngày Xuất
+                </label>
+                <div class="col-sm-4">
+                  <div class="input-group mr-1">
+                    <input type="text"
+                           placeholder="Chọn ngày xuất"
+                           name="date"
+                           [bsConfig]="bsConfig"
+                           class="form-control"
+                           bsDatepicker
+                           [(ngModel)]="date">
+                    <div class="input-group-append">
+                      <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
+                    </div>
+                  </div>
                 </div>
                 <label for="SanPham"
                        class="col-sm-2 col-form-label lb form-group required control-label">Tên sản phẩm
@@ -184,7 +187,7 @@
               <button type="button"
                       class="btn btn-success mr-2"
                       (click)="update()"
-                      [disabled]="!data.iD_KH || listChiTiet.length < 1">
+                      [disabled]="!data.iD_KH || listChiTiet.length == 0">
                 <i class="{{iconButton.SAVE}}"></i>
                 Lưu
               </button>

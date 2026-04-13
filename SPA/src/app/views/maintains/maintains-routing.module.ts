@@ -11,6 +11,10 @@ const routes: Routes = [
     loadChildren: () => import('./khach-hang/kh.module').then(m => m.KhachHangModule)
   },
   {
+    path: 'nha-cung-cap',
+    loadChildren: () => import('./nha-cung-cap/ncc.module').then(m => m.NhaCungCapModule)
+  },
+  {
     path: 'san-pham',
     loadChildren: () => import('./san-pham/sp.module').then(m => m.SanPhamModule)
   },

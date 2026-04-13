@@ -18,8 +18,18 @@
             </div>
             <form class="form-group row"
                   autocomplete="off">
-              <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                <label class="badge badge-warning">Lọc theo:</label>
+              <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+                <label class="badge badge-warning">Ngày lọc :</label>
+                <ng-select name="dateType"
+                           [(ngModel)]="param.dateType"
+                           (clear)="param.dateType = '1'"
+                           [clearable]="param.dateType != '1'">
+                  <ng-option *ngFor="let item of dateTypeList"
+                             [value]="item.key">{{ item.value }}</ng-option>
+                </ng-select>
+              </div>
+              <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+                <label class="badge badge-warning">Lọc theo :</label>
                 <ng-select name="filterBy"
                            [(ngModel)]="param.filterBy"
                            (ngModelChange)="onFilterByChange()"
@@ -29,9 +39,9 @@
                              [value]="item.key">{{ item.value }}</ng-option>
                 </ng-select>
               </div>
-              <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+              <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                 <label class="badge badge-warning">
-                  Ngày:
+                  Ngày :
                 </label>
                 <div class="full-width">
                   <div class="container_date">
@@ -70,7 +80,7 @@
               </div>
               <div class="col-12">
                 <div class="row">
-                  <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+                  <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
                     <label class="badge badge-warning"> Thanh Toán: </label>
                     <div class="row pl-4 pr-4">
                       <div *ngFor="let item of thanhToanList; index as i">
@@ -97,7 +107,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                  <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                     <label class="badge badge-warning"> Tình Trạng: </label>
                     <div class="row pl-4 pr-4">
                       <div *ngFor="let item of tinhTrangList; index as i">
@@ -157,8 +167,9 @@
                   <thead>
                     <tr>
                       <th class="text-center">Stt</th>
+                      <th class=" text-center">Nhà cung cấp</th>
+                      <th class="text-center">Ngày nhập</th>
                       <th class="text-center">Ngày lập</th>
-                      <th class=" text-center">Khách hàng</th>
                       <th class=" text-center">Tổng tiền</th>
                       <th class=" text-center col-payment">Thanh toán</th>
                       <th class=" text-center">Tình trạng</th>
@@ -168,8 +179,9 @@
                   <tbody>
                     <tr *ngFor="let item of data; let i = index">
                       <td class="col-stt">{{ ((pagination.pageNumber - 1) * pagination.pageSize) + i + 1 }}</td>
-                      <td class="col-date">{{item.date | date: 'dd/MM/YYYY hh:mm:ss'}}</td>
-                      <td class="align-middle">{{item.ten_KH}}</td>
+                      <td class="align-middle">{{item.ten_NCC}}</td>
+                      <td class="col-date">{{item.date | date: 'dd/MM/YYYY'}}</td>
+                      <td class="col-date">{{item.create_Time | date: 'dd/MM/YYYY hh:mm:ss'}}</td>
                       <td class="text-right">{{item.tongTien | number}} VNĐ</td>
 
                       <td class="align-middle">
@@ -213,7 +225,7 @@
                     </tr>
                     <tr *ngIf="data?.length > 0"
                         class="row-total">
-                      <td colspan="3"> <b>Tổng tiền: </b> </td>
+                      <td colspan="4"> <b>Tổng tiền: </b> </td>
                       <td class="text-right"><b>{{tongTien | number}} VNĐ</b></td>
                       <td colspan="3"></td>
                     </tr>

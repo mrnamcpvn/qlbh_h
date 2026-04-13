@@ -16,6 +16,7 @@ namespace API.Data
         }
 
 
+        public virtual DbSet<NhaCungCap> NhaCungCap { get; set; }
         public virtual DbSet<KhachHang> KhachHang { get; set; }
         public virtual DbSet<SanPham> SanPham { get; set; }
         public virtual DbSet<DonHang> DonHang { get; set; }

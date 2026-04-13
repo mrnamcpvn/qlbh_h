@@ -17,6 +17,7 @@ namespace API.Configurations
             services.AddScoped<I_Auth, S_Auth>();
             services.AddScoped<I_DonHang, S_DonHang>();
             services.AddScoped<I_CommodityCode, S_CommodityCode>();
+            services.AddScoped<I_NhaCungCap, S_NhaCungCap>();
             services.AddScoped<I_KhachHang, S_KhachHang>();
             services.AddScoped<I_SanPham, S_SanPham>();
             services.AddScoped<I_User, S_User>();

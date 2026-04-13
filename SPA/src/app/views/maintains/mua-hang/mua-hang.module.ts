@@ -9,7 +9,7 @@ import {PaginationModule} from "ngx-bootstrap/pagination";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxPrintModule} from 'ngx-print';
 import {BsDatepickerModule} from "ngx-bootstrap/datepicker";
-import { AddOrEditComponent } from './add/add-or-edit.component';
+import { AddComponent } from './add/add.component';
 import { ChiTietComponent } from './chi-tiet/chi-tiet.component';
 import { EditComponent} from './edit/edit.component';
 import { ModelThanhToanComponent } from './model-thanh-toan/model-thanh-toan.component';
@@ -17,9 +17,9 @@ import { ModelThanhToanComponent } from './model-thanh-toan/model-thanh-toan.com
 @NgModule({
   declarations: [
     MainComponent,
-    AddOrEditComponent,
+    AddComponent,
     ChiTietComponent,
-    EditComponent,  
+    EditComponent,
     ModelThanhToanComponent],
   imports: [
     CommonModule,

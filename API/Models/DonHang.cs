@@ -7,8 +7,6 @@ namespace API.Models
     {
         [Key]
         public int ID { get; set; }
-        public int ID_KH { get; set; }
-        public string Ten_KH { get; set; }
         public int? Loai { get; set; }
         [Column(TypeName = "decimal(18, 0)")]
         public decimal? TongTien { get; set; }
@@ -16,8 +14,11 @@ namespace API.Models
         public decimal? TienMat { get; set; }
         [Column(TypeName = "decimal(18, 0)")]
         public decimal? ChuyenKhoan { get; set; }
-        public DateTime? Date { get; set; }
         public int? ID_NV { get; set; }
         public string Ma_DH { get; set; }
+        public DateTime? Date { get; set; }
+        public DateTime? Create_Time { get; set; }
+        public int? ID_KH { get; set; }
+        public int? ID_NCC { get; set; }
     }
 }

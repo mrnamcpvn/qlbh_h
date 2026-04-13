@@ -12,13 +12,15 @@ import { KhachHangService } from '@services/khach-hang.service';
 import { InjectBase } from '@utilities/inject-base-app';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { KeyValuePair } from '@utilities/key-value-pair';
+import { NhaCungCap } from '@models/maintains/nha-cung-cap';
+import { NhaCungCapService } from '@services/nha-cung-cap.service';
 
 @Component({
-  selector: 'app-add-or-edit',
-  templateUrl: './add-or-edit.component.html',
-  styleUrls: ['./add-or-edit.component.scss']
+  selector: 'app-add',
+  templateUrl: './add.component.html',
+  styleUrls: ['./add.component.scss']
 })
-export class AddOrEditComponent extends InjectBase implements OnInit {
+export class AddComponent extends InjectBase implements OnInit {
   iconButton = IconButton;
   bsConfig: Partial<BsDatepickerConfig> = <Partial<BsDatepickerConfig>>{
     dateInputFormat: 'DD/MM/YYYY'
@@ -27,7 +29,7 @@ export class AddOrEditComponent extends InjectBase implements OnInit {
   data: DonHangDTO = <DonHangDTO>{};
   chiTiet: ChiTietDonHang = <ChiTietDonHang>{}
   listChiTiet: ChiTietDonHang[] = [];
-  khachHangs: KhachHang[] = [];
+  nhaCungCaps: NhaCungCap[] = [];
   sanPhams: SanPham[] = [];
   tenSP: string = '';
   giaSP: number;
@@ -35,18 +37,18 @@ export class AddOrEditComponent extends InjectBase implements OnInit {
   idSP: number;
   tongTien: number;
   id: number;
-  type: string = 'add';
   dvt: string = '';
+  date: Date = new Date();
   constructor(
     private donHangService: DonHangService,
-    private khService: KhachHangService,
+    private service: NhaCungCapService,
     private spService: SanPhamService,
     private route: ActivatedRoute) {
     super();
   }
 
   ngOnInit() {
-    this.getAllKH();
+    this.getAllNCC();
     this.getAllSP();
     this.clear();
   }
@@ -64,10 +66,10 @@ export class AddOrEditComponent extends InjectBase implements OnInit {
     //   })
   }
 
-  getAllKH() {
-    this.khService.getAll().subscribe({
+  getAllNCC() {
+    this.service.getAll().subscribe({
       next: (res) => {
-        this.khachHangs = res;
+        this.nhaCungCaps = res;
       }
     })
   }
@@ -78,20 +80,20 @@ export class AddOrEditComponent extends InjectBase implements OnInit {
 
   mhChanges(id) {
     this.clearSP();
-    let item = this.sanPhams.find(x=>x.id == id);
+    let item = this.sanPhams.find(x => x.id == id);
     this.giaSP = item.gia;
     this.tenSP = item.ten;
     this.chiTiet.ten_SP = item.ten;
     this.chiTiet.iD_SP = item.id;
     this.dvt = item.dvt;
   }
-clearSP(){
+  clearSP() {
     this.giaSP = null;
     this.tenSP = '';
     this.chiTiet.ten_SP = '';
     this.chiTiet.iD_SP = null;
     this.dvt = '';
-  }  
+  }
 
   getAllSP() {
     this.spService.getAll().subscribe({
@@ -105,31 +107,31 @@ clearSP(){
     this.chiTiet.gia = this.giaSP;
     this.chiTiet.dvt = this.dvt;
     this.chiTiet.thanhTien = this.chiTiet.soLuong * this.chiTiet.gia;
-    if(this.listChiTiet.some(x => x.iD_SP == this.chiTiet.iD_SP))
 
-      this.listChiTiet.map(x => {
-        if(x.iD_SP == this.chiTiet.iD_SP){
-          x.soLuong += this.chiTiet.soLuong;
-          x.thanhTien = x.soLuong * x.gia;
-        }
-    })
-    else this.listChiTiet.push(this.chiTiet)
+    const existingItem = this.listChiTiet.find(x => x.iD_SP == this.chiTiet.iD_SP && x.gia == this.chiTiet.gia);
 
+    if (existingItem) {
+      existingItem.soLuong += this.chiTiet.soLuong;
+      existingItem.thanhTien = existingItem.soLuong * existingItem.gia;
+    } else {
+      this.listChiTiet.push({ ...this.chiTiet });
+    }
 
     this.tongTien = this.listChiTiet.reduce((tt, item) => {
       return tt + (item.gia * item.soLuong);
-    },0)
+    }, 0)
     this.idSP = null;
     this.tenSP = '';
     this.giaSP = null;
     this.chiTiet = <ChiTietDonHang>{};
   }
 
-  create(type: string) {
-    this.data.ten_KH = this.khachHangs.find(x=> x.id == this.data.iD_KH).ten;
+  create() {
     this.data.tongTien = this.tongTien;
     this.data.loai = 1;
     this.data.chitiet = this.listChiTiet;
+    if (this.date)
+      this.data.date_Str = this.functionUtility.getDateFormat(this.date)
     this.donHangService.create(this.data).subscribe({
       next: (res) => {
         if (res) {
@@ -141,20 +143,6 @@ clearSP(){
           this.snotifyService.success('Thêm đơn hàng không thành công', 'Lỗi');
       }
     })
-  }
-
-  update() {
-    // this.data.date = this.functionUtility.getUTCDate(new Date(this.data.date));
-    // this.chamcongService.update(this.data).subscribe({
-    //   next: (res) => {
-    //     if (res) {
-    //       this.snotifyService.success('Sửa công thành công', 'Thành công');
-    //       this.back();
-    //     }
-    //     else
-    //       this.snotifyService.success('Sửa công không thành công', 'Lỗi');
-    //   }
-    // })
   }
 
   checktime() {

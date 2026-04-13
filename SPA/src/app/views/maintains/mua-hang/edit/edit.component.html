@@ -26,16 +26,16 @@
                     autocomplete="off"
                     #AddBHForm="ngForm">
                 <label for="khach-hang"
-                       class="col-sm-2 col-form-label lb form-group required control-label">Khách hàng
+                       class="col-sm-2 col-form-label lb form-group required control-label">Nhà Cung Cấp
                   <i class="i-required">*</i></label>
                 <div class="col-sm-4">
                   <ng-select name="khach-hang"
                              required
-                             [items]="khachHangs"
+                             [items]="nhaCungCaps"
                              bindLabel="ten"
                              bindValue="id"
-                             [(ngModel)]="data.iD_KH"
-                             placeholder="Chọn Khách Hàng">
+                             [(ngModel)]="data.iD_NCC"
+                             placeholder="Chọn Nhà Cung Cấp">
                   </ng-select>
                 </div>
                 <div class="col-sm-6"></div>
@@ -53,6 +53,23 @@
                              bindValue="id"
                              placeholder="Chọn sản phẩm">
                   </ng-select>
+                </div>
+                <label for="date"
+                       class="col-sm-2 col-form-label lb form-group required control-label">Ngày Nhập
+                </label>
+                <div class="col-sm-4">
+                  <div class="input-group mr-1">
+                    <input type="text"
+                           placeholder="Chọn ngày nhập"
+                           name="date"
+                           [bsConfig]="bsConfig"
+                           class="form-control"
+                           bsDatepicker
+                           [(ngModel)]="date">
+                    <div class="input-group-append">
+                      <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
+                    </div>
+                  </div>
                 </div>
                 <label for="SanPham"
                        class="col-sm-2 col-form-label lb form-group required control-label">Tên sản phẩm
@@ -161,7 +178,7 @@
               <button type="button"
                       class="btn btn-success mr-2"
                       (click)="update()"
-                      [disabled]="!data.iD_KH || listChiTiet.length < 1">
+                      [disabled]="!data.iD_NCC || listChiTiet.length == 0">
                 <i class="{{iconButton.SAVE}}"></i>
                 Lưu
               </button>

@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AddOrEditComponent } from './add-or-edit/add-or-edit.component';
+import { AddComponent } from './add-or-edit/add.component';
 import {MainComponent} from "./main/main.component";
 import { ChiTietComponent } from "./chi-tiet/chi-tiet.component"
 import { EditComponent } from './edit/edit.component';
@@ -15,7 +15,7 @@ const routes: Routes = [
   },
   {
     path: 'add',
-    component: AddOrEditComponent,
+    component: AddComponent,
     data: {
       title: 'Thêm mới đơn hàng'
     }

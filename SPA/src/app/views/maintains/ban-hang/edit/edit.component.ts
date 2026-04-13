@@ -43,6 +43,7 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
   tongTien: number;
   slMax: number | null = null;
   id: number;
+  date: Date;
   type: string = 'add';
   dvt: string = '';
   modalRef?: BsModalRef;
@@ -59,11 +60,13 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
   ngOnInit() {
     this.donHangService.current_DH.subscribe({
       next: res => {
-        if(res){
+        if (res) {
           this.donHang = res;
           this.data.iD_KH = res.iD_KH;
           this.data.iD_NV = res.iD_NV;
           this.data.ma_DH = res.ma_DH;
+          if (res.date)
+            this.date = new Date(res.date);
           this.tongTien = res.tongTien;
         }
 
@@ -88,7 +91,7 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
     this.donHangService.getDetail(this.id).subscribe({
       next: res => {
         this.listChiTiet = res;
-       // this.tongSL = this.listChiTiet.reduce((x, y) => x + y.soLuong, 0);
+        // this.tongSL = this.listChiTiet.reduce((x, y) => x + y.soLuong, 0);
       }
     })
   }
@@ -110,7 +113,7 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
 
   mhChanges(id) {
     this.clearSP();
-    let item = this.sanPhams.find(x=>x.id == id);
+    let item = this.sanPhams.find(x => x.id == id);
     this.giaSP = item.gia;
     this.tenSP = item.ten;
     this.chiTiet.ten_SP = item.ten;
@@ -118,7 +121,7 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
     this.dvt = item.dvt;
     this.slMax = item.soLuong;
   }
-  clearSP(){
+  clearSP() {
     this.giaSP = null;
     this.tenSP = '';
     this.chiTiet.ten_SP = '';
@@ -139,22 +142,19 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
     this.chiTiet.gia = this.giaSP;
     this.chiTiet.dvt = this.dvt;
     this.chiTiet.thanhTien = this.chiTiet.soLuong * this.chiTiet.gia;
-    if(this.listChiTiet.some(x => x.iD_SP == this.chiTiet.iD_SP))
 
-      this.listChiTiet.map(x => {
-        if(x.iD_SP == this.chiTiet.iD_SP){
-          x.soLuong += this.chiTiet.soLuong;
-          let text = '';
-          this.slMax ? text += "Số lượng trong kho chỉ còn " + this.slMax + " " + this.dvt : text += "Không có trong kho"
-          x.thanhTien = x.soLuong * x.gia;
-        }
-    })
-    else this.listChiTiet.push(this.chiTiet)
+    const existingItem = this.listChiTiet.find(x => x.iD_SP == this.chiTiet.iD_SP && x.gia == this.chiTiet.gia);
 
+    if (existingItem) {
+      existingItem.soLuong += this.chiTiet.soLuong;
+      existingItem.thanhTien = existingItem.soLuong * existingItem.gia;
+    } else {
+      this.listChiTiet.push({ ...this.chiTiet });
+    }
 
     this.tongTien = this.listChiTiet.reduce((tt, item) => {
       return tt + (item.gia * item.soLuong);
-    },0)
+    }, 0)
     this.idSP = null;
     this.tenSP = '';
     this.giaSP = null;
@@ -165,10 +165,11 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
   update() {
     this.data.id = this.donHang.id;
     this.data.loai = this.donHang.loai;
-    this.data.ten_KH = this.khachHangs.find(x=> x.id == this.data.iD_KH).ten;
     this.data.tongTien = this.tongTien;
     this.data.ma_DH = this.donHang.ma_DH;
     this.data.chitiet = this.listChiTiet;
+    if (this.date)
+      this.data.date_Str = this.functionUtility.getDateFormat(this.date)
     this.donHangService.update(this.data).subscribe({
       next: (res) => {
         if (res) {
@@ -191,18 +192,18 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
   }
 
   deleteItem(item: ChiTietDonHang) {
-    this.snotifyService.confirm("Bạn có chắc chắc muốn xóa?","Xóa",
-      ()=> {
+    this.snotifyService.confirm("Bạn có chắc chắc muốn xóa?", "Xóa",
+      () => {
 
         this.donHangService.deleteItem(item.id).subscribe({
           next: (res) => {
-            if(res) {
+            if (res) {
               this.snotifyService.success("Xóa thành công", "Thành công");
-              this.listChiTiet = this.listChiTiet.filter(x=> x!= item);
+              this.listChiTiet = this.listChiTiet.filter(x => x != item);
               this.tongTien = this.listChiTiet.reduce((tt, item) => {
                 return tt + (item.gia * item.soLuong);
-              },0)
-            }else this.snotifyService.warning("Xóa không thành công", "Cảnh báo");
+              }, 0)
+            } else this.snotifyService.warning("Xóa không thành công", "Cảnh báo");
           },
           error: (err) => this.snotifyService.error(err, "Lỗi")
         })
@@ -215,13 +216,13 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
     this.chiTiet = { ...item };
     this.modalRef = this.modalService.show(template);
   }
-  cancel(){
+  cancel() {
     this.modalRef.hide();
   }
 
-  saveModal(){
-    this.listChiTiet.map(x=> {
-      if(x.id == this.chiTiet.id) {
+  saveModal() {
+    this.listChiTiet.map(x => {
+      if (x.id == this.chiTiet.id) {
         x.gia = this.chiTiet.gia;
         x.soLuong = this.chiTiet.soLuong;
         x.thanhTien = x.gia * x.soLuong;
@@ -229,8 +230,7 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
     })
     this.tongTien = this.listChiTiet.reduce((tt, item) => {
       return tt + (item.gia * item.soLuong);
-    },0)
-    this.donHang.ten_KH = this.data.ten_KH;
+    }, 0)
     this.donHang.tongTien = this.tongTien;
     this.donHangService.changeSDonHang(this.donHang)
     this.modalRef?.hide();

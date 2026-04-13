@@ -138,7 +138,8 @@ app-header {
         color: $primary;
       }
 
-      i, .fa {
+      i,
+      .fa {
         font-size: 1rem;
         width: 20px;
         text-align: center;
@@ -150,8 +151,14 @@ app-header {
 }
 
 @keyframes dropdownFade {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 // Sidebar
@@ -298,14 +305,17 @@ app-sidebar,
       letter-spacing: -0.01em;
     }
 
-    .close, .btn-close {
-        color: $primary !important;
-        opacity: 0.8;
-        padding: 1rem;
-        margin: -1rem -1rem -1rem auto;
-        text-shadow: none;
-        outline: none !important;
-        &:hover { opacity: 1; }
+    .close,
+    .btn-close {
+      color: $primary !important;
+      opacity: 0.8;
+      padding: 1rem;
+      margin: -1rem -1rem -1rem auto;
+      text-shadow: none;
+      outline: none !important;
+      &:hover {
+        opacity: 1;
+      }
     }
   }
 
@@ -319,7 +329,7 @@ app-sidebar,
     padding: 0.85rem 1.5rem;
 
     .btn {
-        margin-left: 0.5rem;
+      margin-left: 0.5rem;
     }
   }
 }
@@ -329,24 +339,26 @@ app-sidebar,
   background-color: rgba(black, 0.4) !important;
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
-  &.show { opacity: 1 !important; }
+  &.show {
+    opacity: 1 !important;
+  }
 }
 
 // Input Groups in Modals
 .modal .input-group {
-    background: #fff;
-    border-radius: 8px;
+  background: #fff;
+  border-radius: 8px;
 
-    .input-group-text {
-        background: #f8f9fa !important;
-        border-color: #adb5bd !important;
-        color: $text-main;
-        font-weight: 600;
-    }
+  .input-group-text {
+    background: #f8f9fa !important;
+    border-color: #adb5bd !important;
+    color: $text-main;
+    font-weight: 600;
+  }
 
-    .form-control {
-        border-color: #adb5bd !important;
-    }
+  .form-control {
+    border-color: #adb5bd !important;
+  }
 }
 
 // Inputs: Eye-friendly
@@ -546,8 +558,14 @@ table.table {
     min-width: 250px; // Ensure 3 buttons fit on one line
   }
 
-  .col-stt { width: 40px; text-align: center; }
-  .col-date { width: 140px; text-align: center; }
+  .col-stt {
+    width: 40px;
+    text-align: center;
+  }
+  .col-date {
+    width: 140px;
+    text-align: center;
+  }
   .col-payment {
     min-width: 220px;
     white-space: nowrap !important;
@@ -643,4 +661,60 @@ a {
       width: (100% / 12) * $i;
     }
   }
+}
+.custom-print-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+  font-size: 24px;
+  color: #000;
+    font-weight: bold;
+
+  th,
+  td {
+    border: 2px solid #333;
+    padding: 8px 10px;
+    vertical-align: middle;
+  }
+
+  thead th {
+    background-color: #f2f2f2;
+    text-align: center;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .text-right {
+    text-align: right;
+  }
+
+  tbody tr {
+    &:nth-child(even) {
+      background-color: #fafafa;
+    }
+  }
+}
+.title-font {
+  font-size: 28px;
+  font-weight: bold;
+}
+.brand-font {
+  font-size: 28px;
+  font-weight: bold;
+}
+.address-font {
+  font-size: 22px;
+  font-weight: bold;
+}
+.info-font {
+  font-size: 26px;
+  font-weight: bold;
+}
+.text-font {
+  font-size: 22px;
+}
+.total-font {
+  font-size: 26px;
 }

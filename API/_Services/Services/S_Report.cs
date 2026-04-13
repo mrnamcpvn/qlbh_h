@@ -32,14 +32,14 @@ namespace API._Services.Services
             List<Cell> cells = new()
             {
                 new Cell("A2", $"Từ ngày {Convert.ToDateTime(param.FromDate):dd/MM/yyyy} đến ngày {Convert.ToDateTime(param.ToDate):dd/MM/yyyy}"),
-                new Cell($"D{5 + data.Result.Count}", data.Tong_SoLuongTonDau),
-                new Cell($"E{5 + data.Result.Count}", data.Tong_GiaTon),
-                new Cell($"F{5 + data.Result.Count}", data.Tong_SoLuongNhap),
-                new Cell($"G{5 + data.Result.Count}", data.Tong_TongTienNhap),
-                new Cell($"H{5 + data.Result.Count}", data.Tong_SoLuongXuat),
-                new Cell($"I{5 + data.Result.Count}", data.Tong_TongTienXuat),
-                new Cell($"J{5 + data.Result.Count}", data.Tong_SoLuongTonCuoi),
-                new Cell($"K{5 + data.Result.Count}", data.Tong_DoanhThu),
+                new Cell($"E{5 + data.Result.Count}", data.Tong_SoLuongTonDau),
+                new Cell($"F{5 + data.Result.Count}", data.Tong_GiaTon),
+                new Cell($"G{5 + data.Result.Count}", data.Tong_SoLuongNhap),
+                new Cell($"H{5 + data.Result.Count}", data.Tong_TongTienNhap),
+                new Cell($"I{5 + data.Result.Count}", data.Tong_SoLuongXuat),
+                new Cell($"J{5 + data.Result.Count}", data.Tong_TongTienXuat),
+                new Cell($"K{5 + data.Result.Count}", data.Tong_SoLuongTonCuoi),
+                new Cell($"L{5 + data.Result.Count}", data.Tong_DoanhThu),
             };
             ExcelResult excelResult = ExcelUtility.DownloadExcel(tables, cells, pathFile);
             return new OperationResult(excelResult.IsSuccess, excelResult.Error, excelResult.Result);
@@ -53,7 +53,12 @@ namespace API._Services.Services
 
         private async Task<Report_Data> GetDataQuery(ReportParam param)
         {
-            var predicate = PredicateBuilder.New<DonHang>(x => Convert.ToDateTime(param.FromDate) <= x.Date && x.Date <= Convert.ToDateTime(param.ToDate).AddDays(1));
+            var fromDate = Convert.ToDateTime(param.FromDate);
+            var toDate = Convert.ToDateTime(param.ToDate);
+            var predicate = PredicateBuilder.New<DonHang>(x =>
+                x.Date.HasValue &&
+                fromDate.Date <= x.Date.Value.Date &&
+                x.Date.Value.Date <= toDate.Date);
             var predicateChiTiet = PredicateBuilder.New<ChiTietDonHang>(true);
             if (param.ID_SP > 0)
                 predicateChiTiet.And(x => x.ID_SP == param.ID_SP);
@@ -69,6 +74,7 @@ namespace API._Services.Services
                 .Select(x => new Report
                 {
                     ID_SP = x.ct.ID_SP,
+                    MaSP = x.sp.MaSP,
                     Ten_SP = x.sp.Ten,
                     DVT = x.sp.Dvt,
                     Gia = x.ct.Gia,
@@ -88,6 +94,7 @@ namespace API._Services.Services
                     {
                         Stt = i + 1,
                         ID_SP = item.Key,
+                        MaSP = firstItem?.MaSP ?? "",
                         Ten_SP = firstItem?.Ten_SP ?? "",
                         DVT = firstItem?.DVT ?? "",
                         GiaTon = t != null ? t.Gia : 0,
