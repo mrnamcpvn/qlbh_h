@@ -20,6 +20,7 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
   tongSL: number;
   donHang: DonHang;
   listChiTiet: ChiTietDonHang[] = [];
+  listChiTietGrouped: any[] = [];
   cuaHang: CuaHang = <CuaHang>{};
   get printDate() {
     if (this.donHang.date) {
@@ -57,9 +58,26 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
     this.donHangService.getDetail(this.id).subscribe({
       next: res => {
         this.listChiTiet = res;
+        this.groupChiTiet();
         this.tongSL = this.listChiTiet.reduce((x, y) => x + y.soLuong, 0);
       }
     })
+  }
+
+  groupChiTiet() {
+    const grouped = new Map<number, any>();
+    this.listChiTiet.forEach(item => {
+      const key = item.iD_SP;
+      if (grouped.has(key)) {
+        const existing = grouped.get(key);
+        existing.soLuong += item.soLuong;
+        existing.thanhTien += item.thanhTien;
+      } else {
+        grouped.set(key, { ...item });
+      }
+    });
+    this.listChiTietGrouped = Array.from(grouped.values());
+    this.listChiTietGrouped.forEach((item, index) => item.stt = index + 1);
   }
 
   update() {

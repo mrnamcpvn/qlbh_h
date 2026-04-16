@@ -88,7 +88,7 @@
                   <input type="number"
                          class="form-control"
                          id="quantity"
-                         [(ngModel)]="chiTiet.soLuong"
+                         [(ngModel)]="soLuong"
                          name="quantity"
                          autocomplete="off"
                          min="0"
@@ -96,8 +96,15 @@
                          placeholder="Số lượng"
                          required>
                 </div>
+                <label class="col-sm-2 col-form-label lb">Tồn kho</label>
+                <div class="col-sm-4">
+                  <input type="text"
+                         class="form-control"
+                         [value]="slMax != null ? slMax + ' ' + dvt : ''"
+                         disabled>
+                </div>
                 <label for="gia"
-                       class="col-sm-2 col-form-label lb form-group required control-label">Giá bán
+                       class="col-sm-2 col-form-label lb form-group required control-label">Giá mua
                   <i class="i-required">*</i></label>
                 <div class="col-sm-4">
                   <input type="number"
@@ -132,24 +139,33 @@
                       <th class="text-center">Stt</th>
                       <th class="text-center">Tên sản phẩm</th>
                       <th class="text-center">Đơn vị tính</th>
-                      <th class=" text-center">Số lượng</th>
-                      <th class=" text-center">Giá mua</th>
-                      <th class=" text-center">Thành tiền</th>
+                      <th class="text-center">Số lượng</th>
+                      <th class="text-center">Giá mua</th>
+                      <th class="text-center">Thành tiền</th>
+                      <th class="text-center">Hàng động</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr *ngFor="let item of listChiTiet; let i = index">
-                      <td>{{ i + 1 }}</td>
+                    <tr *ngFor="let item of listChiTiet">
+                      <td class="text-center">{{ item.stt }}</td>
                       <td>{{item.ten_SP}}</td>
-                      <td>{{item.dvt}}</td>
-                      <td>{{item.soLuong}}</td>
-                      <td>{{item.gia}}</td>
-                      <td>{{item.thanhTien | number}}</td>
+                      <td class="text-center">{{item.dvt}}</td>
+                      <td class="text-center">{{item.soLuong}}</td>
+                      <td class="text-right">{{item.gia | number}}</td>
+                      <td class="text-right">{{item.thanhTien | number}}</td>
+                      <td class="col-action">
+                        <button type="button" (click)="openModal(editModal, item)" class="btn btn-warning btn-sm">
+                          <i class="fa fa-edit"></i>&nbsp;Sửa
+                        </button>
+                        <button type="button" (click)="deleteItem(item)" class="btn btn-danger btn-sm ml-2">
+                          <i class="fa fa-trash-o"></i>&nbsp;Xóa
+                        </button>
+                      </td>
                     </tr>
                     <tr>
-
                       <td colspan="5"> <b>Tổng tiền: </b> </td>
-                      <td>{{tongTien | number}}</td>
+                      <td class="text-right">{{tongTien | number}}</td>
+                      <td></td>
                     </tr>
 
                   </tbody>
@@ -175,3 +191,69 @@
     </div>
   </div>
 </div>
+<ng-template #editModal>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Sửa số lượng / giá</h4>
+    <button type="button"
+            class="btn-close close pull-right"
+            aria-label="Close"
+            (click)="modalRef?.hide()">
+      <span aria-hidden="true"
+            class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal"
+          #EditSLForm="ngForm"
+          autocomplete="off">
+      <div class="form-group row p-2">
+        <label for="name"
+               class="col-sm-4 col-form-label lb form-group required control-label">
+          Tên Sản Phẩm
+        </label>
+        <div class="col-sm-8">
+          <input type="text"
+                 [(ngModel)]="chiTiet.ten_SP"
+                 name="name"
+                 class="form-control"
+                 id="name"
+                 readonly />
+        </div>
+        <label for="gia"
+               class="col-sm-4 col-form-label lb form-group required control-label">Giá</label>
+        <div class="col-sm-8">
+          <input type="number"
+                 step="1"
+                 [(ngModel)]="chiTiet.gia"
+                 name="gia"
+                 class="form-control"
+                 id="gia"
+                 min="0"
+                 required />
+        </div>
+        <label for="soLuong"
+               class="col-sm-4 col-form-label lb form-group required control-label">Số lượng</label>
+        <div class="col-sm-8">
+          <input type="number"
+                 step="1"
+                 [(ngModel)]="chiTiet.soLuong"
+                 name="soLuong"
+                 class="form-control"
+                 id="soLuong"
+                 min="0"
+                 required />
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button"
+            class="btn btn-danger text-white"
+            (click)="cancel()"><i class="fa fa-ban"></i>
+      Hủy</button>
+    <button type="button"
+            class="btn btn-success text-white"
+            (click)="saveModal()"
+            [disabled]="!EditSLForm.valid"><i class="fa fa-check"></i> Lưu lại</button>
+  </div>
+</ng-template>

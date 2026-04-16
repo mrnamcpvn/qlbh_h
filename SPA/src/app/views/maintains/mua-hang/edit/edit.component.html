@@ -88,7 +88,7 @@
                   <input type="number"
                          class="form-control"
                          id="quantity"
-                         [(ngModel)]="chiTiet.soLuong"
+                         [(ngModel)]="soLuong"
                          name="quantity"
                          autocomplete="off"
                          min="0"
@@ -97,7 +97,7 @@
                          required>
                 </div>
                 <label for="gia"
-                       class="col-sm-2 col-form-label lb form-group required control-label">Giá bán
+                       class="col-sm-2 col-form-label lb form-group required control-label">Giá mua
                   <i class="i-required">*</i></label>
                 <div class="col-sm-4">
                   <input type="number"
@@ -110,6 +110,13 @@
                          onkeypress="return /[0-9]/i.test(event.key)"
                          placeholder="Giá sản phẩm"
                          required>
+                </div>
+                <label class="col-sm-2 col-form-label lb">Tồn kho</label>
+                <div class="col-sm-4">
+                  <input type="text"
+                         class="form-control"
+                         [value]="slMax != null ? slMax + ' ' + dvt : ''"
+                         disabled>
                 </div>
                 <div class="col-sm-12">
                   <div class="add-sp">
@@ -139,8 +146,8 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr *ngFor="let item of listChiTiet; let i = index">
-                      <td>{{ i + 1 }}</td>
+                    <tr *ngFor="let item of listChiTiet">
+                      <td class="text-center">{{ item.stt }}</td>
                       <td>{{item.ten_SP}}</td>
                       <td>{{item.dvt}}</td>
                       <td>{{item.soLuong}}</td>

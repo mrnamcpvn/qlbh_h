@@ -4,15 +4,10 @@ import { IconButton } from '@constants/common.constants';
 import { ChiTietDonHang, DonHang, DonHangDTO } from '@models/maintains/don-hang';
 import { SanPham } from '@models/maintains/san-pham';
 import { MaHang } from '@models/maintains/ma-hang';
-import { KhachHang } from '@models/maintains/khach-hang';
 import { SanPhamService } from '@services/san-pham.service';
 import { DonHangService } from '@services/don-hang.service';
-import { MaHangService } from '@services/mahang.service';
-import { KhachHangService } from '@services/khach-hang.service';
 import { InjectBase } from '@utilities/inject-base-app';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
-import { KeyValuePair } from '@utilities/key-value-pair';
-import { ModalService } from '@services/modal.service';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { NhaCungCapService } from '@services/nha-cung-cap.service';
 import { NhaCungCap } from '@models/maintains/nha-cung-cap';
@@ -36,6 +31,8 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
   sanPhams: SanPham[] = [];
   tenSP: string = '';
   giaSP: number;
+  soLuong: number;
+  slMax: number | null = null;
   mahangs: MaHang[] = [];
   idSP: number;
   tongTien: number;
@@ -70,7 +67,6 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
     })
     this.getAllNCC();
     this.getAllSP();
-    this.clear();
   }
 
   ngAfterViewInit(): void {
@@ -84,7 +80,9 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
     this.donHangService.getDetail(this.id).subscribe({
       next: res => {
         this.listChiTiet = res;
-        // this.tongSL = this.listChiTiet.reduce((x, y) => x + y.soLuong, 0);
+        this.listChiTiet.forEach((item, index) => {
+          item.stt = index + 1;
+        });
       }
     })
   }
@@ -97,12 +95,14 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
   }
 
   mhChanges(id) {
+    this.clearSP();
     let item = this.sanPhams.find(x => x.id == id);
     this.giaSP = item.gia;
     this.tenSP = item.ten;
     this.chiTiet.ten_SP = item.ten;
     this.chiTiet.iD_SP = item.id;
     this.dvt = item.dvt;
+    this.slMax = item.soLuong;
   }
 
   getAllSP() {
@@ -112,20 +112,23 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
       }
     })
   }
+  clearSP() {
+    this.giaSP = null;
+    this.tenSP = '';
+    this.chiTiet.ten_SP = '';
+    this.chiTiet.iD_SP = null;
+    this.dvt = '';
+    this.slMax = null;
+  }
 
   add() {
     this.chiTiet.gia = this.giaSP;
     this.chiTiet.dvt = this.dvt;
+    this.chiTiet.soLuong = this.soLuong;
     this.chiTiet.thanhTien = this.chiTiet.soLuong * this.chiTiet.gia;
+    this.chiTiet.stt = this.listChiTiet.length + 1;
 
-    const existingItem = this.listChiTiet.find(x => x.iD_SP == this.chiTiet.iD_SP && x.gia == this.chiTiet.gia);
-
-    if (existingItem) {
-      existingItem.soLuong += this.chiTiet.soLuong;
-      existingItem.thanhTien = existingItem.soLuong * existingItem.gia;
-    } else {
-      this.listChiTiet.push({ ...this.chiTiet });
-    }
+    this.listChiTiet.push({ ...this.chiTiet });
 
     this.tongTien = this.listChiTiet.reduce((tt, item) => {
       return tt + (item.gia * item.soLuong);
@@ -134,6 +137,7 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
     this.tenSP = '';
     this.giaSP = null;
     this.chiTiet = <ChiTietDonHang>{};
+    this.slMax = null;
   }
 
   update() {
@@ -193,27 +197,17 @@ export class EditComponent extends InjectBase implements OnInit, AfterViewInit {
   }
 
   saveModal() {
-    this.listChiTiet.map(x => {
-      if (x.id == this.chiTiet.id) {
-        x.gia = this.chiTiet.gia;
-        x.soLuong = this.chiTiet.soLuong;
-        x.thanhTien = x.gia * x.soLuong;
-      }
-    })
+    const index = this.listChiTiet.findIndex(x => x.stt === this.chiTiet.stt);
+    if (index !== -1) {
+      this.listChiTiet[index].gia = this.chiTiet.gia;
+      this.listChiTiet[index].soLuong = this.chiTiet.soLuong;
+      this.listChiTiet[index].thanhTien = this.listChiTiet[index].gia * this.listChiTiet[index].soLuong;
+    }
     this.tongTien = this.listChiTiet.reduce((tt, item) => {
       return tt + (item.gia * item.soLuong);
     }, 0)
     this.donHang.tongTien = this.tongTien;
     this.donHangService.changeSDonHang(this.donHang)
     this.modalRef?.hide();
-  }
-
-
-
-  clear() {
-    // this.data = <ChiTietDonHang>{
-    //   date: new Date()
-    // };
-    // this.idMH = null;
   }
 }

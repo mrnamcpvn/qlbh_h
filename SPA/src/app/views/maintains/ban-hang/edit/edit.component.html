@@ -98,15 +98,20 @@
                   <input type="number"
                          class="form-control"
                          id="quantity"
-                         [(ngModel)]="chiTiet.soLuong"
+                         [(ngModel)]="soLuong"
                          name="quantity"
                          autocomplete="off"
                          min="0"
                          onkeypress="return /[0-9]/i.test(event.key)"
                          placeholder="Số lượng"
                          required>
-                  <span *ngIf="slMax"
-                        class="slmax">Số lượng tồn trong kho: {{slMax}} {{dvt}}</span>
+                </div>
+                <label class="col-sm-2 col-form-label lb">Tồn kho</label>
+                <div class="col-sm-4">
+                  <input type="text"
+                         class="form-control"
+                         [value]="slMax != null ? slMax + ' ' + dvt : ''"
+                         disabled>
                 </div>
                 <label for="gia"
                        class="col-sm-2 col-form-label lb form-group required control-label">Giá bán
@@ -149,8 +154,8 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr *ngFor="let item of listChiTiet; let i = index">
-                      <td>{{ i + 1 }}</td>
+                    <tr *ngFor="let item of listChiTiet">
+                      <td class="text-center">{{ item.stt }}</td>
                       <td>{{item.ten_SP}}</td>
                       <td>{{item.dvt}}</td>
                       <td>{{item.soLuong}}</td>

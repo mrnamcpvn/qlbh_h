@@ -43,6 +43,7 @@ export interface ChiTietDonHang {
   updated_time: string | Date;
   dvt: string;
   thanhTien: number;
+  stt?: number;
 }
 
 export interface DonHangDTO extends DonHang{

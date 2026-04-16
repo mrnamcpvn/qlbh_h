@@ -1,19 +1,15 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import { IconButton } from '@constants/common.constants';
 import { ChiTietDonHang, DonHangDTO } from '@models/maintains/don-hang';
 import { SanPham } from '@models/maintains/san-pham';
 import { MaHang } from '@models/maintains/ma-hang';
-import { KhachHang } from '@models/maintains/khach-hang';
 import { SanPhamService } from '@services/san-pham.service';
 import { DonHangService } from '@services/don-hang.service';
-import { MaHangService } from '@services/mahang.service';
-import { KhachHangService } from '@services/khach-hang.service';
 import { InjectBase } from '@utilities/inject-base-app';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
-import { KeyValuePair } from '@utilities/key-value-pair';
 import { NhaCungCap } from '@models/maintains/nha-cung-cap';
 import { NhaCungCapService } from '@services/nha-cung-cap.service';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-add',
@@ -33,17 +29,20 @@ export class AddComponent extends InjectBase implements OnInit {
   sanPhams: SanPham[] = [];
   tenSP: string = '';
   giaSP: number;
+  soLuong: number;
+  slMax: number | null = null;
   mahangs: MaHang[] = [];
   idSP: number;
   tongTien: number;
   id: number;
   dvt: string = '';
   date: Date = new Date();
+  modalRef?: BsModalRef;
   constructor(
     private donHangService: DonHangService,
     private service: NhaCungCapService,
     private spService: SanPhamService,
-    private route: ActivatedRoute) {
+    private modalService: BsModalService) {
     super();
   }
 
@@ -51,19 +50,6 @@ export class AddComponent extends InjectBase implements OnInit {
     this.getAllNCC();
     this.getAllSP();
     this.clear();
-  }
-
-
-  getDetail() {
-    // this.chamcongService.getDetail(this.id)
-    //   .subscribe({
-    //     next: res => {
-    //       this.data = res;
-    //       this.data.date = new Date(res.date);
-    //       this.idMH = this.data.idMaHang;
-    //       this.getAllCD(this.idMH);
-    //     }
-    //   })
   }
 
   getAllNCC() {
@@ -86,6 +72,7 @@ export class AddComponent extends InjectBase implements OnInit {
     this.chiTiet.ten_SP = item.ten;
     this.chiTiet.iD_SP = item.id;
     this.dvt = item.dvt;
+    this.slMax = item.soLuong;
   }
   clearSP() {
     this.giaSP = null;
@@ -93,6 +80,7 @@ export class AddComponent extends InjectBase implements OnInit {
     this.chiTiet.ten_SP = '';
     this.chiTiet.iD_SP = null;
     this.dvt = '';
+    this.slMax = null;
   }
 
   getAllSP() {
@@ -106,16 +94,11 @@ export class AddComponent extends InjectBase implements OnInit {
   add() {
     this.chiTiet.gia = this.giaSP;
     this.chiTiet.dvt = this.dvt;
+    this.chiTiet.soLuong = this.soLuong;
     this.chiTiet.thanhTien = this.chiTiet.soLuong * this.chiTiet.gia;
+    this.chiTiet.stt = this.listChiTiet.length + 1;
 
-    const existingItem = this.listChiTiet.find(x => x.iD_SP == this.chiTiet.iD_SP && x.gia == this.chiTiet.gia);
-
-    if (existingItem) {
-      existingItem.soLuong += this.chiTiet.soLuong;
-      existingItem.thanhTien = existingItem.soLuong * existingItem.gia;
-    } else {
-      this.listChiTiet.push({ ...this.chiTiet });
-    }
+    this.listChiTiet.push({ ...this.chiTiet });
 
     this.tongTien = this.listChiTiet.reduce((tt, item) => {
       return tt + (item.gia * item.soLuong);
@@ -124,6 +107,7 @@ export class AddComponent extends InjectBase implements OnInit {
     this.tenSP = '';
     this.giaSP = null;
     this.chiTiet = <ChiTietDonHang>{};
+    this.slMax = null;
   }
 
   create() {
@@ -154,9 +138,35 @@ export class AddComponent extends InjectBase implements OnInit {
   }
 
   clear() {
-    // this.data = <ChiTietDonHang>{
-    //   date: new Date()
-    // };
-    // this.idMH = null;
+  }
+
+  openModal(template: TemplateRef<void>, item: ChiTietDonHang) {
+    this.chiTiet = { ...item };
+    this.modalRef = this.modalService.show(template);
+  }
+
+  cancel() {
+    this.modalRef?.hide();
+  }
+
+  saveModal() {
+    const index = this.listChiTiet.findIndex(x => x.stt === this.chiTiet.stt);
+    if (index !== -1) {
+      this.listChiTiet[index].gia = this.chiTiet.gia;
+      this.listChiTiet[index].soLuong = this.chiTiet.soLuong;
+      this.listChiTiet[index].thanhTien = this.listChiTiet[index].gia * this.listChiTiet[index].soLuong;
+    }
+    this.tongTien = this.listChiTiet.reduce((tt, item) => {
+      return tt + (item.gia * item.soLuong);
+    }, 0);
+    this.modalRef?.hide();
+  }
+
+  deleteItem(item: ChiTietDonHang) {
+    this.listChiTiet = this.listChiTiet.filter(x => x !== item);
+    this.listChiTiet.forEach((x, i) => x.stt = i + 1);
+    this.tongTien = this.listChiTiet.reduce((tt, item) => {
+      return tt + (item.gia * item.soLuong);
+    }, 0);
   }
 }
