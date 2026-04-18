@@ -150,8 +150,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of listChiTietGrouped">
-              <td class="text-center">{{ item.stt}}</td>
+            <tr *ngFor="let item of listChiTiet; let i = index">
+              <td class="text-center">{{ i + 1 }}</td>
               <td>{{item.ten_SP}}</td>
               <td class="text-center">{{item.dvt}}</td>
               <td class="text-center">{{item.soLuong}}</td>
