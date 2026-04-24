@@ -9,23 +9,21 @@
               <div class="col-md-6 col-sm-12">
                 <h5>Chi tiết đơn hàng
                   <button type="button"
-                          class="btn btn-success"
-                          [useExistingCss]="true"
-                          printSectionId="printMuaHang"
-                          ngxPrint>
-                    <i class="fa fa-print"></i> In</button>
+                          class="btn btn-sm btn-success ml-2"
+                          (click)="print()">
+                    <i class="fa fa-print"></i> In </button>
                   <button type="button"
-                          class="btn btn-warning ml-2"
-                          (click)="update()"><i class="fa fa-update"></i>
-                    Chỉnh sửa đơn hàng</button>
+                          class="btn btn-sm btn-warning ml-2"
+                          (click)="update()">
+                    <i class="fa fa-edit"></i> Chỉnh sửa đơn hàng </button>
                 </h5>
               </div>
-              <div class="col-md-6 col-sm-12">
+              <div class="col-6 text-right">
                 <button type="button"
-                        class="btn btn-sm btn-primary float-right"
+                        class="btn btn-sm btn-primary"
                         (click)="back()">
-                  <i class="{{iconButton.BACK}}"></i>
-                  Trờ về</button>
+                  <i class="{{iconButton.BACK}}"></i> Trở về
+                </button>
               </div>
             </div>
           </div>
@@ -126,8 +124,7 @@
   </div>
 </div>
 
-<div id="printMuaHang"
-     style="visibility: hidden;">
+<div id="printMuaHang">
   <div class="padding-print">
     <div class="row">
       <div class="col-8">

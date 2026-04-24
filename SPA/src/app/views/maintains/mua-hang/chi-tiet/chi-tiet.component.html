@@ -2,47 +2,43 @@
   <div class="row pt-4">
     <div class="col-lg-12">
       <div class="card">
-        <form class="form-horizontal"
-              autocomplete="off">
-          <div class="card-header">
-            <div class="row">
-              <div class="col-md-6 col-sm-12">
-                <h5>Chi tiết đơn hàng
-                  <button type="button"
-                          class="btn btn-success"
-                          [useExistingCss]="true"
-                          printSectionId="printMuaHang"
-                          ngxPrint>
-                    <i class="fa fa-print"></i> In
-                  </button>
-                  <button type="button"
-                          class="btn btn-warning ml-2"
-                          (click)="update()"><i class="fa fa-update"></i> Chỉnh sửa đơn hàng</button>
-                </h5>
-              </div>
-              <div class="col-md-6 col-sm-12">
-                <button type="button"
-                        class="btn btn-sm btn-primary float-right"
-                        (click)="back()">
-                  <i class="{{iconButton.BACK}}"></i>
-                  Trờ về</button>
-              </div>
+        <div class="card-header">
+          <div class="row align-items-center">
+            <div class="col-6">
+              <h5 class="mb-0">Chi tiết đơn hàng</h5>
+            </div>
+            <div class="col-6 text-right">
+              <button type="button"
+                      class="btn btn-sm btn-success mr-2"
+                      (click)="print()">
+                <i class="fa fa-print"></i> In phiếu
+              </button>
+              <button type="button"
+                      class="btn btn-sm btn-warning mr-2"
+                      (click)="update()">
+                <i class="fa fa-edit"></i> Chỉnh sửa
+              </button>
+              <button type="button"
+                      class="btn btn-sm btn-primary"
+                      (click)="back()">
+                <i class="{{iconButton.BACK}}"></i> Trở về
+              </button>
             </div>
           </div>
-        </form>
+        </div>
         <div class="card-body">
           <div class="order-info">
             <div class="row">
-              <div class="col-xl-2 col-lg-3 col-md-6 col-sm-12 mb-2">
+              <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 mb-2">
                 <div class="d-flex align-items-center">
-                  <i class="fa fa-user text-primary mr-2"></i>
+                  <i class="fa fa-truck text-primary mr-2"></i>
                   <div>
                     <small class="text-muted d-block">Nhà Cung Cấp</small>
                     <strong>{{donHang.ten_NCC}}</strong>
                   </div>
                 </div>
               </div>
-              <div class="col-xl-2 col-lg-3 col-md-6 col-sm-12 mb-2">
+              <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 mb-2">
                 <div class="d-flex align-items-center">
                   <i class="fa fa-calendar-o text-primary mr-2"></i>
                   <div>
@@ -51,7 +47,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-xl-2 col-lg-3 col-md-6 col-sm-12 mb-2">
+              <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12 mb-2">
                 <div class="d-flex align-items-center">
                   <i class="fa fa-calendar-o text-primary mr-2"></i>
                   <div>
@@ -65,8 +61,8 @@
           <div class="row justify-content-md-center">
             <div class="col-12">
               <div class="table-responsive">
-                <table class="table table-bordered">
-                  <thead>
+                <table class="table table-bordered table-sm">
+                  <thead class="bg-light">
                     <tr>
                       <th class="text-center">Stt</th>
                       <th class="text-center">Tên sản phẩm</th>
@@ -85,11 +81,11 @@
                       <td class="text-right">{{item.gia | number}}</td>
                       <td class="text-right">{{item.thanhTien | number}}</td>
                     </tr>
-                    <tr class="font-20">
-                      <td colspan="3"> <b>Tổng cộng: </b> </td>
-                      <td class="text-center"><b>{{tongSL}}</b></td>
+                    <tr class="font-weight-bold bg-light">
+                      <td colspan="3" class="text-right">Tổng cộng:</td>
+                      <td class="text-center text-primary">{{tongSL}}</td>
                       <td></td>
-                      <td class="text-right"><b>{{donHang.tongTien | number}}</b></td>
+                      <td class="text-right text-primary">{{donHang.tongTien | number}}</td>
                     </tr>
                     <tr *ngIf="listChiTiet?.length === 0">
                       <td colspan="100%"
@@ -108,8 +104,7 @@
   </div>
 </div>
 
-<div id="printMuaHang"
-     style="visibility: hidden;">
+<div id="printMuaHang">
   <div class="padding-print">
     <div class="row">
       <div class="col-8">
@@ -167,9 +162,8 @@
           </tbody>
         </table>
         <p class="text-font"><b>Bằng chữ: {{tienChu}}</b></p>
-        <i class="text-font">Lưu ý: Kiểm tra hàng trước khi thanh toán</i>
+        <i class="text-font">Lưu ý: Kiểm tra hàng trước khi nhận hàng</i>
       </div>
     </div>
   </div>
-
 </div>

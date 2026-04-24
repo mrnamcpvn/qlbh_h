@@ -6,7 +6,7 @@
           <div class="row">
             <div class="col-6">
               <strong class="title-card-cs">
-                {{ isEdit ? 'Chỉnh sửa đơn hàng' : 'Xuất hàng' }}
+                {{ isEdit ? 'Chỉnh sửa đơn hàng' : 'Nhập hàng' }}
               </strong>
             </div>
             <div class="col-6">
@@ -27,15 +27,15 @@
                     autocomplete="off">
                 <div class="col-md-5">
                   <div class="form-group">
-                    <label for="khach-hang"
-                           class="badge badge-primary">Khách hàng <i class="text-danger text-bold">*</i></label>
-                    <ng-select name="khach-hang"
+                    <label for="nha-cung-cap"
+                           class="badge badge-primary">Nhà cung cấp <i class="text-danger text-bold">*</i></label>
+                    <ng-select name="nha-cung-cap"
                                required
-                               [items]="khachHangs"
+                               [items]="nhaCungCaps"
                                bindLabel="ten"
                                bindValue="id"
-                               [(ngModel)]="data.iD_KH"
-                               placeholder="Chọn Khách Hàng"
+                               [(ngModel)]="data.iD_NCC"
+                               placeholder="Chọn Nhà Cung Cấp"
                                required>
                     </ng-select>
                   </div>
@@ -56,10 +56,10 @@
                 <div class="col-md-3">
                   <div class="form-group">
                     <label for="date"
-                           class="badge badge-primary">Ngày Xuất</label>
+                           class="badge badge-primary">Ngày Nhập</label>
                     <div class="input-group">
                       <input type="text"
-                             placeholder="Chọn ngày xuất"
+                             placeholder="Chọn ngày nhập"
                              name="date"
                              [bsConfig]="bsConfig"
                              class="form-control"
@@ -89,7 +89,7 @@
                           <th class="text-center"
                               style="width: 120px;">Số lượng</th>
                           <th class="text-center"
-                              style="width: 150px;">Giá bán</th>
+                              style="width: 150px;">Giá mua</th>
                           <th class="text-center"
                               style="width: 150px;">Thành tiền</th>
                           <th class="text-center"

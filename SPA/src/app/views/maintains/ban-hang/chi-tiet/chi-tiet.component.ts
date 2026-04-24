@@ -80,6 +80,10 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
   update() {
     this.router.navigate(['/maintain/ban-hang/edit', this.donHang.id]);
   }
+
+  print() {
+    window.print();
+  }
   getAllNV() {
     this.nvService.getAll().subscribe({
       next: (res) => {

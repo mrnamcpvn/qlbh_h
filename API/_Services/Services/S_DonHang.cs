@@ -186,9 +186,11 @@ namespace API._Services.Services
             _repoAccessor.DonHang.Add(dh);
             await _repoAccessor.Save();
             var idDH = dh.ID;
-            foreach (var item in model.ChiTiet)
+            var items = model.ChiTiet.Where(x => x.ID_SP > 0 && x.SoLuong > 0).ToList();
+            foreach (var item in items)
             {
                 var sp = await _repoAccessor.SanPham.FindById(item.ID_SP);
+                if (sp == null) continue;
                 item.SL_Ton_Dau = sp.SoLuong ?? 0;
                 if (model.Loai == 1)
                     sp.SoLuong = (sp.SoLuong ?? 0) + item.SoLuong;
@@ -267,21 +269,41 @@ namespace API._Services.Services
             dh.Ma_DH = model.Ma_DH;
             dh.Date = !string.IsNullOrWhiteSpace(model.Date_Str) ? Convert.ToDateTime(model.Date_Str) : null;
             _repoAccessor.DonHang.Update(dh);
-            foreach (var item in model.ChiTiet)
+            var items = model.ChiTiet.Where(x => x.ID_SP > 0 && x.SoLuong > 0).ToList();
+            foreach (var item in items)
             {
                 var sp = await _repoAccessor.SanPham.FindById(item.ID_SP);
+                if (sp == null) continue;
                 var chiTiet = await _repoAccessor.ChiTietDonHang.FindById(item.ID);
 
                 if (chiTiet != null)
                 {
-                    if (model.Loai == 1)
-                        sp.SoLuong = (sp.SoLuong ?? 0) + (item.SoLuong - chiTiet.SoLuong);
-                    else sp.SoLuong = (sp.SoLuong ?? 0) - (item.SoLuong - chiTiet.SoLuong);
-                    chiTiet.SL_Ton_Cuoi = sp.SoLuong;
-                    chiTiet.Updated_Time = DateTime.Now;
+                    if (chiTiet.ID_SP == item.ID_SP)
+                    {
+                        int delta = item.SoLuong - chiTiet.SoLuong;
+                        if (model.Loai == 1)
+                            sp.SoLuong = (sp.SoLuong ?? 0) + delta;
+                        else sp.SoLuong = (sp.SoLuong ?? 0) - delta;
+                    }
+                    else
+                    {
+                        var oldSp = await _repoAccessor.SanPham.FindById(chiTiet.ID_SP);
+                        if (oldSp != null)
+                        {
+                            if (model.Loai == 1) oldSp.SoLuong -= chiTiet.SoLuong;
+                            else oldSp.SoLuong += chiTiet.SoLuong;
+                            _repoAccessor.SanPham.Update(oldSp);
+                        }
+                        if (model.Loai == 1)
+                            sp.SoLuong = (sp.SoLuong ?? 0) + item.SoLuong;
+                        else sp.SoLuong = (sp.SoLuong ?? 0) - item.SoLuong;
+                    }
+                    chiTiet.ID_SP = item.ID_SP;
                     chiTiet.SoLuong = item.SoLuong;
                     chiTiet.ThanhTien = item.ThanhTien;
                     chiTiet.Gia = item.Gia;
+                    chiTiet.SL_Ton_Cuoi = sp.SoLuong;
+                    chiTiet.Updated_Time = DateTime.Now;
                     _repoAccessor.ChiTietDonHang.Update(chiTiet);
                 }
                 else

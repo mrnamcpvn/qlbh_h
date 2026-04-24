@@ -3,11 +3,11 @@ import { ActivatedRoute } from '@angular/router';
 import { IconButton } from '@constants/common.constants';
 import { ChiTietDonHang, DonHang, DonHangDTO } from '@models/maintains/don-hang';
 import { SanPham } from '@models/maintains/san-pham';
-import { KhachHang } from '@models/maintains/khach-hang';
+import { NhaCungCap } from '@models/maintains/nha-cung-cap';
 import { NhanVien } from '@models/maintains/nhan-vien';
 import { SanPhamService } from '@services/san-pham.service';
 import { DonHangService } from '@services/don-hang.service';
-import { KhachHangService } from '@services/khach-hang.service';
+import { NhaCungCapService } from '@services/nha-cung-cap.service';
 import { NhanVienService } from '@services/nhan-vien.service';
 import { InjectBase } from '@utilities/inject-base-app';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
@@ -20,27 +20,32 @@ import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 export class FormComponent extends InjectBase implements OnInit, AfterViewInit {
   iconButton = IconButton;
 
+  // 1. UI & System Config
   bsConfig: Partial<BsDatepickerConfig> = { dateInputFormat: 'DD/MM/YYYY' };
 
+  // 2. State & Route Params
   id: number;
   isEdit: boolean = false;
 
+  // 3. Form Data Models
   data: DonHangDTO = <DonHangDTO>{};
   donHang: DonHang = <DonHang>{};
   listChiTiet: ChiTietDonHang[] = [];
   date: Date = new Date();
   tongTien: number = 0;
 
-  khachHangs: KhachHang[] = [];
+  // 4. Master Data (Dropdown lists)
+  nhaCungCaps: NhaCungCap[] = [];
   nhanViens: NhanVien[] = [];
   sanPhams: SanPham[] = [];
 
+  // 5. Tracking Data (For stock recalculation)
   originalSanPhams: SanPham[] = [];
   originalChiTiet: ChiTietDonHang[] = [];
 
   constructor(
     private donHangService: DonHangService,
-    private khService: KhachHangService,
+    private nccService: NhaCungCapService,
     private nvService: NhanVienService,
     private spService: SanPhamService,
     private route: ActivatedRoute
@@ -57,23 +62,21 @@ export class FormComponent extends InjectBase implements OnInit, AfterViewInit {
         next: res => {
           if (res) {
             this.donHang = res;
-            this.data.iD_KH = res.iD_KH;
+            this.data.iD_NCC = res.iD_NCC;
             this.data.iD_NV = res.iD_NV;
             this.data.ma_DH = res.ma_DH;
             if (res.date)
               this.date = new Date(res.date);
             this.tongTien = res.tongTien;
           } else {
-            // If no current_DH (e.g. direct access via URL), we might need to fetch it or redirect
-            // For now follow the original logic
-            this.router.navigate(['/maintain/ban-hang']);
+            this.router.navigate(['/maintain/mua-hang']);
           }
         },
-        error: () => this.router.navigate(['/maintain/ban-hang'])
+        error: () => this.router.navigate(['/maintain/mua-hang'])
       });
     }
 
-    this.getAllKH();
+    this.getAllNCC();
     this.getAllNV();
     this.getAllSP();
   }
@@ -104,10 +107,10 @@ export class FormComponent extends InjectBase implements OnInit, AfterViewInit {
     });
   }
 
-  getAllKH() {
-    this.khService.getAll().subscribe({
+  getAllNCC() {
+    this.nccService.getAll().subscribe({
       next: (res) => {
-        this.khachHangs = res;
+        this.nhaCungCaps = res;
       }
     });
   }
@@ -137,19 +140,22 @@ export class FormComponent extends InjectBase implements OnInit, AfterViewInit {
         tonHienTai: sp.soLuong
       }));
 
+      // For purchasing, we subtract what's already in the DB to get pre-purchase levels
       if (this.isEdit && this.originalChiTiet && this.originalChiTiet.length > 0) {
         this.originalChiTiet.forEach(item => {
           let sp = this.sanPhams.find(x => x.id == item.iD_SP);
           if (sp) {
-            sp.soLuong += (item.soLuong || 0);
+            sp.soLuong -= (item.soLuong || 0);
           }
         });
       }
+
+      // Add all selected products' quantities currently in the form
       if (this.listChiTiet && this.listChiTiet.length > 0) {
         this.listChiTiet.forEach(item => {
           if (item.iD_SP) {
             let sp = this.sanPhams.find(x => x.id == item.iD_SP);
-            if (sp) sp.soLuong -= (item.soLuong || 0);
+            if (sp) sp.soLuong += (item.soLuong || 0);
           }
         });
       }
@@ -205,20 +211,20 @@ export class FormComponent extends InjectBase implements OnInit, AfterViewInit {
           if (res) {
             this.snotifyService.success('Sửa đơn hàng thành công', 'Thành công');
             this.donHangService.changeSDonHang(res);
-            this.router.navigate(['/maintain/ban-hang/detail', res.id]);
+            this.router.navigate(['/maintain/mua-hang/detail', res.id]);
           } else {
             this.snotifyService.error('Sửa đơn hàng không thành công', 'Lỗi');
           }
         }
       });
     } else {
-      this.data.loai = 2; // Fixed type for sales
+      this.data.loai = 1; // Fixed type for purchasing
       this.donHangService.create(this.data).subscribe({
         next: (res) => {
           if (res) {
             this.snotifyService.success('Thêm đơn hàng thành công', 'Thành công');
             this.donHangService.changeSDonHang(res);
-            this.router.navigate(['/maintain/ban-hang/detail', res.id]);
+            this.router.navigate(['/maintain/mua-hang/detail', res.id]);
           } else {
             this.snotifyService.error('Thêm đơn hàng không thành công', 'Lỗi');
           }
@@ -228,7 +234,7 @@ export class FormComponent extends InjectBase implements OnInit, AfterViewInit {
   }
 
   back() {
-    this.router.navigate(['/maintain/ban-hang']);
+    this.router.navigate(['/maintain/mua-hang']);
   }
 
   deleteItem(item: ChiTietDonHang) {
@@ -270,18 +276,6 @@ export class FormComponent extends InjectBase implements OnInit, AfterViewInit {
 
     item.thanhTien = (item.soLuong || 0) * (item.gia || 0);
     this.recalculateStock();
-
-    // Check stock limit
-    if (item.iD_SP && item.soLuong) {
-      const sp = this.sanPhams.find(x => x.id == item.iD_SP);
-      if (sp && sp.soLuong < 0) {
-        this.snotifyService.warning(`Số lượng xuất vượt quá tồn kho!`, "Cảnh báo");
-        delete item.soLuong;
-        item.thanhTien = 0;
-        this.recalculateStock();
-      }
-    }
-
     this.calculateTotal();
     if (this.isEdit) {
       this.donHang.tongTien = this.tongTien;

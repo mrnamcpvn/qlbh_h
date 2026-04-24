@@ -66,6 +66,10 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
     this.router.navigate(['/maintain/mua-hang/edit', this.donHang.id]);
   }
 
+  print() {
+    window.print();
+  }
+
   back() {
     this.router.navigate(['/maintain/mua-hang']);
   }

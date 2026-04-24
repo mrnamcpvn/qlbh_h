@@ -35,6 +35,7 @@ export interface ChiTietDonHang {
   id: number;
   iD_DH: number;
   iD_SP: number;
+  ma_SP: string;
   ten_SP: string;
   soLuong: number;
   gia: number;
