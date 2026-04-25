@@ -1,11 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ModalModule} from "ngx-bootstrap/modal";
 import {PaginationModule} from "ngx-bootstrap/pagination";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {NgxPrintModule} from 'ngx-print';
 import {BsDatepickerModule} from "ngx-bootstrap/datepicker";
 import { TheoDoiNhanVienBanHangModuleRoutingModule } from './theo-doi-nhan-vien-ban-hang-routing.module';
 import { MainComponent } from './main/main.component';
@@ -20,7 +18,6 @@ import { MainComponent } from './main/main.component';
     ModalModule.forRoot(),
     PaginationModule.forRoot(),
     NgSelectModule,
-    NgxPrintModule,
     ReactiveFormsModule,
     BsDatepickerModule.forRoot(),
     TheoDoiNhanVienBanHangModuleRoutingModule

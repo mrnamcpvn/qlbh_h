@@ -19,30 +19,3 @@
     font-size: 0.9rem;
   }
 }
-
-#printMuaHang {
-  display: none;
-}
-
-@media print {
-  // Hide main content container completely
-  .animated.fadeIn {
-    display: none !important;
-  }
-
-  // Ensure print section is visible and positioned at the top
-  #printMuaHang {
-    display: block !important;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-  }
-
-  // Hide system elements that might be outside .animated.fadeIn
-  .sidebar, .breadcrumb, .app-header, .card-footer, .card-header, .btn {
-    display: none !important;
-  }
-}

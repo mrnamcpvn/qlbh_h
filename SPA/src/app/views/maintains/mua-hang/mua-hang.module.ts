@@ -7,11 +7,11 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { ModalModule } from "ngx-bootstrap/modal";
 import { PaginationModule } from "ngx-bootstrap/pagination";
 import { NgSelectModule } from "@ng-select/ng-select";
-import { NgxPrintModule } from 'ngx-print';
 import { BsDatepickerModule } from "ngx-bootstrap/datepicker";
 import { ChiTietComponent } from './chi-tiet/chi-tiet.component';
 import { FormComponent } from './form/form.component';
 import { ModelThanhToanComponent } from './model-thanh-toan/model-thanh-toan.component';
+import { SharedModule } from '../../_shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -25,10 +25,10 @@ import { ModelThanhToanComponent } from './model-thanh-toan/model-thanh-toan.com
     ModalModule.forRoot(),
     PaginationModule.forRoot(),
     NgSelectModule,
-    NgxPrintModule,
     ReactiveFormsModule,
     BsDatepickerModule.forRoot(),
-    MuaHangRoutingModule
+    MuaHangRoutingModule,
+    SharedModule
   ]
 })
 export class MuaHangModule { }
