@@ -2,7 +2,7 @@ import {
   TheoDoiNhanVienBanHang_Param,
   TheoDoiNhanVienBanHang_Data
 } from '@models/maintains/theo-doi-nhan-vien-ban-hang';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewChecked, ViewChild } from '@angular/core';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { InjectBase } from "@utilities/inject-base-app";
 import { ClassButton, IconButton } from "@constants/common.constants";
@@ -17,8 +17,9 @@ import { FormGroup, NgForm } from '@angular/forms';
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss']
 })
-export class MainComponent extends InjectBase implements OnInit {
+export class MainComponent extends InjectBase implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('mainForm') public mainForm: NgForm;
+  private savedState: any;
   iconButton = IconButton;
   classButton = ClassButton
   bsConfig: Partial<BsDatepickerConfig> = {
@@ -29,7 +30,14 @@ export class MainComponent extends InjectBase implements OnInit {
   fromDate: Date;
   toDate: Date;
   param: TheoDoiNhanVienBanHang_Param = <TheoDoiNhanVienBanHang_Param>{}
-  data: TheoDoiNhanVienBanHang_Data = <TheoDoiNhanVienBanHang_Data>{};
+  data: TheoDoiNhanVienBanHang_Data = <TheoDoiNhanVienBanHang_Data>{
+    result: [],
+    pagination: <Pagination>{
+      pageNumber: 1,
+      pageSize: 10,
+      totalCount: 0
+    }
+  };
   filterByList: KeyValuePair[] = [
     { key: "0", value: 'Khoảng thời gian' },
     { key: "1", value: 'Năm' },
@@ -45,36 +53,44 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   ngOnInit() {
-    this.getListSanPham()
-    this.getListNhanVien()
-    this.clear();
+    this.savedState = this.service.getMainState();
+    this.service.clearMainState();
+    if (this.savedState) {
+      this.restoreState(this.savedState);
+    } else {
+      this.getListSanPham()
+      this.getListNhanVien()
+      this.clear();
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.savedState && this.mainForm) {
+      const form: FormGroup = this.mainForm.form
+      const values = Object.values(form.value)
+      const isLoad = !values.every(v => v === undefined)
+      if (isLoad) {
+        if (form.valid)
+          this.getData();
+        this.savedState = null;
+      }
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.service.saveMainState({ fromDate: this.fromDate, toDate: this.toDate, param: this.param });
   }
 
   getData() {
-    if (this.mainForm) {
-      const form: FormGroup = this.mainForm.form
-      if (form.valid) {
-        this.spinnerService.show();
-        this.param.fromDate_Str = this.functionUtility.getDateFormat(this.fromDate)
-        this.param.toDate_Str = this.functionUtility.getDateFormat(this.toDate)
-        this.service.getDataPagination(this.data.pagination, this.param).subscribe({
-          next: (res) => {
-            this.data = res;
-            this.spinnerService.hide();
-          }
-        });
+    this.spinnerService.show();
+    this.param.fromDate_Str = this.functionUtility.getDateFormat(this.fromDate)
+    this.param.toDate_Str = this.functionUtility.getDateFormat(this.toDate)
+    this.service.getDataPagination(this.data.pagination, this.param).subscribe({
+      next: (res) => {
+        this.data = res;
+        this.spinnerService.hide();
       }
-      else {
-        this.data = <TheoDoiNhanVienBanHang_Data>{
-          result: [],
-          pagination: <Pagination>{
-            pageNumber: 1,
-            pageSize: 10,
-            totalCount: 0
-          }
-        };
-      }
-    }
+    });
   }
   search() {
     this.data.pagination.pageNumber !== 1 ? this.data.pagination.pageNumber = 1 : this.getData();
@@ -186,6 +202,7 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   clear() {
+    this.service.clearMainState();
     // First of month
     this.fromDate = new Date(this.now.getFullYear(), this.now.getMonth(), 1)
     this.toDate = new Date(this.now.getFullYear(), this.now.getMonth() + 1, 0)
@@ -203,4 +220,13 @@ export class MainComponent extends InjectBase implements OnInit {
       }
     };
   }
+
+  private restoreState(state: any) {
+    this.getListSanPham();
+    this.getListNhanVien();
+    this.fromDate = state.fromDate;
+    this.toDate = state.toDate;
+    this.param = state.param;
+  }
+
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ModalService } from '@services/modal.service';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { KhachHangService } from '@services/khach-hang.service';
@@ -14,7 +14,7 @@ import { FileResultModel } from 'src/app/views/_shared/file-upload-component/fil
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss']
 })
-export class MainComponent extends InjectBase implements OnInit {
+export class MainComponent extends InjectBase implements OnInit, OnDestroy {
   pagination: Pagination = <Pagination>{
     pageNumber: 1,
     pageSize: 10
@@ -35,7 +35,17 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   ngOnInit(): void {
-    this.search();
+    const savedState = this.khService.getMainState();
+    this.khService.clearMainState();
+    if (savedState) {
+      this.restoreState(savedState);
+    } else {
+      this.search();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.khService.saveMainState({ pagination: this.pagination, ten: this.ten });
   }
 
   openModal(id: string, kh?: KhachHang) {
@@ -116,8 +126,15 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   clear() {
+    this.khService.clearMainState();
     this.ten = '';
     this.search();
+  }
+
+  private restoreState(state: any) {
+    this.pagination = state.pagination;
+    this.ten = state.ten;
+    this.getData();
   }
 
 }

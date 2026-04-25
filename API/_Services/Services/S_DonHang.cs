@@ -8,6 +8,7 @@ using API.Helper.Utilities;
 using API.Helpers.Params;
 using API.Models;
 using LinqKit;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
@@ -60,20 +61,24 @@ namespace API._Services.Services
 
             var start = Convert.ToDateTime(fromDate);
             var end = Convert.ToDateTime(toDate);
-            if (dateType == 1) // Ngày Lập
-                predicateDonHang.And(x => x.Create_Time.HasValue && start.Date <= x.Create_Time.Value.Date && x.Create_Time.Value.Date <= end.Date);
-            else if (dateType == 2) // Ngày Xuất/Nhập
-                predicateDonHang.And(x => x.Date.HasValue && start.Date <= x.Date.Value.Date && x.Date.Value.Date <= end.Date);
+            if (dateType == 1)
+                predicateDonHang = predicateDonHang.And(x => x.Create_Time.HasValue && start.Date <= x.Create_Time.Value.Date && x.Create_Time.Value.Date <= end.Date);
+            else if (dateType == 2)
+                predicateDonHang = predicateDonHang.And(x => x.Date.HasValue && start.Date <= x.Date.Value.Date && x.Date.Value.Date <= end.Date);
             if (!string.IsNullOrEmpty(ma_DH))
-                predicateDonHang.And(x => x.Ma_DH.Contains(ma_DH));
+                predicateDonHang = predicateDonHang.And(x => x.Ma_DH.Contains(ma_DH));
             if (payType == 1)
-                predicateDonHang.And(x => x.TienMat > 0);
+                predicateDonHang = predicateDonHang.And(x => x.TienMat > 0);
             else if (payType == 2)
-                predicateDonHang.And(x => x.ChuyenKhoan > 0);
+                predicateDonHang = predicateDonHang.And(x => x.ChuyenKhoan > 0);
             if (filter.TinhTrang == "1")
-                predicateDonHang.And(x => (x.ChuyenKhoan ?? 0) + (x.TienMat ?? 0) >= (x.TongTien ?? 0));
+                predicateDonHang = predicateDonHang.And(x => (x.ChuyenKhoan ?? 0) + (x.TienMat ?? 0) >= (x.TongTien ?? 0));
             else if (filter.TinhTrang == "2")
-                predicateDonHang.And(x => (x.ChuyenKhoan ?? 0) + (x.TienMat ?? 0) < (x.TongTien ?? 0));
+                predicateDonHang = predicateDonHang.And(x => (x.ChuyenKhoan ?? 0) + (x.TienMat ?? 0) < (x.TongTien ?? 0));
+            if (filter.IdNCC != null && filter.IdNCC.Count > 0)
+                predicateDonHang = predicateDonHang.And(x => x.ID_NCC.HasValue && filter.IdNCC.Contains(x.ID_NCC.Value));
+            if (filter.IdKH != null && filter.IdKH.Count > 0)
+                predicateDonHang = predicateDonHang.And(x => x.ID_KH.HasValue && filter.IdKH.Contains(x.ID_KH.Value));
             var donHangs = await _repoAccessor.DonHang.FindAll(predicateDonHang).ToListAsync();
             List<InfoDTO> info = new();
             if (type == 1)
@@ -270,6 +275,23 @@ namespace API._Services.Services
             dh.Date = !string.IsNullOrWhiteSpace(model.Date_Str) ? Convert.ToDateTime(model.Date_Str) : null;
             _repoAccessor.DonHang.Update(dh);
             var items = model.ChiTiet.Where(x => x.ID_SP > 0 && x.SoLuong > 0).ToList();
+
+            // Xóa các chi tiết cũ không còn trong danh sách mới
+            var existingCTs = await _repoAccessor.ChiTietDonHang.FindAll(x => x.ID_DH == model.ID).ToListAsync();
+            var incomingIds = items.Where(x => x.ID > 0).Select(x => x.ID).ToHashSet();
+            var removedCTs = existingCTs.Where(x => !incomingIds.Contains(x.ID)).ToList();
+            foreach (var removed in removedCTs)
+            {
+                var sp = await _repoAccessor.SanPham.FindById(removed.ID_SP);
+                if (sp != null)
+                {
+                    if (model.Loai == 1) sp.SoLuong -= removed.SoLuong;
+                    else sp.SoLuong += removed.SoLuong;
+                    _repoAccessor.SanPham.Update(sp);
+                }
+                _repoAccessor.ChiTietDonHang.Remove(removed);
+            }
+
             foreach (var item in items)
             {
                 var sp = await _repoAccessor.SanPham.FindById(item.ID_SP);
@@ -369,50 +391,56 @@ namespace API._Services.Services
         {
             // 1. Lấy đơn hàng và chi tiết
             var dh = await _repoAccessor.DonHang.FindSingle(x => x.ID == id);
-            if (dh == null) return true; // Đơn hàng đã không tồn tại, coi như đã xóa thành công
+            if (dh == null) return true;
             var listChitiet = await _repoAccessor.ChiTietDonHang.FindAll(x => x.ID_DH == id).ToListAsync();
             if (!listChitiet.Any())
             {
-                _repoAccessor.DonHang.Remove(dh); // Xóa đơn trống
+                _repoAccessor.DonHang.Remove(dh);
                 return await _repoAccessor.Save();
             }
             var productDeltas = listChitiet.GroupBy(x => x.ID_SP)
                 .ToDictionary(g => g.Key, g => g.Sum(x => x.SoLuong));
-            // 3. Lấy tất cả Sản phẩm cần cập nhật trong 1 lần duy nhất
             var productIds = productDeltas.Keys.ToList();
             var listSanPham = await _repoAccessor.SanPham.FindAll(x => productIds.Contains(x.ID)).ToListAsync();
-            // 4. Lấy các bản ghi lịch sử mới nhất của các sản phẩm này (Loại trừ đơn hàng đang xóa)
-            // Dùng GroupBy để lấy ID lớn nhất của từng SP trong 1 query
-            var latestCTs = await _repoAccessor.ChiTietDonHang
-                .FindAll(x => productIds.Contains(x.ID_SP) && x.ID_DH != id)
+
+            // Lấy max chi tiết ID của đơn đang xóa, theo từng SP
+            var maxDeletedIdPerSp = listChitiet
                 .GroupBy(x => x.ID_SP)
-                .Select(g => g.OrderByDescending(x => x.ID).FirstOrDefault())
+                .ToDictionary(g => g.Key, g => g.Max(x => x.ID));
+
+            // Lấy tất cả bản ghi còn lại của các SP này (loại trừ đơn đang xóa)
+            var remainingCTs = await _repoAccessor.ChiTietDonHang
+                .FindAll(x => productIds.Contains(x.ID_SP) && x.ID_DH != id)
                 .ToListAsync();
-            var validLatestCTs = latestCTs.Where(x => x != null).ToList();
-            // 5. Tạo Dictionary, Xử lý logic in-memory
+
             var spDict = listSanPham.ToDictionary(x => x.ID);
-            var lastRecordDict = validLatestCTs.ToDictionary(x => x.ID_SP);
-            int multiplier = (dh.Loai == 1) ? -1 : 1; // Nhập (1) => Trừ, Xuất (2) => Cộng
+            int multiplier = (dh.Loai == 1) ? -1 : 1;
             foreach (var delta in productDeltas)
             {
                 if (spDict.TryGetValue(delta.Key, out var sp))
                 {
-                    // Cập nhật tồn kho
-                    sp.SoLuong = (sp.SoLuong ?? 0) + (multiplier * delta.Value);
-                    // Cập nhật SL_Ton_Cuoi cho bản ghi lịch sử mới nhất của SP đó
-                    if (lastRecordDict.TryGetValue(delta.Key, out var lastRecord))
-                        lastRecord.SL_Ton_Cuoi = sp.SoLuong;
+                    int shift = multiplier * delta.Value;
+                    sp.SoLuong = (sp.SoLuong ?? 0) + shift;
+
+                    // Chỉ shift các bản ghi có ID > max ID của đơn đang xóa (tức là đến SAU nó)
+                    var recordsToShift = remainingCTs
+                        .Where(x => x.ID_SP == delta.Key && x.ID > maxDeletedIdPerSp.GetValueOrDefault(delta.Key, 0))
+                        .ToList();
+                    foreach (var ct in recordsToShift)
+                    {
+                        ct.SL_Ton_Dau += shift;
+                        ct.SL_Ton_Cuoi += shift;
+                    }
                 }
             }
             try
             {
-                // 6. Thực thi cập nhật và xóa hàng loạt
                 _repoAccessor.SanPham.UpdateMultiple(listSanPham);
-                _repoAccessor.ChiTietDonHang.UpdateMultiple(validLatestCTs);
+                _repoAccessor.ChiTietDonHang.UpdateMultiple(remainingCTs);
                 _repoAccessor.ChiTietDonHang.RemoveMultiple(listChitiet);
                 _repoAccessor.DonHang.Remove(dh);
                 return await _repoAccessor.Save();
-            }
+            }   
             catch
             {
                 return false;
@@ -458,6 +486,20 @@ namespace API._Services.Services
                 return await _repoAccessor.Save();
             }
             else return false;
+        }
+
+        public async Task<List<KeyValuePair<int, string>>> GetListNhaCungCap()
+        {
+            return await _repoAccessor.NhaCungCap.FindAll().AsNoTracking().OrderBy(x => x.ID)
+                .Select(x => new KeyValuePair<int, string>(x.ID, $"{x.Ten} ({x.Ma_NCC})"))
+                .Distinct().ToListAsync();
+        }
+
+        public async Task<List<KeyValuePair<int, string>>> GetListKhachHang()
+        {
+            return await _repoAccessor.KhachHang.FindAll().AsNoTracking().OrderBy(x => x.ID)
+                .Select(x => new KeyValuePair<int, string>(x.ID, $"{x.Ten} ({x.Ma_KH})"))
+                .Distinct().ToListAsync();
         }
     }
     #endregion

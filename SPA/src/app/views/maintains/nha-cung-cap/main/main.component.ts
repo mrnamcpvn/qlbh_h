@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ModalService } from '@services/modal.service';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Pagination } from '@utilities/pagination-utility';
@@ -14,7 +14,7 @@ import { NhaCungCapService } from '@services/nha-cung-cap.service';
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss']
 })
-export class MainComponent extends InjectBase implements OnInit {
+export class MainComponent extends InjectBase implements OnInit, OnDestroy {
   pagination: Pagination = <Pagination>{
     pageNumber: 1,
     pageSize: 10
@@ -35,7 +35,17 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   ngOnInit(): void {
-    this.search();
+    const savedState = this.service.getMainState();
+    this.service.clearMainState();
+    if (savedState) {
+      this.restoreState(savedState);
+    } else {
+      this.search();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.service.saveMainState({ pagination: this.pagination, ten: this.ten });
   }
 
   openModal(id: string, NCC?: NhaCungCap) {
@@ -116,8 +126,15 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   clear() {
+    this.service.clearMainState();
     this.ten = '';
     this.search();
+  }
+
+  private restoreState(state: any) {
+    this.pagination = state.pagination;
+    this.ten = state.ten;
+    this.getData();
   }
 
 }

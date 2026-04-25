@@ -78,6 +78,28 @@
                      id="email"
                      maxlength="100"/>
             </div>
+            <label for="soNgayCongNo"
+                   class="col-sm-3 col-form-label lb form-group control-label">Số ngày công nợ</label>
+            <div class="col-sm-9">
+              <input type="number"
+                     [(ngModel)]="data.soNgayCongNo"
+                     name="soNgayCongNo"
+                     class="form-control"
+                     id="soNgayCongNo"
+                     min="0"
+                     placeholder="0"/>
+            </div>
+            <label for="hanMucCongNo"
+                   class="col-sm-3 col-form-label lb form-group control-label">Hạn mức công nợ</label>
+            <div class="col-sm-9">
+              <input type="number"
+                     [(ngModel)]="data.hanMucCongNo"
+                     name="hanMucCongNo"
+                     class="form-control"
+                     id="hanMucCongNo"
+                     min="0"
+                     placeholder="0"/>
+            </div>
 
           </div>
         </form>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SanPham } from "@models/maintains/san-pham";
 import { Pagination } from '@utilities/pagination-utility';
 import { BsModalRef } from "ngx-bootstrap/modal";
@@ -14,7 +14,7 @@ import { FileResultModel } from 'src/app/views/_shared/file-upload-component/fil
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss']
 })
-export class MainComponent extends InjectBase implements OnInit {
+export class MainComponent extends InjectBase implements OnInit, OnDestroy {
   data: SanPham[] = [];
   pagination: Pagination = <Pagination>{
     pageNumber: 1,
@@ -32,7 +32,17 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   ngOnInit() {
-    this.getData();
+    const savedState = this.spService.getMainState();
+    this.spService.clearMainState();
+    if (savedState) {
+      this.restoreState(savedState);
+    } else {
+      this.getData();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.spService.saveMainState({ pagination: this.pagination, name: this.name });
   }
 
   getData() {
@@ -111,7 +121,15 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   clear() {
+    this.spService.clearMainState();
     this.name = '';
     this.search();
   }
+
+  private restoreState(state: any) {
+    this.pagination = state.pagination;
+    this.name = state.name;
+    this.getData();
+  }
+
 }

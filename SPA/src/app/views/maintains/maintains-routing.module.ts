@@ -41,6 +41,18 @@ const routes: Routes = [
   {
     path: 'cua-hang',
     loadChildren: () => import('./cua-hang/cua-hang.module').then(m => m.CuaHangModule)
+  },
+  {
+    path: 'lich-su-hang-hoa',
+    loadChildren: () => import('./lich-su-hang-hoa/lich-su-hang-hoa.module').then(m => m.LichSuHangHoaModule)
+  },
+  {
+    path: 'bao-cao-thu-chi',
+    loadChildren: () => import('./bao-cao-thu-chi/bao-cao-thu-chi.module').then(m => m.BaoCaoThuChiModule)
+  },
+  {
+    path: 'cong-no',
+    loadChildren: () => import('./cong-no/cong-no.module').then(m => m.CongNoModule)
   }
 ];
 

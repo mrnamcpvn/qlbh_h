@@ -30,16 +30,16 @@
                     <label for="khach-hang"
                            class="badge badge-primary">Khách hàng <i class="text-danger text-bold">*</i></label>
                     <ng-select name="khach-hang"
-                               required
                                [items]="khachHangs"
                                bindLabel="ten"
                                bindValue="id"
                                [(ngModel)]="data.iD_KH"
+                               (ngModelChange)="onCustomerChange($event)"
                                placeholder="Chọn Khách Hàng"
                                required>
-                    </ng-select>
-                  </div>
-                </div>
+                     </ng-select>
+                   </div>
+                 </div>
                 <div class="col-md-4">
                   <div class="form-group">
                     <label for="nhan-vien"
@@ -71,7 +71,25 @@
                     </div>
                   </div>
                 </div>
-              </form>
+               </form>
+               <div class="row mt-1 no-gutters ml-2">
+                 <div class="col-6">
+                     <div *ngIf="soNgayCongNo > 0" class="text-info font-weight-bold small d-flex">
+                        <div>
+                          <div>Công nợ {{soNgayCongNo}} ngày
+                            <span *ngIf="ngayDenHan"> — Hạn thanh toán: {{ngayDenHan | date:'dd/MM/yyyy'}}</span>
+                          </div>
+                          <div class="text-muted" *ngIf="debtInfo?.soNgayCongNo > 0 && debtInfo.creditLimit > 0">
+                           Hạn mức: {{debtInfo.creditLimit | number}}₫
+                           | Dư nợ: {{debtInfo.currentDebt | number}}₫
+                           <span *ngIf="debtInfo.remainingCredit > 0" class="text-success">
+                             (Còn: {{debtInfo.remainingCredit | number}}₫)
+                           </span>
+                         </div>
+                       </div>
+                     </div>
+                 </div>
+                </div>
               <form class="form-group row p-2"
                     #tableForm="ngForm"
                     autocomplete="off">
@@ -146,7 +164,7 @@
                                    class="form-control form-control-sm text-center"
                                    [(ngModel)]="item.soLuong"
                                    [name]="'qty_' + i"
-                                   (ngModelChange)="onItemChange(item)"
+                                   (blur)="onItemChange(item)"
                                    placeholder="Số lượng"
                                    min="1"
                                    required>
@@ -156,7 +174,7 @@
                                    class="form-control form-control-sm text-right"
                                    [(ngModel)]="item.gia"
                                    [name]="'price_' + i"
-                                   (ngModelChange)="onItemChange(item)"
+                                   (blur)="onItemChange(item)"
                                    placeholder="Giá"
                                    min="0"
                                    required>
@@ -199,10 +217,21 @@
                         </tr>
                       </tbody>
                     </table>
-                    <div *ngIf="tableForm.invalid && listChiTiet.length > 0"
-                         class="text-danger small font-italic text-right mt-1">
-                      * Vui lòng hoàn tất thông tin đơn hàng để có thể thêm sản phẩm mới.
-                    </div>
+                      <div class="d-flex align-items-center mt-1">
+                        <div *ngIf="debtInfo?.hasOverdueOrders"
+                             class="alert alert-warning py-1 mb-0 rounded-0 small mr-auto">
+                         <i class="fa fa-exclamation-triangle"></i>
+                         Khách hàng đang có <strong>{{debtInfo.overdueOrderCount}}</strong> đơn quá hạn
+                         (tổng dư nợ: <strong>{{debtInfo.currentDebt | number}}₫</strong>).
+                         <span *ngIf="debtInfo.isOverLimit" class="text-danger font-weight-bold">
+                           Đã vượt hạn mức công nợ!
+                         </span>
+                         <a href="javascript:;" class="ml-2 font-weight-bold" (click)="viewDebtDetail()">Xem Chi Tiết</a>
+                       </div>
+                        <div class="text-danger small font-italic text-right ml-auto">
+                         * Hoàn tất thông tin đơn hàng để có thể thêm sản phẩm mới.
+                       </div>
+                     </div>
                   </div>
                 </div>
               </form>
@@ -210,12 +239,12 @@
           </div>
         </div>
         <div class="card-footer">
-          <div class="row">
+          <div class="row mt-3">
             <div class="col-md-12">
               <button type="button"
                       class="btn btn-success mr-2"
                       (click)="save()"
-                      [disabled]="tableForm.invalid || tableForm.invalid || listChiTiet.length == 0">
+                      [disabled]="paramForm.invalid || tableForm.invalid || listChiTiet.length == 0">
                 <i class="{{iconButton.SAVE}}"></i>
                 Lưu
               </button>

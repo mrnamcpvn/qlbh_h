@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 import { ModalService } from '@services/modal.service';
 import { DonHang, ChiTietDonHang, DonHangFilter } from "@models/maintains/don-hang";
@@ -14,7 +14,7 @@ import { KeyValuePair } from '@utilities/key-value-pair';
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss']
 })
-export class MainComponent extends InjectBase implements OnInit {
+export class MainComponent extends InjectBase implements OnInit, OnDestroy {
   iconButton = IconButton;
   bsConfig: Partial<BsDatepickerConfig> = {
     dateInputFormat: "DD/MM/YYYY",
@@ -34,6 +34,8 @@ export class MainComponent extends InjectBase implements OnInit {
     payType: '3',
     dateType: '1'
   };
+  khList: KeyValuePair[] = [];
+  selectedKH: number[] = [];
   tinhTrangList: KeyValuePair[] = [
     { key: '1', value: 'Đã Thanh Toán' },
     { key: '2', value: 'Chưa Thanh Toán' },
@@ -69,7 +71,33 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   ngOnInit() {
-    this.clear();
+    const savedState = this.donHangService.getMainState('ban-hang');
+    this.donHangService.clearMainState('ban-hang');
+    if (savedState) {
+      this.restoreState(savedState);
+    } else {
+      this.getListKhachHang();
+      this.clear();
+    }
+  }
+
+  ngOnDestroy() {
+    this.donHangService.saveMainState('ban-hang', {
+      param: { ...this.param },
+      fromDate: this.fromDate,
+      toDate: this.toDate,
+      pagination: { ...this.pagination },
+      selectedKH: [...this.selectedKH]
+    });
+  }
+
+  getListKhachHang() {
+    this.donHangService.getListKhachHang().subscribe({
+      next: (res) => {
+        this.khList = res;
+        this.functionUtility.getNgSelectAllCheckbox(this.khList);
+      }
+    });
   }
 
   getData() {
@@ -82,7 +110,8 @@ export class MainComponent extends InjectBase implements OnInit {
       payType: this.param.payType,
       tinhTrang: this.param.tinhTrang,
       ma_DH: this.param.ma_DH,
-      dateType: this.param.dateType
+      dateType: this.param.dateType,
+      idKH: this.selectedKH
       };
     this.donHangService.getDataPagination(filter).subscribe({
       next: (res) => {
@@ -106,7 +135,8 @@ export class MainComponent extends InjectBase implements OnInit {
       payType: this.param.payType,
       tinhTrang: this.param.tinhTrang,
       ma_DH: this.param.ma_DH,
-      dateType: this.param.dateType
+      dateType: this.param.dateType,
+      idKH: this.selectedKH
     };
     this.donHangService.excelExport(filter)
       .subscribe({
@@ -160,6 +190,7 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   clear() {
+    this.donHangService.clearMainState('ban-hang');
     // First of month
     this.fromDate = new Date(this.now.getFullYear(), this.now.getMonth(), 1);
     // Last of month
@@ -169,6 +200,7 @@ export class MainComponent extends InjectBase implements OnInit {
     this.param.filterBy = '0';
     this.param.tinhTrang = '3';
     this.param.dateType = '1';
+    this.selectedKH = [];
     this.search();
   }
 
@@ -249,5 +281,15 @@ export class MainComponent extends InjectBase implements OnInit {
   }
   changeData($event) {
     this.search();
+  }
+
+  private restoreState(state: any) {
+    this.getListKhachHang();
+    this.param = { ...state.param };
+    this.fromDate = state.fromDate ? new Date(state.fromDate) : null;
+    this.toDate = state.toDate ? new Date(state.toDate) : null;
+    this.pagination = { ...state.pagination };
+    this.selectedKH = [...(state.selectedKH || [])];
+    this.getData();
   }
 }

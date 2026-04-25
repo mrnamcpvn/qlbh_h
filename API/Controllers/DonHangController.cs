@@ -70,5 +70,19 @@ namespace API.Controllers
             var result = await _service.GetDetail(id);
             return Ok(result);
         }
+
+        [HttpGet("GetListNhaCungCap")]
+        public async Task<IActionResult> GetListNhaCungCap()
+        {
+            var result = await _service.GetListNhaCungCap();
+            return Ok(result);
+        }
+
+        [HttpGet("GetListKhachHang")]
+        public async Task<IActionResult> GetListKhachHang()
+        {
+            var result = await _service.GetListKhachHang();
+            return Ok(result);
+        }
     }
 }

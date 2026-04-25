@@ -1,54 +1,55 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
 import { IconButton } from '@constants/common.constants';
 import { ChiTietDonHang, DonHang, DonHangDTO } from '@models/maintains/don-hang';
-import { SanPham } from '@models/maintains/san-pham';
 import { NhaCungCap } from '@models/maintains/nha-cung-cap';
 import { NhanVien } from '@models/maintains/nhan-vien';
-import { SanPhamService } from '@services/san-pham.service';
+import { SanPham } from '@models/maintains/san-pham';
 import { DonHangService } from '@services/don-hang.service';
 import { NhaCungCapService } from '@services/nha-cung-cap.service';
 import { NhanVienService } from '@services/nhan-vien.service';
+import { SanPhamService } from '@services/san-pham.service';
 import { InjectBase } from '@utilities/inject-base-app';
-import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
 
 @Component({
   selector: 'app-form',
   templateUrl: './form.component.html',
   styleUrls: ['./form.component.scss']
 })
-export class FormComponent extends InjectBase implements OnInit, AfterViewInit {
-  iconButton = IconButton;
+export class FormComponent extends InjectBase implements OnInit, AfterViewInit, OnDestroy {
 
-  // 1. UI & System Config
+  iconButton = IconButton;
   bsConfig: Partial<BsDatepickerConfig> = { dateInputFormat: 'DD/MM/YYYY' };
 
-  // 2. State & Route Params
   id: number;
   isEdit: boolean = false;
 
-  // 3. Form Data Models
   data: DonHangDTO = <DonHangDTO>{};
   donHang: DonHang = <DonHang>{};
   listChiTiet: ChiTietDonHang[] = [];
   date: Date = new Date();
   tongTien: number = 0;
 
-  // 4. Master Data (Dropdown lists)
   nhaCungCaps: NhaCungCap[] = [];
   nhanViens: NhanVien[] = [];
   sanPhams: SanPham[] = [];
 
-  // 5. Tracking Data (For stock recalculation)
-  originalSanPhams: SanPham[] = [];
-  originalChiTiet: ChiTietDonHang[] = [];
+  private originalSanPhams: SanPham[] = [];
+  private originalChiTiet: ChiTietDonHang[] = [];
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private donHangService: DonHangService,
     private nccService: NhaCungCapService,
     private nvService: NhanVienService,
     private spService: SanPhamService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
   ) {
     super();
   }
@@ -58,22 +59,7 @@ export class FormComponent extends InjectBase implements OnInit, AfterViewInit {
     this.isEdit = !!this.id;
 
     if (this.isEdit) {
-      this.donHangService.current_DH.subscribe({
-        next: res => {
-          if (res) {
-            this.donHang = res;
-            this.data.iD_NCC = res.iD_NCC;
-            this.data.iD_NV = res.iD_NV;
-            this.data.ma_DH = res.ma_DH;
-            if (res.date)
-              this.date = new Date(res.date);
-            this.tongTien = res.tongTien;
-          } else {
-            this.router.navigate(['/maintain/mua-hang']);
-          }
-        },
-        error: () => this.router.navigate(['/maintain/mua-hang'])
-      });
+      this.loadEditData();
     }
 
     this.getAllNCC();
@@ -87,7 +73,32 @@ export class FormComponent extends InjectBase implements OnInit, AfterViewInit {
     }
   }
 
-  getDetail() {
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadEditData() {
+    this.donHangService.current_DH
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: res => {
+          if (res) {
+            this.donHang = res;
+            this.data.iD_NCC = res.iD_NCC;
+            this.data.iD_NV = res.iD_NV;
+            this.data.ma_DH = res.ma_DH;
+            if (res.date) this.date = new Date(res.date);
+            this.tongTien = res.tongTien;
+          } else {
+            this.router.navigate(['/maintain/mua-hang']);
+          }
+        },
+        error: () => this.router.navigate(['/maintain/mua-hang'])
+      });
+  }
+
+  private getDetail() {
     this.donHangService.getDetail(this.id).subscribe({
       next: res => {
         this.listChiTiet = (res || []).map((item: any) => ({
@@ -99,71 +110,115 @@ export class FormComponent extends InjectBase implements OnInit, AfterViewInit {
           dvt: item.dvt || item.Dvt
         }));
         this.originalChiTiet = this.listChiTiet.map(x => ({ ...x }));
-        this.listChiTiet.forEach((item, index) => {
-          item.stt = index + 1;
-        });
+        this.listChiTiet.forEach((item, i) => item.stt = i + 1);
         this.recalculateStock();
       }
     });
   }
 
-  getAllNCC() {
+  private getAllNCC() {
     this.nccService.getAll().subscribe({
-      next: (res) => {
-        this.nhaCungCaps = res;
-      }
+      next: res => this.nhaCungCaps = res
     });
   }
 
-  getAllNV() {
+  private getAllNV() {
     this.nvService.getAll().subscribe({
-      next: (res) => {
-        this.nhanViens = res;
-      }
+      next: res => this.nhanViens = res
     });
   }
 
-  getAllSP() {
+  private getAllSP() {
     this.spService.getAll().subscribe({
-      next: (res) => {
+      next: res => {
         this.originalSanPhams = res;
         this.recalculateStock();
       }
     });
   }
 
-  recalculateStock() {
-    if (this.originalSanPhams && this.originalSanPhams.length > 0) {
-      // Create new list and preserve current warehouse stock in 'tonHienTai'
-      this.sanPhams = this.originalSanPhams.map(sp => ({
-        ...sp,
-        tonHienTai: sp.soLuong
-      }));
+  /**
+   * Tính lại tồn kho ảo (soLuong trên sanPhams) dựa trên:
+   * 1. Tồn gốc (originalSanPhams)
+   * 2. Trừ số lượng đã nhập trong DB (originalChiTiet) - chỉ khi edit
+   * 3. Cộng thêm số lượng đang nhập trên form (listChiTiet)
+   */
+  private recalculateStock() {
+    if (!this.originalSanPhams?.length) return;
 
-      // For purchasing, we subtract what's already in the DB to get pre-purchase levels
-      if (this.isEdit && this.originalChiTiet && this.originalChiTiet.length > 0) {
-        this.originalChiTiet.forEach(item => {
-          let sp = this.sanPhams.find(x => x.id == item.iD_SP);
-          if (sp) {
-            sp.soLuong -= (item.soLuong || 0);
-          }
-        });
-      }
+    this.sanPhams = this.originalSanPhams.map(sp => ({
+      ...sp,
+      tonHienTai: sp.soLuong
+    }));
 
-      // Add all selected products' quantities currently in the form
-      if (this.listChiTiet && this.listChiTiet.length > 0) {
-        this.listChiTiet.forEach(item => {
-          if (item.iD_SP) {
-            let sp = this.sanPhams.find(x => x.id == item.iD_SP);
-            if (sp) sp.soLuong += (item.soLuong || 0);
-          }
-        });
-      }
+    // Edit mode: trừ lại tồn đã nhập trong DB (hoàn tồn về trạng thái trước nhập)
+    if (this.isEdit && this.originalChiTiet?.length) {
+      this.originalChiTiet.forEach(item => {
+        const sp = this.sanPhams.find(x => x.id == item.iD_SP);
+        if (sp) sp.soLuong -= (item.soLuong || 0);
+      });
+    }
+
+    // Cộng thêm số lượng đang nhập trên form
+    this.listChiTiet.forEach(item => {
+      if (!item.iD_SP) return;
+      const sp = this.sanPhams.find(x => x.id == item.iD_SP);
+      if (sp) sp.soLuong += (item.soLuong || 0);
+    });
+  }
+
+  private calculateTotal() {
+    this.tongTien = this.listChiTiet.reduce(
+      (sum, item) => sum + ((item.gia || 0) * (item.soLuong || 0)), 0
+    );
+  }
+
+  /** Đồng bộ tổng tiền với donHang khi ở chế độ Edit */
+  private syncEditState() {
+    if (this.isEdit) {
+      this.donHang.tongTien = this.tongTien;
+      this.donHangService.changeSDonHang(this.donHang);
     }
   }
 
+  add() {
+    this.listChiTiet.push({
+      stt: this.listChiTiet.length + 1,
+      iD_SP: null,
+      ten_SP: '',
+      dvt: ''
+    } as any);
+    this.calculateTotal();
+  }
+
+  deleteItem(item: ChiTietDonHang) {
+    if (this.isEdit && item.id) {
+      this.snotifyService.confirm("Bạn có chắc chắc muốn xóa?", "Xóa", () => {
+        this.donHangService.deleteItem(item.id).subscribe({
+          next: res => {
+            if (res) {
+              this.snotifyService.success("Xóa thành công", "Thành công");
+              this.removeItemFromList(item);
+            } else {
+              this.snotifyService.warning("Xóa không thành công", "Cảnh báo");
+            }
+          },
+          error: err => this.snotifyService.error(err, "Lỗi")
+        });
+      });
+    } else {
+      this.removeItemFromList(item);
+    }
+  }
+
+  private removeItemFromList(item: ChiTietDonHang) {
+    this.listChiTiet = this.listChiTiet.filter(x => x !== item);
+    this.listChiTiet.forEach((x, i) => x.stt = i + 1);
+    this.refreshCalculations();
+  }
+
   mhChanges(id: number, item: ChiTietDonHang) {
-    let sp = this.originalSanPhams.find(x => x.id == id);
+    const sp = this.originalSanPhams.find(x => x.id == id);
     if (sp) {
       item.ten_SP = sp.ten;
       item.ma_SP = sp.maSP;
@@ -172,34 +227,38 @@ export class FormComponent extends InjectBase implements OnInit, AfterViewInit {
       item.dvt = sp.dvt;
     } else {
       delete item.gia;
-      delete item.dvt
-      delete item.soLuong
+      delete item.dvt;
+      delete item.soLuong;
     }
     this.onItemChange(item);
   }
 
-  add() {
-    const newItem = {
-      stt: this.listChiTiet.length + 1,
-      iD_SP: null,
-      ten_SP: '',
-      dvt: ''
-    } as any;
-    this.listChiTiet.push(newItem);
-    this.calculateTotal();
-  }
+  onItemChange(item: ChiTietDonHang) {
+    let needDetectChanges = false;
 
-  calculateTotal() {
-    this.tongTien = this.listChiTiet.reduce((tt, item) => {
-      return tt + (item.gia * item.soLuong);
-    }, 0);
+    // Xóa giá trị không hợp lệ
+    if (item.soLuong != null && item.soLuong <= 0) {
+      delete item.soLuong;
+      needDetectChanges = true;
+    }
+    if (item.gia != null && item.gia < 0) {
+      delete item.gia;
+      needDetectChanges = true;
+    }
+
+    item.thanhTien = (item.soLuong || 0) * (item.gia || 0);
+    this.recalculateStock();
+    this.calculateTotal();
+    this.syncEditState();
+
+    // Chỉ gọi detectChanges khi thực sự có delete property
+    if (needDetectChanges) this.cdr.detectChanges();
   }
 
   save() {
     this.data.tongTien = this.tongTien;
     this.data.chitiet = this.listChiTiet;
-    if (this.date)
-      this.data.date_Str = this.functionUtility.getDateFormat(this.date);
+    if (this.date) this.data.date_Str = this.functionUtility.getDateFormat(this.date);
 
     if (this.isEdit) {
       this.data.id = this.donHang.id;
@@ -207,7 +266,7 @@ export class FormComponent extends InjectBase implements OnInit, AfterViewInit {
       this.data.ma_DH = this.donHang.ma_DH;
 
       this.donHangService.update(this.data).subscribe({
-        next: (res) => {
+        next: res => {
           if (res) {
             this.snotifyService.success('Sửa đơn hàng thành công', 'Thành công');
             this.donHangService.changeSDonHang(res);
@@ -218,9 +277,9 @@ export class FormComponent extends InjectBase implements OnInit, AfterViewInit {
         }
       });
     } else {
-      this.data.loai = 1; // Fixed type for purchasing
+      this.data.loai = 1; // Loại: Mua hàng
       this.donHangService.create(this.data).subscribe({
-        next: (res) => {
+        next: res => {
           if (res) {
             this.snotifyService.success('Thêm đơn hàng thành công', 'Thành công');
             this.donHangService.changeSDonHang(res);
@@ -237,50 +296,11 @@ export class FormComponent extends InjectBase implements OnInit, AfterViewInit {
     this.router.navigate(['/maintain/mua-hang']);
   }
 
-  deleteItem(item: ChiTietDonHang) {
-    if (this.isEdit && item.id) {
-      this.snotifyService.confirm("Bạn có chắc chắc muốn xóa?", "Xóa", () => {
-        this.donHangService.deleteItem(item.id).subscribe({
-          next: (res) => {
-            if (res) {
-              this.snotifyService.success("Xóa thành công", "Thành công");
-              this.removeItemFromList(item);
-            } else {
-              this.snotifyService.warning("Xóa không thành công", "Cảnh báo");
-            }
-          },
-          error: (err) => this.snotifyService.error(err, "Lỗi")
-        });
-      });
-    } else {
-      this.removeItemFromList(item);
-    }
-  }
-
-  removeItemFromList(item: ChiTietDonHang) {
-    this.listChiTiet = this.listChiTiet.filter(x => x !== item);
-    this.listChiTiet.forEach((x, i) => x.stt = i + 1);
+  /** Gọi lại tất cả tính toán sau khi thay đổi dữ liệu */
+  private refreshCalculations() {
     this.recalculateStock();
     this.calculateTotal();
-    if (this.isEdit) {
-      this.donHang.tongTien = this.tongTien;
-      this.donHangService.changeSDonHang(this.donHang);
-    }
-  }
-
-  onItemChange(item: ChiTietDonHang) {
-    if (item.soLuong == null || item.soLuong == undefined || item.soLuong <= 0)
-      delete item.soLuong
-    if (item.gia == null || item.gia == undefined || item.gia < 0)
-      delete item.gia
-
-    item.thanhTien = (item.soLuong || 0) * (item.gia || 0);
-    this.recalculateStock();
-    this.calculateTotal();
-    if (this.isEdit) {
-      this.donHang.tongTien = this.tongTien;
-      this.donHangService.changeSDonHang(this.donHang);
-    }
+    this.syncEditState();
   }
 
   customSearchFn = (term: string, item: any) => {
@@ -289,7 +309,7 @@ export class FormComponent extends InjectBase implements OnInit, AfterViewInit {
       this.removeAccents(item.ten).includes(search);
   }
 
-  removeAccents(str: string): string {
+  private removeAccents(str: string): string {
     return (str || '').toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')

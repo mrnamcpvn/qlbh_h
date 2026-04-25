@@ -4,9 +4,11 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { PaginationParam, PaginationResult } from '@utilities/pagination-utility';
 import { OperationResult } from '@utilities/operation-result';
 import { ChiTietDonHang, DonHang, DonHangDTO, DonHangFilter, DonHangPaginationResult } from '@models/maintains/don-hang';
+import { KeyValuePair } from '@utilities/key-value-pair';
 import { ThanhToan } from '@models/maintains/thanh-toan';
 import { FunctionUtility } from '@utilities/function-utility';
 import { BehaviorSubject } from 'rxjs';
+import { AppStateService } from './app-state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +19,28 @@ export class DonHangService {
   current_DH = this.s_DonHang.asObservable();
   s_DonHangDTO = new BehaviorSubject<DonHangDTO>(null);
   current_DHDTO = this.s_DonHang.asObservable();
-  constructor(private http: HttpClient, private functionUtility: FunctionUtility) { }
+
+  // Main state cache: lưu filter/pagination/data khi rời main
+  private mainStates = new Map<string, any>();
+
+  saveMainState(key: string, state: any) {
+    this.mainStates.set(key, state);
+  }
+
+  getMainState(key: string): any {
+    return this.mainStates.get(key);
+  }
+
+  clearMainState(key: string) {
+    this.mainStates.delete(key);
+  }
+  constructor(
+    private http: HttpClient,
+    private functionUtility: FunctionUtility,
+    private appState: AppStateService
+  ) {
+    this.appState.reset$.subscribe(() => this.mainStates.clear());
+  }
 
   getDataPagination(filter: DonHangFilter) {
     let dateStart = this.functionUtility.getDateFormat(filter.fromDate as Date);
@@ -32,6 +55,8 @@ export class DonHangService {
     if (filter.payType) params = params.append('payType', filter.payType);
     if (filter.dateType) params = params.append('dateType', filter.dateType);
     if (filter.tinhTrang) params = params.append('tinhTrang', filter.tinhTrang);
+    if (filter.idNCC?.length) filter.idNCC.forEach(id => params = params.append('IdNCC', id));
+    if (filter.idKH?.length) filter.idKH.forEach(id => params = params.append('IdKH', id));
     return this.http.get<DonHangPaginationResult>(`${this.apiUrl}/GetDonHangPagination`, { params });
   }
 
@@ -45,6 +70,8 @@ export class DonHangService {
     if (filter.ma_DH) params = params.append('ma_DH', filter.ma_DH);
     if (filter.payType) params = params.append('payType', filter.payType);
     if (filter.tinhTrang) params = params.append('tinhTrang', filter.tinhTrang);
+    if (filter.idNCC?.length) filter.idNCC.forEach(id => params = params.append('IdNCC', id));
+    if (filter.idKH?.length) filter.idKH.forEach(id => params = params.append('IdKH', id));
     return this.http.get<OperationResult>(`${this.apiUrl}/ExcelExport`, { params });
   }
 
@@ -78,6 +105,14 @@ export class DonHangService {
 
   getThanhToanByDonHang(idDh: number) {
     return this.http.get<ThanhToan[]>(`${this.apiUrl.replace('DonHang', 'ThanhToan')}/GetByDonHang`, { params: { idDh } });
+  }
+
+  getListNhaCungCap() {
+    return this.http.get<KeyValuePair[]>(`${this.apiUrl}/GetListNhaCungCap`);
+  }
+
+  getListKhachHang() {
+    return this.http.get<KeyValuePair[]>(`${this.apiUrl}/GetListKhachHang`);
   }
 
   changeSDonHang(model: DonHang) {
