@@ -146,7 +146,7 @@
                                    class="form-control form-control-sm text-center"
                                    [(ngModel)]="item.soLuong"
                                    [name]="'qty_' + i"
-                                   (ngModelChange)="onItemChange(item)"
+                                   (blur)="onItemChange(item)"
                                    placeholder="Số lượng"
                                    min="1"
                                    required>
@@ -156,7 +156,7 @@
                                    class="form-control form-control-sm text-right"
                                    [(ngModel)]="item.gia"
                                    [name]="'price_' + i"
-                                   (ngModelChange)="onItemChange(item)"
+                                   (blur)="onItemChange(item)"
                                    placeholder="Giá"
                                    min="0"
                                    required>
@@ -199,9 +199,8 @@
                         </tr>
                       </tbody>
                     </table>
-                    <div *ngIf="tableForm.invalid && listChiTiet.length > 0"
-                         class="text-danger small font-italic text-right mt-1">
-                      * Vui lòng hoàn tất thông tin đơn hàng để có thể thêm sản phẩm mới.
+                    <div class="text-danger small font-italic text-right mt-1">
+                      * Hoàn tất thông tin đơn hàng để có thể thêm sản phẩm mới.
                     </div>
                   </div>
                 </div>
