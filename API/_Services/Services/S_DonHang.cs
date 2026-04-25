@@ -26,137 +26,220 @@ namespace API._Services.Services
         #region Download
         public async Task<OperationResult> DownloadExcel(DonHangRequestDTO filter)
         {
-            var data = await GetData(filter).ToListAsync();
+            var data = await GetData(filter);
             if (!data.Any())
                 return new OperationResult(false, "No Data");
-
             foreach (var item in data)
             {
                 item.StatusName = (item.TienMat ?? 0) + (item.ChuyenKhoan ?? 0) >= (item.TongTien ?? 0) ? "Đã thanh toán" : "Chưa thanh toán";
             }
-            var excelResult = ExcelUtility.DownloadExcel(data, "Resources\\Template\\DonHang\\Download.xlsx");
+            var excelResult = ExcelUtility.DownloadExcel(data, $"Resources\\Template\\DonHang\\Download_{(filter.Loai == 1 ? "Nhap" : "Xuat")}.xlsx");
             return new OperationResult(excelResult.IsSuccess, excelResult.Error, excelResult.Result);
         }
         #endregion
         #region Getdata
         public async Task<DonHangPaginationResult> GetDataPagination(DonHangRequestDTO filter)
         {
-            var donHangs = GetData(filter);
+            var donHangs = await GetData(filter);
             var pageNumber = filter.Pagination?.PageNumber ?? 1;
             var pageSize = filter.Pagination?.PageSize ?? 10;
-            var donHangsList = await donHangs.ToListAsync();
-            var result = PaginationUtility<DonHangO>.Create(donHangsList, pageNumber, pageSize);
-            var total = donHangsList.Sum(x => x.TongTien ?? 0);
+            var result = PaginationUtility<DonHangO>.Create(donHangs, pageNumber, pageSize);
+            var total = donHangs.Sum(x => x.TongTien ?? 0);
             return new DonHangPaginationResult { Pagination = result, TotalAmount = total };
         }
 
-        private IQueryable<DonHangO> GetData(DonHangRequestDTO filter)
+        private async Task<List<DonHangO>> GetData(DonHangRequestDTO filter)
         {
             string fromDate = filter.FromDate;
             string toDate = filter.ToDate;
             int type = filter.Loai;
             string ma_DH = filter.Ma_DH;
             int? payType = filter.PayType;
-            var predicateUser = PredicateBuilder.New<DonHang>(true);
+            int? dateType = filter.DateType;
+            var predicateDonHang = PredicateBuilder.New<DonHang>(x => x.Loai == type);
 
-            if (!string.IsNullOrEmpty(fromDate) && !string.IsNullOrEmpty(toDate))
-            {
-                var start = Convert.ToDateTime(fromDate);
-                var end = Convert.ToDateTime(toDate).AddDays(1);
-                predicateUser.And(x => start <= x.Date && x.Date <= end);
-            }
-            if (type > 0)
-                predicateUser.And(x => x.Loai == type);
+            var start = Convert.ToDateTime(fromDate);
+            var end = Convert.ToDateTime(toDate);
+            if (dateType == 1) // Ngày Lập
+                predicateDonHang.And(x => x.Create_Time.HasValue && start.Date <= x.Create_Time.Value.Date && x.Create_Time.Value.Date <= end.Date);
+            else if (dateType == 2) // Ngày Xuất/Nhập
+                predicateDonHang.And(x => x.Date.HasValue && start.Date <= x.Date.Value.Date && x.Date.Value.Date <= end.Date);
             if (!string.IsNullOrEmpty(ma_DH))
-                predicateUser.And(x => x.Ma_DH == ma_DH);
+                predicateDonHang.And(x => x.Ma_DH.Contains(ma_DH));
             if (payType == 1)
-                predicateUser.And(x => x.TienMat > 0);
+                predicateDonHang.And(x => x.TienMat > 0);
             else if (payType == 2)
-                predicateUser.And(x => x.ChuyenKhoan > 0);
+                predicateDonHang.And(x => x.ChuyenKhoan > 0);
             if (filter.TinhTrang == "1")
-                predicateUser.And(x => (x.ChuyenKhoan ?? 0) + (x.TienMat ?? 0) >= (x.TongTien ?? 0));
+                predicateDonHang.And(x => (x.ChuyenKhoan ?? 0) + (x.TienMat ?? 0) >= (x.TongTien ?? 0));
             else if (filter.TinhTrang == "2")
-                predicateUser.And(x => (x.ChuyenKhoan ?? 0) + (x.TienMat ?? 0) < (x.TongTien ?? 0));
+                predicateDonHang.And(x => (x.ChuyenKhoan ?? 0) + (x.TienMat ?? 0) < (x.TongTien ?? 0));
+            var donHangs = await _repoAccessor.DonHang.FindAll(predicateDonHang).ToListAsync();
+            List<InfoDTO> info = new();
+            if (type == 1)
+            {
+                var ncc = donHangs.Select(x => x.ID_NCC);
+                info = await _repoAccessor.NhaCungCap.FindAll(x => ncc.Contains(x.ID))
+                .Select(x => new InfoDTO
+                {
+                    ID = x.ID,
+                    Ten = x.Ten,
+                    DiaChi = x.DiaChi
+                }).ToListAsync();
+            }
+            else if (type == 2)
+            {
+                var kh = donHangs.Select(x => x.ID_KH);
+                info = await _repoAccessor.KhachHang.FindAll(x => kh.Contains(x.ID))
+                .Select(x => new InfoDTO
+                {
+                    ID = x.ID,
+                    Ten = x.Ten,
+                    DiaChi = x.DiaChi
+                }).ToListAsync();
 
-            var donHangs = _repoAccessor.DonHang.FindAll(predicateUser)
-                            .Join(_repoAccessor.KhachHang.FindAll(),
-                                x => x.ID_KH,
-                                y => y.ID,
-                                (x, y) => new { donHang = x, khachHang = y }
-                            ).Select(x => new DonHangO
-                            {
-                                ID = x.donHang.ID,
-                                ID_KH = x.donHang.ID_KH,
-                                Ten_KH = x.donHang.Ten_KH,
-                                DiaChi = x.khachHang.DiaChi,
-                                Loai = x.donHang.Loai,
-                                TongTien = x.donHang.TongTien,
-                                Date = x.donHang.Date,
-                                TienMat = x.donHang.TienMat,
-                                ChuyenKhoan = x.donHang.ChuyenKhoan,
-                                ID_NV = x.donHang.ID_NV,
-                                Status = (x.donHang.ChuyenKhoan ?? 0) + (x.donHang.TienMat ?? 0) >= (x.donHang.TongTien ?? 0),
-                                Ma_DH = x.donHang.Ma_DH
-                            }).OrderByDescending(x => x.Date);
-            return donHangs;
+            }
+            List<DonHangO> result = donHangs
+                .Join(info,
+                    x => x.Loai == 1 ? x.ID_NCC : x.ID_KH,
+                    y => y.ID,
+                    (x, y) => new { donHang = x, info = y })
+                .Select(x => new DonHangO
+                {
+                    ID = x.donHang.ID,
+                    ID_KH = x.donHang.ID_KH,
+                    ID_NCC = x.donHang.ID_NCC,
+                    Ten_NCC = x.donHang.Loai == 1 ? x.info.Ten : null,
+                    Ten_KH = x.donHang.Loai == 2 ? x.info.Ten : null,
+                    DiaChi = x.info.DiaChi,
+                    Loai = x.donHang.Loai,
+                    TongTien = x.donHang.TongTien,
+                    TienMat = x.donHang.TienMat,
+                    ChuyenKhoan = x.donHang.ChuyenKhoan,
+                    ID_NV = x.donHang.ID_NV,
+                    Status = (x.donHang.ChuyenKhoan ?? 0) + (x.donHang.TienMat ?? 0) >= (x.donHang.TongTien ?? 0),
+                    Ma_DH = x.donHang.Ma_DH,
+                    Date = x.donHang.Date, // Ngày Nhập/Xuất Hàng
+                    Create_Time = x.donHang.Create_Time
+                }).ToList();
+            result = dateType == 1
+                ? result.OrderByDescending(x => x.Create_Time).ToList()
+                : result.OrderByDescending(x => x.Date).ToList();
+            return result;
         }
         public async Task<List<ChiTietDonHangDTO>> GetDetail(int id)
         {
-            var data = await _repoAccessor.ChiTietDonHang.FindAll(x => x.ID_DH == id)
-            .Join(_repoAccessor.SanPham.FindAll(),
-                ct => ct.ID_SP,
-                sp => sp.ID,
-                (ct, sp) => new ChiTietDonHangDTO
-                {
-                    ID = ct.ID,
-                    ID_DH = ct.ID_DH,
-                    ID_SP = ct.ID_SP,
-                    Ten_SP = sp.Ten,
-                    Dvt = sp.Dvt,
-                    SoLuong = ct.SoLuong,
-                    Gia = ct.Gia,
-                    ThanhTien = ct.ThanhTien,
-                    Updated_Time = ct.Updated_Time,
-                    SL_Ton_Dau = ct.SL_Ton_Dau,
-                    SL_Ton_Cuoi = ct.SL_Ton_Cuoi,
-                }).AsNoTracking().ToListAsync();
+            var data = await _repoAccessor.ChiTietDonHang
+                .FindAll(x => x.ID_DH == id)
+                .Join(_repoAccessor.SanPham.FindAll(),
+                    ct => ct.ID_SP,
+                    sp => sp.ID,
+                    (ct, sp) => new { ct, sp })
+                .Join(_repoAccessor.DonHang.FindAll(),
+                    temp => temp.ct.ID_DH,
+                    dh => dh.ID,
+                    (temp, dh) => new ChiTietDonHangDTO
+                    {
+                        ID = temp.ct.ID,
+                        ID_DH = temp.ct.ID_DH,
+                        Ma_DH = dh.Ma_DH,
+                        ID_SP = temp.ct.ID_SP,
+                        Ten_SP = temp.sp.Ten,
+                        Dvt = temp.sp.Dvt,
+                        SoLuong = temp.ct.SoLuong,
+                        Gia = temp.ct.Gia,
+                        ThanhTien = temp.ct.ThanhTien,
+                        Updated_Time = temp.ct.Updated_Time,
+                        SL_Ton_Dau = temp.ct.SL_Ton_Dau,
+                        SL_Ton_Cuoi = temp.ct.SL_Ton_Cuoi,
+                    })
+                .AsNoTracking()
+                .ToListAsync();
+
             return data;
         }
         #endregion
         #region CUD
-        public async Task<DonHang> Create(DonHangDTO model)
+        public async Task<DonHangO> Create(DonHangDTO model)
         {
+            var now = DateTime.Now;
             DonHang dh = new()
             {
-                Date = model.Date ?? DateTime.Now,
-                ID_KH = model.ID_KH,
-                Ten_KH = model.Ten_KH,
+                Date = !string.IsNullOrWhiteSpace(model.Date_Str) ? Convert.ToDateTime(model.Date_Str) : null,
                 TongTien = model.TongTien,
                 Loai = model.Loai,
                 ID_NV = model.ID_NV,
-                Ma_DH = model.Ma_DH
+                Create_Time = now
             };
+            if (model.Loai == 1)
+            {
+                dh.ID_NCC = model.ID_NCC;
+            }
+            else if (model.Loai == 2)
+            {
+                dh.ID_KH = model.ID_KH;
+                // Ma_DH (BH + YYMMDD + XXXX)
+                var p = "BH" + now.ToString("yyMMdd");
+                var last = await _repoAccessor.DonHang.FindAll(x => x.Ma_DH.StartsWith(p)).Select(x => x.Ma_DH).MaxAsync();
+                dh.Ma_DH = p + (last == null ? 1 : int.Parse(last[p.Length..]) + 1).ToString("D4");
+            }
             _repoAccessor.DonHang.Add(dh);
             await _repoAccessor.Save();
             var idDH = dh.ID;
-            foreach (var item in model.ChiTiet)
+            var items = model.ChiTiet.Where(x => x.ID_SP > 0 && x.SoLuong > 0).ToList();
+            foreach (var item in items)
             {
                 var sp = await _repoAccessor.SanPham.FindById(item.ID_SP);
+                if (sp == null) continue;
                 item.SL_Ton_Dau = sp.SoLuong ?? 0;
                 if (model.Loai == 1)
                     sp.SoLuong = (sp.SoLuong ?? 0) + item.SoLuong;
                 else sp.SoLuong = (sp.SoLuong ?? 0) - item.SoLuong;
                 item.ID_DH = idDH;
                 item.SL_Ton_Cuoi = sp.SoLuong;
-                item.Updated_Time = DateTime.Now;
+                item.Updated_Time = now;
                 _repoAccessor.ChiTietDonHang.Add(item);
                 _repoAccessor.SanPham.Update(sp);
             }
-
+            DonHangO res = new()
+            {
+                ID = dh.ID,
+                Date = dh.Date,
+                ID_KH = dh.ID_KH,
+                ID_NCC = dh.ID_NCC,
+                TongTien = dh.TongTien,
+                Loai = dh.Loai,
+                ID_NV = dh.ID_NV,
+                Ma_DH = dh.Ma_DH,
+                TienMat = dh.TienMat,
+                ChuyenKhoan = dh.ChuyenKhoan,
+                Create_Time = dh.Create_Time,
+            };
+            if (model.Loai == 1)
+            {
+                var ncc = await _repoAccessor.NhaCungCap.FindById(model.ID_NCC);
+                if (ncc != null)
+                {
+                    res.Ten_NCC = ncc.Ten;
+                    res.DiaChi = ncc.DiaChi;
+                }
+            }
+            else if (model.Loai == 2)
+            {
+                var kh = await _repoAccessor.KhachHang.FindById(model.ID_KH);
+                if (kh != null)
+                {
+                    res.Ten_KH = kh.Ten;
+                    res.DiaChi = kh.DiaChi;
+                }
+            }
+            var nv = await _repoAccessor.NhanVien.FindById(model.ID_NV);
+            if (nv != null)
+                res.Ten_NV = nv.Ten;
             try
             {
                 await _repoAccessor.Save();
-                return dh;
+                return res;
             }
             catch
             {
@@ -166,35 +249,61 @@ namespace API._Services.Services
                 await _repoAccessor.Save();
                 throw; // or return null, but better throw to let controller handle
             }
-
         }
 
-        public async Task<DonHang> Update(DonHangDTO model)
+        public async Task<DonHangO> Update(DonHangDTO model)
         {
             var dh = await _repoAccessor.DonHang.FindById(model.ID);
             if (dh == null)
                 throw new Exception("Đơn hàng không tồn tại.");
-            dh.ID_KH = model.ID_KH;
-            dh.Ten_KH = model.Ten_KH;
+            if (model.Loai == 1)
+            {
+                dh.ID_NCC = model.ID_NCC;
+            }
+            else if (model.Loai == 2)
+            {
+                dh.ID_KH = model.ID_KH;
+            }
             dh.TongTien = model.TongTien;
             dh.ID_NV = model.ID_NV;
             dh.Ma_DH = model.Ma_DH;
+            dh.Date = !string.IsNullOrWhiteSpace(model.Date_Str) ? Convert.ToDateTime(model.Date_Str) : null;
             _repoAccessor.DonHang.Update(dh);
-            foreach (var item in model.ChiTiet)
+            var items = model.ChiTiet.Where(x => x.ID_SP > 0 && x.SoLuong > 0).ToList();
+            foreach (var item in items)
             {
                 var sp = await _repoAccessor.SanPham.FindById(item.ID_SP);
+                if (sp == null) continue;
                 var chiTiet = await _repoAccessor.ChiTietDonHang.FindById(item.ID);
 
                 if (chiTiet != null)
                 {
-                    if (model.Loai == 1)
-                        sp.SoLuong = (sp.SoLuong ?? 0) + (item.SoLuong - chiTiet.SoLuong);
-                    else sp.SoLuong = (sp.SoLuong ?? 0) - (item.SoLuong - chiTiet.SoLuong);
-                    chiTiet.SL_Ton_Cuoi = sp.SoLuong;
-                    chiTiet.Updated_Time = DateTime.Now;
+                    if (chiTiet.ID_SP == item.ID_SP)
+                    {
+                        int delta = item.SoLuong - chiTiet.SoLuong;
+                        if (model.Loai == 1)
+                            sp.SoLuong = (sp.SoLuong ?? 0) + delta;
+                        else sp.SoLuong = (sp.SoLuong ?? 0) - delta;
+                    }
+                    else
+                    {
+                        var oldSp = await _repoAccessor.SanPham.FindById(chiTiet.ID_SP);
+                        if (oldSp != null)
+                        {
+                            if (model.Loai == 1) oldSp.SoLuong -= chiTiet.SoLuong;
+                            else oldSp.SoLuong += chiTiet.SoLuong;
+                            _repoAccessor.SanPham.Update(oldSp);
+                        }
+                        if (model.Loai == 1)
+                            sp.SoLuong = (sp.SoLuong ?? 0) + item.SoLuong;
+                        else sp.SoLuong = (sp.SoLuong ?? 0) - item.SoLuong;
+                    }
+                    chiTiet.ID_SP = item.ID_SP;
                     chiTiet.SoLuong = item.SoLuong;
                     chiTiet.ThanhTien = item.ThanhTien;
                     chiTiet.Gia = item.Gia;
+                    chiTiet.SL_Ton_Cuoi = sp.SoLuong;
+                    chiTiet.Updated_Time = DateTime.Now;
                     _repoAccessor.ChiTietDonHang.Update(chiTiet);
                 }
                 else
@@ -210,14 +319,49 @@ namespace API._Services.Services
                 }
                 _repoAccessor.SanPham.Update(sp);
             }
+            DonHangO res = new()
+            {
+                ID = dh.ID,
+                Date = dh.Date,
+                ID_KH = dh.ID_KH,
+                ID_NCC = dh.ID_NCC,
+                TongTien = dh.TongTien,
+                Loai = dh.Loai,
+                ID_NV = dh.ID_NV,
+                Ma_DH = dh.Ma_DH,
+                TienMat = dh.TienMat,
+                ChuyenKhoan = dh.ChuyenKhoan,
+                Create_Time = dh.Create_Time,
+            };
+            if (model.Loai == 1)
+            {
+                var ncc = await _repoAccessor.NhaCungCap.FindById(model.ID_NCC);
+                if (ncc != null)
+                {
+                    res.Ten_NCC = ncc.Ten;
+                    res.DiaChi = ncc.DiaChi;
+                }
+            }
+            else if (model.Loai == 2)
+            {
+                var kh = await _repoAccessor.KhachHang.FindById(model.ID_KH);
+                if (kh != null)
+                {
+                    res.Ten_KH = kh.Ten;
+                    res.DiaChi = kh.DiaChi;
+                }
+            }
+            var nv = await _repoAccessor.NhanVien.FindById(model.ID_NV);
+            if (nv != null)
+                res.Ten_NV = nv.Ten;
             try
             {
                 await _repoAccessor.Save();
-                return dh;
+                return res;
             }
             catch
             {
-                return new DonHang();
+                return new DonHangO();
             }
         }
 

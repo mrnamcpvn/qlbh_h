@@ -9,10 +9,10 @@ namespace API._Services.Interfaces
     {
         Task<DonHangPaginationResult> GetDataPagination(DonHangRequestDTO filter);
         Task<OperationResult> DownloadExcel(DonHangRequestDTO filter);
-        Task<DonHang> Create(DonHangDTO model);
+        Task<DonHangO> Create(DonHangDTO model);
         Task<bool> Delete(int id);
         Task<bool> DeleteItem(int id);
-        Task<DonHang> Update(DonHangDTO model);
+        Task<DonHangO> Update(DonHangDTO model);
         Task<bool> UpdatePayment(DonHang model);
         Task<List<ChiTietDonHangDTO>> GetDetail(int id);
     }

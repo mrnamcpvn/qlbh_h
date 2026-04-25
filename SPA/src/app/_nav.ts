@@ -15,6 +15,11 @@ export const navItems: INavData[] = [
     icon: 'fa fa-user',
   },
   {
+    name: 'Quản lý nhà cung cấp',
+    url: '/maintain/nha-cung-cap',
+    icon: 'fa fa-users',
+  },
+  {
     name: 'Quản lý khách hàng',
     url: '/maintain/khach-hang',
     icon: 'fa fa-users',

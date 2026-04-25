@@ -217,25 +217,26 @@
                              class="mr-2"></i>
                           <b>Tên hàng: {{ product.ten_SP }} ({{ product.nV_List.length }})</b>
                         </td>
-                        <td class="text-right"><b>{{ product.sL_Ban | number:'1.0-0' }}</b></td>
+                        <td class="text-center"><b>{{ product.sL_Ban | number:'1.0-0' }}</b></td>
                         <td class="text-right"><b>{{ product.dS_Ban | number:'1.0-0' }}</b></td>
                       </tr>
                       <ng-container *ngIf="product.isExpanded !== false">
                         <tr *ngFor="let nv of product.nV_List">
                           <td>{{ nv.ten_NV }}</td>
                           <td>{{ nv.sdT_NV }}</td>
-                          <td>{{ nv.dvt }}</td>
-                          <td class="text-right">{{ nv.sL_Ban | number:'1.0-0' }}</td>
+                          <td class="text-center">{{ nv.dvt }}</td>
+                          <td class="text-center">{{ nv.sL_Ban | number:'1.0-0' }}</td>
                           <td class="text-right">{{ nv.dS_Ban | number:'1.0-0' }}</td>
                         </tr>
                       </ng-container>
                     </ng-container>
 
-                    <tr *ngIf="data.result?.length > 0" class="row-total">
+                    <tr *ngIf="data.result?.length > 0"
+                        class="row-total">
                       <td colspan="3">
                         <b>Tổng cộng:</b>
                       </td>
-                      <td class="text-right">
+                      <td class="text-center">
                         <b>{{ data.tong_SL_Ban | number:'1.0-0' }}</b>
                       </td>
                       <td class="text-right">

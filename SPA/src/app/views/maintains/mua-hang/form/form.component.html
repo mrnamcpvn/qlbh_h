@@ -1,0 +1,228 @@
+<div class="animated fadeIn">
+  <div class="row pt-4">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <div class="row">
+            <div class="col-6">
+              <strong class="title-card-cs">
+                {{ isEdit ? 'Chỉnh sửa đơn hàng' : 'Nhập hàng' }}
+              </strong>
+            </div>
+            <div class="col-6">
+              <button type="button"
+                      class="btn btn-primary btn-sm float-right"
+                      (click)="back()">
+                <i class="{{iconButton.BACK}}"></i>
+                Trở về
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row justify-content-center">
+            <div class="col-12">
+              <form class="form-group row p-2"
+                    #paramForm="ngForm"
+                    autocomplete="off">
+                <div class="col-md-5">
+                  <div class="form-group">
+                    <label for="nha-cung-cap"
+                           class="badge badge-primary">Nhà cung cấp <i class="text-danger text-bold">*</i></label>
+                    <ng-select name="nha-cung-cap"
+                               required
+                               [items]="nhaCungCaps"
+                               bindLabel="ten"
+                               bindValue="id"
+                               [(ngModel)]="data.iD_NCC"
+                               placeholder="Chọn Nhà Cung Cấp"
+                               required>
+                    </ng-select>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="nhan-vien"
+                           class="badge badge-primary">Nhân viên Phụ Trách</label>
+                    <ng-select name="nhan-vien"
+                               [items]="nhanViens"
+                               bindLabel="ten"
+                               bindValue="id"
+                               [(ngModel)]="data.iD_NV"
+                               placeholder="Chọn Nhân Viên">
+                    </ng-select>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label for="date"
+                           class="badge badge-primary">Ngày Nhập</label>
+                    <div class="input-group">
+                      <input type="text"
+                             placeholder="Chọn ngày nhập"
+                             name="date"
+                             [bsConfig]="bsConfig"
+                             class="form-control"
+                             bsDatepicker
+                             [(ngModel)]="date">
+                      <div class="input-group-append">
+                        <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+              <form class="form-group row p-2"
+                    #tableForm="ngForm"
+                    autocomplete="off">
+                <div class="col-12 mt-3">
+                  <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                      <thead class="bg-light">
+                        <tr>
+                          <th class="text-center"
+                              style="width: 50px;">Stt</th>
+                          <th class="text-center"
+                              style="min-width: 250px;">Sản phẩm</th>
+                          <th class="text-center"
+                              style="width: 100px;">ĐVT</th>
+                          <th class="text-center"
+                              style="width: 120px;">Số lượng</th>
+                          <th class="text-center"
+                              style="width: 150px;">Giá mua</th>
+                          <th class="text-center"
+                              style="width: 150px;">Thành tiền</th>
+                          <th class="text-center"
+                              style="width: 100px;">Hành động</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let item of listChiTiet; let i = index">
+                          <td class="text-center">{{ i + 1 }}</td>
+                          <td>
+                            <ng-select [name]="'sanpham_' + i"
+                                       [items]="sanPhams"
+                                       [(ngModel)]="item.iD_SP"
+                                       (ngModelChange)="mhChanges(item.iD_SP, item)"
+                                       bindLabel="maSP"
+                                       bindValue="id"
+                                       placeholder="Chọn sản phẩm"
+                                       appendTo="form"
+                                       dropdownPosition="bottom"
+                                       [searchFn]="customSearchFn"
+                                       required>
+                              <ng-template ng-label-tmp
+                                           let-item="item">
+                                <span *ngIf="item.maSP">{{item.maSP}} - {{item.ten}}</span>
+                                <span *ngIf="!item.maSP && item.ma_SP">{{item.ma_SP}} - {{item.ten_SP}}</span>
+                              </ng-template>
+                              <ng-template ng-option-tmp
+                                           let-sp="item">
+                                <div>{{sp.maSP}} - {{sp.ten}}</div>
+                                <div class="small">
+                                  <span>
+                                    <i class="text-dark font-italic">Tồn kho: </i>
+                                    <i [ngClass]="sp.tonHienTai > 0 ? 'text-success font-weight-bold' : 'text-danger font-weight-bold'">
+                                      {{sp.tonHienTai}}</i>
+                                  </span>
+                                  <span class="mx-1 text-muted">|</span>
+                                  <span>
+                                    <i class="text-dark font-italic">Tồn sau đơn: </i>
+                                    <i [ngClass]="sp.soLuong > 0 ? 'text-success font-weight-bold' : 'text-danger font-weight-bold'">
+                                      {{sp.soLuong}}</i>
+                                  </span>
+                                  <span class="mx-1 text-muted">|</span>
+                                  <span class="text-dark ">
+                                    <i class="font-italic">Đơn vị tính: </i>
+                                    <i class="font-weight-bold">{{sp.dvt}}</i>
+                                  </span>
+                                </div>
+                              </ng-template>
+                            </ng-select>
+                          </td>
+                          <td class="text-center">{{item.dvt}}</td>
+                          <td>
+                            <input type="number"
+                                   class="form-control form-control-sm text-center"
+                                   [(ngModel)]="item.soLuong"
+                                   [name]="'qty_' + i"
+                                   (ngModelChange)="onItemChange(item)"
+                                   placeholder="Số lượng"
+                                   min="1"
+                                   required>
+                          </td>
+                          <td>
+                            <input type="number"
+                                   class="form-control form-control-sm text-right"
+                                   [(ngModel)]="item.gia"
+                                   [name]="'price_' + i"
+                                   (ngModelChange)="onItemChange(item)"
+                                   placeholder="Giá"
+                                   min="0"
+                                   required>
+                          </td>
+                          <td class="text-right">{{item.thanhTien | number}}</td>
+                          <td class="text-center">
+                            <button type="button"
+                                    (click)="deleteItem(item)"
+                                    class="btn btn-danger btn-sm"
+                                    title="Xóa">
+                              <i class="fa fa-trash-o"></i> Xóa
+                            </button>
+                          </td>
+                        </tr>
+                        <tr *ngIf="listChiTiet.length === 0">
+                          <td colspan="100%"
+                              class="table-warning text-center font-weight-bold">
+                            Không có dữ liệu!
+                          </td>
+                        </tr>
+
+                        <!-- Total Row -->
+                        <tr class="font-weight-bold bg-light">
+                          <td colspan="5"
+                              class="text-right">Tổng cộng:</td>
+                          <td class="text-right text-primary">{{tongTien | number}}</td>
+                          <td></td>
+                        </tr>
+                        <!-- New Add Row at the bottom -->
+                        <tr>
+                          <td class="text-center p-0"
+                              colspan="7">
+                            <button type="button"
+                                    class="btn btn-outline-success btn-sm"
+                                    (click)="add()"
+                                    [disabled]="tableForm.invalid">
+                              <i class="{{iconButton.ADD}}"></i> Thêm sản phẩm
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <div *ngIf="tableForm.invalid && listChiTiet.length > 0"
+                         class="text-danger small font-italic text-right mt-1">
+                      * Vui lòng hoàn tất thông tin đơn hàng để có thể thêm sản phẩm mới.
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="row">
+            <div class="col-md-12">
+              <button type="button"
+                      class="btn btn-success mr-2"
+                      (click)="save()"
+                      [disabled]="tableForm.invalid || tableForm.invalid || listChiTiet.length == 0">
+                <i class="{{iconButton.SAVE}}"></i>
+                Lưu
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

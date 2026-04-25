@@ -2,39 +2,42 @@
   <div class="row pt-4">
     <div class="col-lg-12">
       <div class="card">
-        <form class="form-horizontal" autocomplete="off">
-          <div class="card-header">
-            <div class="row">
-              <div class="col-md-6 col-sm-12">
-                <h5>Chi tiết đơn hàng
-                  <button type="button" class="btn btn-success" [useExistingCss]="true" printSectionId="printMuaHang"
-                    ngxPrint>
-                    <i class="fa fa-print"></i> In</button>
-                  <button type="button" class="btn btn-warning ml-2" (click)="update()"><i class="fa fa-update"></i>
-                    Chỉnh sửa đơn hàng</button>
-                </h5>
-              </div>
-              <div class="col-md-6 col-sm-12">
-                <button type="button" class="btn btn-sm btn-primary float-right" (click)="back()">
-                  <i class="{{iconButton.BACK}}"></i>
-                  Trờ về</button>
-              </div>
+        <div class="card-header">
+          <div class="row">
+            <div class="col-md-6 col-sm-12">
+              <h5>Chi tiết đơn hàng
+                <button type="button"
+                        class="btn btn-sm btn-success ml-2"
+                        (click)="print()">
+                  <i class="fa fa-print"></i> In </button>
+                <button type="button"
+                        class="btn btn-sm btn-warning ml-2"
+                        (click)="update()">
+                  <i class="fa fa-edit"></i> Chỉnh sửa đơn hàng </button>
+              </h5>
+            </div>
+            <div class="col-6 text-right">
+              <button type="button"
+                      class="btn btn-sm btn-primary"
+                      (click)="back()">
+                <i class="{{iconButton.BACK}}"></i> Trở về
+              </button>
             </div>
           </div>
-        </form>
+        </div>
         <div class="card-body">
           <div class="order-info">
             <div class="row">
-              <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-2">
+              <div class="col-xl-2 col-lg-3 col-md-6 col-sm-12 mb-2">
                 <div class="d-flex align-items-center">
-                  <i class="fa fa-calendar-o text-primary mr-2"></i>
+                  <i class="fa fa-file-text text-primary mr-2"></i>
                   <div>
-                    <small class="text-muted d-block">Ngày lập</small>
-                    <strong>{{donHang.date | date: 'dd/MM/YYYY HH:mm:ss' }}</strong>
+                    <small class="text-muted d-block">Mã hóa đơn</small>
+                    <strong>{{donHang.ma_DH}}</strong>
                   </div>
                 </div>
               </div>
-              <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-2">
+              <div class="col-xl-2 col-lg-3 col-md-6 col-sm-12 mb-2">
                 <div class="d-flex align-items-center">
                   <i class="fa fa-user text-primary mr-2"></i>
                   <div>
@@ -43,11 +46,29 @@
                   </div>
                 </div>
               </div>
-              <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-2">
+              <div class="col-xl-2 col-lg-3 col-md-6 col-sm-12 mb-2">
+                <div class="d-flex align-items-center">
+                  <i class="fa fa-calendar-o text-primary mr-2"></i>
+                  <div>
+                    <small class="text-muted d-block">Ngày Xuất</small>
+                    <strong>{{donHang.date | date: 'dd/MM/YYYY' }}</strong>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-2 col-lg-3 col-md-6 col-sm-12 mb-2">
+                <div class="d-flex align-items-center">
+                  <i class="fa fa-calendar-o text-primary mr-2"></i>
+                  <div>
+                    <small class="text-muted d-block">Ngày Lập</small>
+                    <strong>{{donHang.create_Time | date: 'dd/MM/YYYY HH:mm:ss' }}</strong>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-2 col-lg-3 col-md-6 col-sm-12 mb-2">
                 <div class="d-flex align-items-center">
                   <i class="fa fa-id-badge text-primary mr-2"></i>
                   <div>
-                    <small class="text-muted d-block">Nhân viên bán hàng</small>
+                    <small class="text-muted d-block">Nhân viên phụ trách</small>
                     <strong>{{ten_NV}}</strong>
                   </div>
                 </div>
@@ -70,21 +91,22 @@
                   </thead>
                   <tbody>
                     <tr *ngFor="let item of listChiTiet; let i = index">
-                      <td>{{ i + 1 }}</td>
+                      <td class="text-center">{{ i + 1 }}</td>
                       <td>{{item.ten_SP}}</td>
-                      <td>{{item.dvt}}</td>
-                      <td class="text-right">{{item.soLuong}}</td>
+                      <td class="text-center">{{item.dvt}}</td>
+                      <td class="text-center">{{item.soLuong}}</td>
                       <td class="text-right">{{item.gia | number}}</td>
                       <td class="text-right">{{item.thanhTien | number}}</td>
                     </tr>
                     <tr class="font-20">
                       <td colspan="3"> <b>Tổng cộng: </b> </td>
-                      <td class="text-right"><b>{{tongSL}}</b></td>
+                      <td class="text-center"><b>{{tongSL}}</b></td>
                       <td></td>
                       <td class="text-right"><b>{{donHang.tongTien | number}}</b></td>
                     </tr>
                     <tr *ngIf="listChiTiet?.length === 0">
-                      <td colspan="100%" class="table-warning text-center font-weight-bold">
+                      <td colspan="100%"
+                          class="table-warning text-center font-weight-bold">
                         Không có dữ liệu!
                       </td>
                     </tr>
@@ -99,65 +121,10 @@
   </div>
 </div>
 
-<div id="printMuaHang" style="visibility: hidden;">
-  <div class="padding-print">
-    <div class="row">
-      <div class="col-8">
-        <ng-container *ngIf="cuaHang.id">
-          <h3>{{cuaHang.ten}}</h3>
-          <span class="font-big">
-            {{cuaHang.diaChi}} - Điện thoại: {{cuaHang.sdt}}
-          </span>
-        </ng-container>
-      </div>
-      <div class="col-4">
-        <h3>PHIẾU XUẤT HÀNG</h3>
-        <p class="font-20">Ngày {{printDate | date: 'dd/MM/YYYY'}} </p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-12">
-        <p class="font-big2">Khách Hàng: {{donHang.ten_KH}} <br>
-          Địa chỉ: {{donHang.diaChi}}
-        </p>
-        <p class="font-big2">
-          Nhân viên bán hàng: {{ten_NV}}
-        </p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-12" id="border-bold">
-        <table class="table table-bordered table-print font-20">
-          <thead>
-            <tr class="print-txt-bold">
-              <th class="text-center">Stt</th>
-              <th class="text-center">Tên sản phẩm</th>
-              <th class=" text-center">Đơn vị tính</th>
-              <th class=" text-center">Số lượng</th>
-              <th class=" text-center">Giá mua</th>
-              <th class=" text-center">Thành tiền</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of listChiTiet; let i = index" class="print-txt-bold">
-              <td style="border: 2px solid #000;">{{ i + 1 }}</td>
-              <td>{{item.ten_SP}}</td>
-              <td>{{item.dvt}}</td>
-              <td class="text-right">{{item.soLuong}}</td>
-              <td class="text-right">{{item.gia | number}}</td>
-              <td class="text-right">{{item.thanhTien | number}}</td>
-            </tr>
-            <tr>
-              <td colspan="3"><b>Tổng cộng: </b></td>
-              <td class="text-right font-big2"><b>{{tongSL}}</b></td>
-              <td></td>
-              <td class="text-right font-big2"><b>{{donHang.tongTien | number}}</b> </td>
-            </tr>
-          </tbody>
-        </table>
-        <p class="font-20"><b>Bằng chữ: {{tienChu}}</b></p>
-        <i class="font-20">Lưu ý: Kiểm tra hàng trước khi thanh toán</i>
-      </div>
-    </div>
-  </div>
-</div>
+<app-print type="ban-hang"
+           [cuaHang]="cuaHang"
+           [donHang]="donHang"
+           [listChiTiet]="listChiTiet"
+           [tongSL]="tongSL"
+           [tienChu]="tienChu"
+           [ten_NV]="ten_NV"></app-print>

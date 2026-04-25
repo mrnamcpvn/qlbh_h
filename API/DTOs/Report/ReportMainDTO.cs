@@ -4,6 +4,7 @@ namespace API.DTOs.Report
     public class Report
     {
         public int ID_SP { get; set; }
+        public string MaSP { get; set; }
         public string Ten_SP { get; set; }
         public string DVT { get; set; }
         public int SoLuong { get; set; }
@@ -30,6 +31,7 @@ namespace API.DTOs.Report
     {
         public int Stt { get; set; }
         public int ID_SP { get; set; }
+        public string MaSP { get; set; }
         public string Ten_SP { get; set; }
         public string DVT { get; set; }
         public int? SoLuongTonDau { get; set; }

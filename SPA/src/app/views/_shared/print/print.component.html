@@ -1,0 +1,73 @@
+<div id="printMuaHang">
+  <div class="padding-print">
+    <div class="row">
+      <div class="col-8">
+        <ng-container *ngIf="cuaHang.id">
+          <span class="brand-font">{{cuaHang.ten}}</span><br>
+          <span class="address-font">
+            {{cuaHang.diaChi}} - Điện thoại: {{cuaHang.sdt}}
+          </span>
+        </ng-container>
+      </div>
+      <div class="col-4 text-center">
+        <span class="title-font">{{ type === 'ban-hang' ? 'PHIẾU BÁN HÀNG' : 'PHIẾU NHẬP HÀNG' }}</span><br>
+        <span class="text-font">
+          Ngày {{printDate | date: 'dd/MM/YYYY'}}
+          <ng-container *ngIf="type === 'ban-hang' && donHang?.ma_DH">
+             <br> Mã hóa đơn: {{donHang.ma_DH}}
+          </ng-container>
+        </span>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col-12">
+        <span class="info-font">
+          <ng-container *ngIf="type === 'ban-hang'">
+            Khách Hàng: {{donHang?.ten_KH}}
+            <br> Địa chỉ: {{donHang?.diaChi}}
+            <br> Nhân viên bán hàng: {{ten_NV}}
+          </ng-container>
+          <ng-container *ngIf="type === 'mua-hang'">
+            Nhà cung cấp: {{donHang?.ten_NCC}}
+            <br> Địa chỉ: {{donHang?.diaChi}}
+          </ng-container>
+        </span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <table class="custom-print-table">
+          <thead>
+            <tr>
+              <th class="text-center">Stt</th>
+              <th class="text-center">Tên sản phẩm</th>
+              <th class="text-center">Đơn vị tính</th>
+              <th class="text-center">Số lượng</th>
+              <th class="text-center">Giá mua</th>
+              <th class="text-center">Thành tiền</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of listChiTiet; let i = index">
+              <td class="text-center">{{ i + 1 }}</td>
+              <td>{{item.ten_SP}}</td>
+              <td class="text-center">{{item.dvt}}</td>
+              <td class="text-center">{{item.soLuong}}</td>
+              <td class="text-right">{{item.gia | number}}</td>
+              <td class="text-right">{{item.thanhTien | number}}</td>
+            </tr>
+            <tr>
+              <td colspan="3">Tổng cộng: </td>
+              <td class="text-center total-font">{{tongSL}}</td>
+              <td></td>
+              <td class="text-right total-font">{{donHang?.tongTien | number}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="text-font"><b>Bằng chữ: {{tienChu}}</b></p>
+        <i class="text-font">Lưu ý: Kiểm tra hàng trước khi {{ type === 'ban-hang' ? 'thanh toán' : 'nhận hàng' }}</i>
+      </div>
+    </div>
+  </div>
+</div>

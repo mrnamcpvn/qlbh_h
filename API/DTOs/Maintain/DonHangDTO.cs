@@ -5,16 +5,25 @@ using System.Collections.Generic;
 
 namespace API.DTOs.Maintain
 {
-    public class DonHangO: DonHang
+    public class InfoDTO
     {
-
+        public int ID { get; set; }
+        public string Ten { get; set; }
+        public string DiaChi { get; set; }
+    }
+    public class DonHangO : DonHang
+    {
+        public string Ten_KH { get; set; }
+        public string Ten_NCC { get; set; }
+        public string Ten_NV { get; set; }
+        public string Date_Str { get; set; }
         public string DiaChi { get; set; }
         public bool Status { get; set; }
         public string StatusName { get; set; }
     }
     public class DonHangDTO : DonHangO
     {
-        public List<ChiTietDonHang> ChiTiet { get;set; }
+        public List<ChiTietDonHang> ChiTiet { get; set; }
     }
 
     public class DonHangRequestDTO
@@ -26,6 +35,7 @@ namespace API.DTOs.Maintain
         public string TinhTrang { get; set; }
         public string Ma_DH { get; set; }
         public int? PayType { get; set; }
+        public int? DateType { get; set; }
     }
 
     public class DonHangPaginationResult
@@ -36,7 +46,8 @@ namespace API.DTOs.Maintain
     public class ChiTietDonHangDTO : ChiTietDonHang
     {
         public string Ten_SP { get; set; }
+        public string Ma_DH { get; set; }
         public string Dvt { get; set; }
     }
-    
+
 }

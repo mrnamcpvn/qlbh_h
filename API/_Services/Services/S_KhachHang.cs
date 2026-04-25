@@ -151,8 +151,8 @@ namespace API._Services.Services
                 {
                     Ma_KH = resp.Ws.Cells[i, 0].StringValue.Trim(),
                     Ten = resp.Ws.Cells[i, 1].StringValue.Trim(),
-                    SDT = resp.Ws.Cells[i, 2].StringValue.Trim(),
-                    DiaChi = resp.Ws.Cells[i, 3].StringValue.Trim(),
+                    DiaChi= resp.Ws.Cells[i, 2].StringValue.Trim(),
+                    SDT = resp.Ws.Cells[i, 3].StringValue.Trim(),
                     Email = resp.Ws.Cells[i, 4].StringValue.Trim(),
                     Error = ""
                 };

@@ -30,6 +30,7 @@ export class DonHangService {
       .append('loai', filter.loai);
     if (filter.ma_DH) params = params.append('ma_DH', filter.ma_DH);
     if (filter.payType) params = params.append('payType', filter.payType);
+    if (filter.dateType) params = params.append('dateType', filter.dateType);
     if (filter.tinhTrang) params = params.append('tinhTrang', filter.tinhTrang);
     return this.http.get<DonHangPaginationResult>(`${this.apiUrl}/GetDonHangPagination`, { params });
   }

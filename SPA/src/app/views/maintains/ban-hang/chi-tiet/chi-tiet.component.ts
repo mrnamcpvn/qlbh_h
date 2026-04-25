@@ -24,7 +24,11 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
   nhanViens: NhanVien[] = [];
   cuaHang: CuaHang = <CuaHang>{};
   tongSL: number;
-  printDate = new Date();
+  get printDate() {
+    if (this.donHang.date) {
+      return new Date(this.donHang.date);
+    } else return new Date();
+  }
   get ten_NV() {
     if (this.donHang.iD_NV != null && this.nhanViens.length > 0) {
       const nvId = this.donHang.iD_NV;
@@ -38,12 +42,12 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
     private shopService: CuaHangService,
     private route: ActivatedRoute,
     private toVNService: ToVietnameseService
-    ) { super() }
+  ) { super() }
 
   ngOnInit() {
     this.donHangService.current_DH.subscribe({
       next: res => {
-        if(res)
+        if (res)
           this.donHang = res
         else this.router.navigate(['/maintain/ban-hang'])
       },
@@ -75,6 +79,10 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
 
   update() {
     this.router.navigate(['/maintain/ban-hang/edit', this.donHang.id]);
+  }
+
+  print() {
+    window.print();
   }
   getAllNV() {
     this.nvService.getAll().subscribe({

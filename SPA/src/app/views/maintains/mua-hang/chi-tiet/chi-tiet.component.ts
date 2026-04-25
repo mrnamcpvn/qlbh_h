@@ -21,7 +21,11 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
   donHang: DonHang;
   listChiTiet: ChiTietDonHang[] = [];
   cuaHang: CuaHang = <CuaHang>{};
-  printDate = new Date();
+  get printDate() {
+    if (this.donHang.date) {
+      return new Date(this.donHang.date);
+    } else return new Date();
+  }
   constructor(
     private donHangService: DonHangService,
     private shopService: CuaHangService,
@@ -60,6 +64,10 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
 
   update() {
     this.router.navigate(['/maintain/mua-hang/edit', this.donHang.id]);
+  }
+
+  print() {
+    window.print();
   }
 
   back() {

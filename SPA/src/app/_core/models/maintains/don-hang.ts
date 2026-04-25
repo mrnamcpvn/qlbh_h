@@ -3,10 +3,14 @@ import { Pagination, PaginationResult } from '@utilities/pagination-utility';
 export interface DonHang {
   id: number;
   iD_KH: number;
+  iD_NCC: number;
   ten_KH: string;
+  ten_NCC: string;
   diaChi: string;
   tongTien: number;
   date: string | Date;
+  date_Str: string;
+  create_Time: string | Date;
   loai: number;
   status: boolean;
   tienMat?: number;
@@ -24,12 +28,14 @@ export interface DonHangFilter {
   tinhTrang: string
   ma_DH?: string;
   payType?: number;
+  dateType?: string;
 }
 
 export interface ChiTietDonHang {
   id: number;
   iD_DH: number;
   iD_SP: number;
+  ma_SP: string;
   ten_SP: string;
   soLuong: number;
   gia: number;
@@ -38,6 +44,7 @@ export interface ChiTietDonHang {
   updated_time: string | Date;
   dvt: string;
   thanhTien: number;
+  stt?: number;
 }
 
 export interface DonHangDTO extends DonHang{

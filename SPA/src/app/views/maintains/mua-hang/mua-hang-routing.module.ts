@@ -1,9 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AddOrEditComponent } from './add/add-or-edit.component';
 import {MainComponent} from "./main/main.component";
 import { ChiTietComponent } from "./chi-tiet/chi-tiet.component"
-import { EditComponent } from './edit/edit.component';
+import { FormComponent } from './form/form.component';
 
 const routes: Routes = [
   {
@@ -15,9 +14,9 @@ const routes: Routes = [
   },
   {
     path: 'add',
-    component: AddOrEditComponent,
+    component: FormComponent,
     data: {
-      title: 'Thêm mới đơn hàng'
+      title: 'Nhập hàng'
     }
   },
   {
@@ -29,7 +28,7 @@ const routes: Routes = [
   },
   {
     path: 'edit/:id',
-    component: EditComponent,
+    component: FormComponent,
     data: {
       title: 'Chỉnh sửa đơn hàng'
     }
