@@ -30,7 +30,6 @@
                     <label for="nha-cung-cap"
                            class="badge badge-primary">Nhà cung cấp <i class="text-danger text-bold">*</i></label>
                     <ng-select name="nha-cung-cap"
-                               required
                                [items]="nhaCungCaps"
                                bindLabel="ten"
                                bindValue="id"
@@ -214,7 +213,7 @@
               <button type="button"
                       class="btn btn-success mr-2"
                       (click)="save()"
-                      [disabled]="tableForm.invalid || tableForm.invalid || listChiTiet.length == 0">
+                      [disabled]="paramForm.invalid || tableForm.invalid || listChiTiet.length == 0">
                 <i class="{{iconButton.SAVE}}"></i>
                 Lưu
               </button>

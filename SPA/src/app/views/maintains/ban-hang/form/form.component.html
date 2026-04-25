@@ -30,7 +30,6 @@
                     <label for="khach-hang"
                            class="badge badge-primary">Khách hàng <i class="text-danger text-bold">*</i></label>
                     <ng-select name="khach-hang"
-                               required
                                [items]="khachHangs"
                                bindLabel="ten"
                                bindValue="id"
@@ -214,7 +213,7 @@
               <button type="button"
                       class="btn btn-success mr-2"
                       (click)="save()"
-                      [disabled]="tableForm.invalid || tableForm.invalid || listChiTiet.length == 0">
+                      [disabled]="paramForm.invalid || tableForm.invalid || listChiTiet.length == 0">
                 <i class="{{iconButton.SAVE}}"></i>
                 Lưu
               </button>
