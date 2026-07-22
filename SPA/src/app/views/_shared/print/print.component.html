@@ -69,5 +69,17 @@
         <i class="text-font">Lưu ý: Kiểm tra hàng trước khi {{ type === 'ban-hang' ? 'thanh toán' : 'nhận hàng' }}</i>
       </div>
     </div>
+    <div class="row mt-4" *ngIf="type === 'ban-hang'">
+      <div class="col-6 text-center">
+        <div class="d-inline-block pt-1" style="width:200px;">
+          <p class="text-font"><b>Khách hàng</b></p>
+        </div>
+      </div>
+      <div class="col-6 text-center">
+        <div class="d-inline-block pt-1" style="width:200px;">
+          <p class="text-font"><b>Người giao hàng</b></p>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

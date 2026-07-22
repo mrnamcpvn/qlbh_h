@@ -4,12 +4,30 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { PaginationParam, PaginationResult } from '@utilities/pagination-utility';
 import { SanPham } from "@models/maintains/san-pham";
 import { OperationResult } from '@utilities/operation-result';
+import { BehaviorSubject } from 'rxjs';
+import { AppStateService } from './app-state.service';
 @Injectable({
   providedIn: 'root'
 })
 export class SanPhamService {
   apiUrl = environment.apiUrl + 'SanPham';
-  constructor(private http: HttpClient) { }
+  private mainStateSource = new BehaviorSubject<any>(null);
+
+  saveMainState(state: any) {
+    this.mainStateSource.next(state);
+  }
+
+  getMainState(): any {
+    return this.mainStateSource.getValue();
+  }
+
+  clearMainState() {
+    this.mainStateSource.next(null);
+  }
+
+  constructor(private http: HttpClient, private appState: AppStateService) {
+    this.appState.reset$.subscribe(() => this.clearMainState());
+  }
 
   getDataPagination(pagination: PaginationParam, name?: string) {
     let params = new HttpParams().appendAll({ ...pagination, name })

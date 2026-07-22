@@ -3,12 +3,30 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from '@env/environment';
 import { PaginationParam, PaginationResult } from '@utilities/pagination-utility';
 import { MaHang } from '@models/maintains/ma-hang';
+import { BehaviorSubject } from 'rxjs';
+import { AppStateService } from './app-state.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MaHangService {
-  constructor(private http: HttpClient) { }
+  private mainStateSource = new BehaviorSubject<any>(null);
+
+  saveMainState(state: any) {
+    this.mainStateSource.next(state);
+  }
+
+  getMainState(): any {
+    return this.mainStateSource.getValue();
+  }
+
+  clearMainState() {
+    this.mainStateSource.next(null);
+  }
+
+  constructor(private http: HttpClient, private appState: AppStateService) {
+    this.appState.reset$.subscribe(() => this.clearMainState());
+  }
   apiUrl = environment.apiUrl;
 
   getDataPagination(pagination: PaginationParam, name?: string) {

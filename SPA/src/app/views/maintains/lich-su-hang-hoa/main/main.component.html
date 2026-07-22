@@ -1,0 +1,324 @@
+<div class="animated fadeIn">
+  <div class="row pt-4">
+    <div class="col-lg-12">
+      <div class="card">
+        <form class="form-horizontal"
+              autocomplete="off"
+              #mainForm="ngForm">
+          <div class="card-header">
+            <div class="row mb-3">
+              <div class="col-md-6 col-sm-12">
+                <h5>Lịch Sử Hàng Hóa</h5>
+              </div>
+            </div>
+            <div class="form-group row">
+              <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                <label class="badge badge-warning">Kỳ Báo Cáo:</label>
+                <ng-select name="filterBy"
+                           [(ngModel)]="param.filterBy"
+                           (ngModelChange)="onFilterByChange()"
+                           (clear)="param.filterBy = '0'"
+                           [clearable]="param.filterBy != '0'">
+                  <ng-option *ngFor="let item of filterByList"
+                             [value]="item.key">{{ item.value }}</ng-option>
+                </ng-select>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                <label class="badge badge-warning">Ngày:</label>
+                <div class="full-width">
+                  <div class="container_date">
+                    <div class="input-group mr-1">
+                      <input type="text"
+                             placeholder="Từ ngày..."
+                             [maxDate]="param.filterBy == '0' ? toDate : null"
+                             name="date_start"
+                             [bsConfig]="bsConfig"
+                             class="form-control"
+                             bsDatepicker
+                             [(ngModel)]="fromDate"
+                             (ngModelChange)="onFromDateChange()"
+                             required>
+                      <div class="input-group-append">
+                        <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
+                      </div>
+                    </div>
+                    <div class="input-group ml-1">
+                      <input type="text"
+                             placeholder="Đến ngày..."
+                             [minDate]="param.filterBy == '0' ? fromDate : null"
+                             name="date_end"
+                             [bsConfig]="bsConfig"
+                             class="form-control"
+                             bsDatepicker
+                             [(ngModel)]="toDate"
+                             (ngModelChange)="onToDateChange()"
+                             required>
+                      <div class="input-group-append">
+                        <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                <label class="badge badge-warning">Loại:</label>
+                <div class="d-flex align-items-center">
+                  <div *ngFor="let item of loaiList; index as i"
+                       class="custom-control custom-radio pt-2 mr-3">
+                    <input [id]="'loai' + i"
+                           class="custom-control-input"
+                           type="radio"
+                           name="selectedLoai"
+                           [value]="item.key"
+                           [(ngModel)]="param.loai"
+                           (ngModelChange)="onLoaiChange()" />
+                    <label class="custom-control-label"
+                           [for]="'loai' + i">
+                      <strong>{{ item.value }}</strong>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                <label for="idSP"
+                       class="badge badge-warning">Sản phẩm:</label>
+                <ng-select [items]="sPList"
+                           [multiple]="true"
+                           name="idSP"
+                           groupBy="allGroup"
+                           [selectableGroup]="true"
+                           [selectableGroupAsModel]="false"
+                           [closeOnSelect]="false"
+                           bindLabel="value"
+                           bindValue="key"
+                           [(ngModel)]="param.idSP"
+                           placeholder="Vui lòng chọn sản phẩm">
+                  <ng-template ng-optgroup-tmp
+                               let-item="item"
+                               let-item$="item$"
+                               let-index="index">
+                    <div class="custom-control custom-checkbox pe-none">
+                      <input id="item-idSP-{{ index }}"
+                             type="checkbox"
+                             class="custom-control-input"
+                             name="item-idSP-{{ index }}"
+                             [ngModel]="item$.selected" />
+                      <label class="custom-control-label"
+                             for="item-idSP-{{ index }}">Chọn tất cả</label>
+                    </div>
+                  </ng-template>
+                  <ng-template ng-option-tmp
+                               let-item="item"
+                               let-item$="item$"
+                               let-index="index">
+                    <div class="custom-control custom-checkbox pe-none">
+                      <input id="item-idSP-{{ index }}"
+                             name="item-idSP-{{ index }}"
+                             type="checkbox"
+                             class="custom-control-input"
+                             [ngModel]="item$.selected" />
+                      <label class="custom-control-label"
+                             for="item-idSP-{{ index }}">{{ item.value }}</label>
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                <label class="badge badge-warning">Đối tác:</label>
+                <ng-select [items]="doiTacList"
+                           [multiple]="true"
+                           name="doiTac"
+                           groupBy="allGroup"
+                           [selectableGroup]="true"
+                           [selectableGroupAsModel]="false"
+                           [closeOnSelect]="false"
+                           [virtualScroll]="true"
+                           bindLabel="value"
+                           bindValue="key"
+                           [(ngModel)]="selectedDoiTac"
+                           placeholder="Vui lòng chọn đối tác">
+                  <ng-template ng-optgroup-tmp
+                               let-item="item"
+                               let-item$="item$"
+                               let-index="index">
+                    <div class="custom-control custom-checkbox pe-none">
+                      <input id="item-doiTac-{{ index }}"
+                             type="checkbox"
+                             class="custom-control-input"
+                             name="item-doiTac-{{ index }}"
+                             [ngModel]="item$.selected" />
+                      <label class="custom-control-label"
+                             for="item-doiTac-{{ index }}">Chọn tất cả</label>
+                    </div>
+                  </ng-template>
+                  <ng-template ng-option-tmp
+                               let-item="item"
+                               let-item$="item$"
+                               let-index="index">
+                    <div class="custom-control custom-checkbox pe-none">
+                      <input id="item-doiTac-{{ index }}"
+                             name="item-doiTac-{{ index }}"
+                             type="checkbox"
+                             class="custom-control-input"
+                             [ngModel]="item$.selected" />
+                      <label class="custom-control-label"
+                             for="item-doiTac-{{ index }}">{{ item.value }}</label>
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
+              <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                <label class="badge badge-warning">Nhân viên:</label>
+                <ng-select [items]="nvList"
+                           [multiple]="true"
+                           name="idNV"
+                           groupBy="allGroup"
+                           [selectableGroup]="true"
+                           [selectableGroupAsModel]="false"
+                           [closeOnSelect]="false"
+                           bindLabel="value"
+                           bindValue="key"
+                           [(ngModel)]="param.idNV"
+                           placeholder="Vui lòng chọn nhân viên">
+                  <ng-template ng-optgroup-tmp
+                               let-item="item"
+                               let-item$="item$"
+                               let-index="index">
+                    <div class="custom-control custom-checkbox pe-none">
+                      <input id="item-idNV-{{ index }}"
+                             type="checkbox"
+                             class="custom-control-input"
+                             name="item-idNV-{{ index }}"
+                             [ngModel]="item$.selected" />
+                      <label class="custom-control-label"
+                             for="item-idNV-{{ index }}">Chọn tất cả</label>
+                    </div>
+                  </ng-template>
+                  <ng-template ng-option-tmp
+                               let-item="item"
+                               let-item$="item$"
+                               let-index="index">
+                    <div class="custom-control custom-checkbox pe-none">
+                      <input id="item-idNV-{{ index }}"
+                             name="item-idNV-{{ index }}"
+                             type="checkbox"
+                             class="custom-control-input"
+                             [ngModel]="item$.selected" />
+                      <label class="custom-control-label"
+                             for="item-idNV-{{ index }}">{{ item.value }}</label>
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
+
+              <div class="col">
+                <label class="d-block">&nbsp;</label>
+                <button type="submit"
+                        (click)="search()"
+                        class="{{classButton.SEARCH}}"
+                        [disabled]="!mainForm.valid">
+                  <i class="{{iconButton.SEARCH}}"></i> Xem lịch sử
+                </button>
+                <button type="button"
+                        (click)="clear()"
+                        class="{{classButton.CLEAR}}">
+                  <i class="{{iconButton.CLEAR}}"></i> Xóa
+                </button>
+                <button type="submit"
+                        class="{{classButton.EXCEL}}"
+                        id="excel"
+                        (click)="excel()"
+                        [disabled]="!mainForm.valid">
+                  <i class="{{iconButton.EXCEL}}"></i> Xuất dữ liệu
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <div class="card-body">
+          <div class="row justify-content-md-center">
+            <div class="col-12 text-center"
+                 *ngIf="data.pagination?.totalCount > 0">
+              <h6>Lịch sử từ {{fromDate | date:'dd/MM/yyyy'}} đến {{toDate | date:'dd/MM/yyyy'}}</h6>
+            </div>
+            <div class="col-12">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th class="text-center">Ngày</th>
+                      <th class="text-center">Loại</th>
+                      <th class="text-center">Mã ĐH</th>
+                      <th class="text-center">Đối tác</th>
+                      <th class="text-center">NV</th>
+                      <th class="text-center">Sản Phẩm</th>
+                      <th class="text-center">SL</th>
+                      <th class="text-center">Giá</th>
+                      <th class="text-center">Thành tiền</th>
+                      <th class="text-center">Tồn đầu</th>
+                      <th class="text-center">Tồn cuối</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <ng-container *ngIf="data.result?.length > 0">
+                      <tr *ngFor="let item of data.result">
+                        <td class="text-center">{{item.date | date:'dd/MM/yyyy'}}</td>
+                        <td class="text-center">
+                          <span [ngClass]="item.loai == 1 ? 'badge badge-danger' : 'badge badge-success'">{{item.loaiStr}}</span>
+                        </td>
+                        <td class="text-center">{{item.ma_DH}}</td>
+                        <td>{{item.doiTac}}</td>
+                        <td>{{item.ten_NV}}</td>
+                        <td>{{item.ten_SP}}</td>
+                        <td class="text-center">{{item.soLuong | number}}</td>
+                        <td class="text-right">{{item.gia | number}}</td>
+                        <td class="text-right">{{item.thanhTien | number}}</td>
+                        <td class="text-center">{{item.sL_Ton_Dau | number}}</td>
+                        <td class="text-center">{{item.sL_Ton_Cuoi | number}}</td>
+                      </tr>
+                    </ng-container>
+                    <tr *ngIf="data.result?.length > 0"
+                        class="row-total">
+                      <td colspan="6"><b>Tổng cộng:</b></td>
+                      <td class="text-center"><b>N: {{data.tongSLNhap | number}} / X: {{data.tongSLXuat | number}}</b></td>
+                      <td></td>
+                      <td class="text-right"><b>N: {{data.tongTienNhap | number}} / X: {{data.tongTienXuat | number}}</b></td>
+                      <td colspan="2"></td>
+                    </tr>
+                    <tr *ngIf="data.result?.length == 0">
+                      <td colspan="100%"
+                          class="table-warning text-center font-weight-bold">Không có dữ liệu!</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="row">
+                <div class="col-8">
+                  <div class="d-flex"
+                       *ngIf="data.pagination?.totalCount > 0 && data.pagination?.totalPage > 1">
+                    <pagination [boundaryLinks]="true"
+                                [totalItems]="data.pagination?.totalCount"
+                                [itemsPerPage]="data.pagination?.pageSize"
+                                previousText="&lsaquo;"
+                                nextText="&rsaquo;"
+                                firstText="&laquo;"
+                                lastText="&raquo;"
+                                [maxSize]="10"
+                                [(ngModel)]="data.pagination.pageNumber"
+                                (pageChanged)="pageChanged($event)"
+                                [ngModelOptions]="{standalone: true}">
+                    </pagination>
+                    <span class="cs-page ml-2">Page - {{ data.pagination?.pageNumber }} / {{ data.pagination?.totalPage }}</span>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <span class="cs-page float-right">Tổng số bảng ghi: {{data.pagination?.totalCount ?? 0}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

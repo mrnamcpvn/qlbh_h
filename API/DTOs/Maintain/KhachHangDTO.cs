@@ -8,5 +8,7 @@ namespace API.DTOs.Maintain
         public string Email { get; set; }
         public string Error { get; set; }
         public string Ma_KH { get; set; }
+        public int? SoNgayCongNo { get; set; }
+        public decimal? HanMucCongNo { get; set; }
     }
 }

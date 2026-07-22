@@ -29,6 +29,8 @@ export interface DonHangFilter {
   ma_DH?: string;
   payType?: number;
   dateType?: string;
+  idKH?: number[];
+  idNCC?: number[];
 }
 
 export interface ChiTietDonHang {

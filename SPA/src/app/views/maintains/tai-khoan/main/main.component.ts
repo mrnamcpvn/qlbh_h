@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ModalService } from '@services/modal.service';
 import { BsModalRef } from 'ngx-bootstrap/modal';
 import { Pagination } from '@utilities/pagination-utility';
@@ -13,7 +13,7 @@ import { TaiKhoanService } from '@services/tai-khoan.service';
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss']
 })
-export class MainComponent extends InjectBase implements OnInit {
+export class MainComponent extends InjectBase implements OnInit, OnDestroy {
   pagination: Pagination = <Pagination>{
     pageNumber: 1,
     pageSize: 10
@@ -28,7 +28,17 @@ export class MainComponent extends InjectBase implements OnInit {
     super();
   }
   ngOnInit(): void {
-    this.search();
+    const savedState = this.taiKhoanService.getMainState();
+    this.taiKhoanService.clearMainState();
+    if (savedState) {
+      this.restoreState(savedState);
+    } else {
+      this.search();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.taiKhoanService.saveMainState({ pagination: this.pagination, name: this.name });
   }
 
   openModal(id: string, taiKhoan?: NguoiDung) {
@@ -82,7 +92,15 @@ export class MainComponent extends InjectBase implements OnInit {
   }
 
   clear() {
+    this.taiKhoanService.clearMainState();
     this.name = '';
     this.search();
   }
+
+  private restoreState(state: any) {
+    this.pagination = state.pagination;
+    this.name = state.name;
+    this.getData();
+  }
+
 }

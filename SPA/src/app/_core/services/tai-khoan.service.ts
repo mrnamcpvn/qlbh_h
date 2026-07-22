@@ -3,13 +3,31 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '@env/environment';
 import { PaginationParam, PaginationResult } from '@utilities/pagination-utility';
 import { NguoiDung } from '@models/maintains/nguoi-dung';
+import { BehaviorSubject } from 'rxjs';
+import { AppStateService } from './app-state.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaiKhoanService {
   apiUrl = environment.apiUrl;
-  constructor(private http: HttpClient) { }
+  private mainStateSource = new BehaviorSubject<any>(null);
+
+  saveMainState(state: any) {
+    this.mainStateSource.next(state);
+  }
+
+  getMainState(): any {
+    return this.mainStateSource.getValue();
+  }
+
+  clearMainState() {
+    this.mainStateSource.next(null);
+  }
+
+  constructor(private http: HttpClient, private appState: AppStateService) {
+    this.appState.reset$.subscribe(() => this.clearMainState());
+  }
 
   getDataPagination(pagination: PaginationParam, name?: string) {
     let params = new HttpParams().appendAll({ ...pagination, name })

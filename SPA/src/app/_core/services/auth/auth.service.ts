@@ -6,6 +6,7 @@ import {HttpClient} from '@angular/common/http';
 import { Router } from '@angular/router';
 import {map} from 'rxjs/operators';
 import {LocalStorageConstants} from '../../constants/local-storage.constants';
+import { AppStateService } from '../app-state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,8 @@ export class AuthService {
   currentUser: UserForLogged | null = <UserForLogged>{};
   decodedToken: any;
   constructor(private  http: HttpClient,
-              private  router: Router) { }
+              private  router: Router,
+              private appState: AppStateService) { }
   login(param: UserLoginParam) {
     return this.http.post(this.apiUrl + 'c_auth/login', param).pipe(
       map((response: any) => {
@@ -33,6 +35,7 @@ export class AuthService {
 
   logout() {
     localStorage.clear();
+    this.appState.resetAll();
     this.router.navigate(['/login']);
   }
 

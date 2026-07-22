@@ -149,6 +149,49 @@
                   </div>
                 </div>
               </div>
+              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                <label class="badge badge-warning">Khách hàng:</label>
+                <ng-select [items]="khList"
+                           [multiple]="true"
+                           name="idKH"
+                           groupBy="allGroup"
+                           [selectableGroup]="true"
+                           [selectableGroupAsModel]="false"
+                           [closeOnSelect]="false"
+                           bindLabel="value"
+                           bindValue="key"
+                           [(ngModel)]="selectedKH"
+                           placeholder="Vui lòng chọn khách hàng">
+                  <ng-template ng-optgroup-tmp
+                               let-item="item"
+                               let-item$="item$"
+                               let-index="index">
+                    <div class="custom-control custom-checkbox pe-none">
+                      <input id="item-kh-{{ index }}"
+                             type="checkbox"
+                             class="custom-control-input"
+                             name="item-kh-{{ index }}"
+                             [ngModel]="item$.selected" />
+                      <label class="custom-control-label"
+                             for="item-kh-{{ index }}">Chọn tất cả</label>
+                    </div>
+                  </ng-template>
+                  <ng-template ng-option-tmp
+                               let-item="item"
+                               let-item$="item$"
+                               let-index="index">
+                    <div class="custom-control custom-checkbox pe-none">
+                      <input id="item-kh-opt-{{ index }}"
+                             name="item-kh-opt-{{ index }}"
+                             type="checkbox"
+                             class="custom-control-input"
+                             [ngModel]="item$.selected" />
+                      <label class="custom-control-label"
+                             for="item-kh-opt-{{ index }}">{{ item.value }}</label>
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
               <div class="col-12">
                 <label class="d-block">&nbsp;</label>
                 <button type="submit"
@@ -196,7 +239,7 @@
                       <td class="align-middle">{{item.ma_DH}}</td>
                       <td class="align-middle">{{item.ten_KH}}</td>
                       <td class="col-date">{{item.date | date: 'dd/MM/YYYY'}}</td>
-                      <td class="col-date">{{item.create_Time | date: 'dd/MM/YYYY hh:mm:ss'}}</td>
+                      <td class="col-date">{{item.create_Time | date: 'dd/MM/YYYY HH:mm:ss'}}</td>
                       <td class="text-right">{{item.tongTien | number}} VNĐ</td>
 
                       <td class="align-middle">
@@ -263,7 +306,8 @@
                             previousText="&lsaquo;"
                             nextText="&rsaquo;"
                             firstText="&laquo;"
-                            lastText="&raquo;">
+                            lastText="&raquo;"
+                            [maxSize]="10">
                 </pagination>
               </div>
             </div>

@@ -221,7 +221,7 @@
                         <td class="text-right"><b>{{ product.dS_Ban | number:'1.0-0' }}</b></td>
                       </tr>
                       <ng-container *ngIf="product.isExpanded !== false">
-                        <tr *ngFor="let nv of product.nV_List">
+                        <tr class="product-detail-row" *ngFor="let nv of product.nV_List">
                           <td>{{ nv.ten_NV }}</td>
                           <td>{{ nv.sdT_NV }}</td>
                           <td class="text-center">{{ nv.dvt }}</td>
@@ -264,7 +264,7 @@
                                 nextText="&rsaquo;"
                                 firstText="&laquo;"
                                 lastText="&raquo;"
-                                [maxSize]="5"
+                                 [maxSize]="10"
                                 [(ngModel)]="data.pagination.pageNumber"
                                 (pageChanged)="pageChanged($event)"
                                 [ngModelOptions]="{standalone: true}">

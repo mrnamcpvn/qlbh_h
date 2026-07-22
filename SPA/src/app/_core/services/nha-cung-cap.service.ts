@@ -4,6 +4,8 @@ import { environment } from '@env/environment';
 import { PaginationParam, PaginationResult } from '@utilities/pagination-utility';
 import { NhaCungCap } from '@models/maintains/nha-cung-cap';
 import { OperationResult } from '@utilities/operation-result';
+import { BehaviorSubject } from 'rxjs';
+import { AppStateService } from './app-state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +13,23 @@ import { OperationResult } from '@utilities/operation-result';
 export class NhaCungCapService {
   apiUrl = environment.apiUrl + 'NhaCungCap';
   baseControler: string = '';
-  constructor(private http: HttpClient) { }
+  private mainStateSource = new BehaviorSubject<any>(null);
+
+  saveMainState(state: any) {
+    this.mainStateSource.next(state);
+  }
+
+  getMainState(): any {
+    return this.mainStateSource.getValue();
+  }
+
+  clearMainState() {
+    this.mainStateSource.next(null);
+  }
+
+  constructor(private http: HttpClient, private appState: AppStateService) {
+    this.appState.reset$.subscribe(() => this.clearMainState());
+  }
 
   getDataPagination(pagination: PaginationParam, name?: string) {
     let params = new HttpParams().appendAll({ ...pagination, name })

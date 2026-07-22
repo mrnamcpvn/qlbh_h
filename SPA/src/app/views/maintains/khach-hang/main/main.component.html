@@ -65,7 +65,9 @@
                       <th class="text-center">Số điện thoại</th>
                       <th class="text-center">Email</th>
 
-                      <th class=" text-center">Hành động</th>
+                      <th class="text-center">Công nợ (ngày)</th>
+                      <th class="text-center">Hạn mức (VNĐ)</th>
+                      <th class="text-center">Hành động</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -76,7 +78,8 @@
                       <td>{{item.diaChi}}</td>
                       <td>{{item.sdt}}</td>
                       <td>{{item.email}}</td>
-
+                      <td class="text-center">{{item.soNgayCongNo || 0}}</td>
+                      <td class="text-right">{{(item.hanMucCongNo || 0) | number}}</td>
                       <td class="col-action">
                         <button type="button"
                                 (click)="delete(item.id)"
@@ -108,7 +111,8 @@
                             previousText="&lsaquo;"
                             nextText="&rsaquo;"
                             firstText="&laquo;"
-                            lastText="&raquo;">
+                            lastText="&raquo;"
+                            [maxSize]="10">
                 </pagination>
               </div>
             </div>

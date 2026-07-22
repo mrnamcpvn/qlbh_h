@@ -1,0 +1,42 @@
+.i-required {
+  color: red;
+}
+
+.container_date {
+  flex-direction: row;
+  display: flex;
+}
+
+/* Trong file CSS */
+.group-header:hover {
+  background-color: #f0f0f0 !important;
+  /* Đổi màu nhẹ khi rê chuột vào */
+  transition: background-color 0.2s ease;
+}
+.group-header i {
+  width: 15px;
+  /* Để icon không bị nhảy khi đổi loại icon */
+  display: inline-block;
+  text-align: center;
+}
+/* Ẩn bớt các đường chấm chấm ở hàng Group để trông gọn hơn (tùy chọn) */
+.group-header td {
+  border-right: none;
+}
+.group-header td:last-child {
+  border-right: 1px dotted #ccc;
+}
+
+.product-detail-row {
+  background-color: #f8f9fa;
+}
+
+.product-detail-row td {
+  border-top: none;
+}
+
+.product-detail-row .thanh-tien-cell {
+  border-right: 1px solid #b8bfc7 !important;
+}
+
+

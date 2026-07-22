@@ -45,6 +45,21 @@ export const navItems: INavData[] = [
     icon: 'fa fa-users',
   },
   {
+    name: 'Lịch sử hàng hóa',
+    url: '/maintain/lich-su-hang-hoa',
+    icon: 'fa fa-history',
+  },
+  {
+    name: 'Báo cáo thu chi',
+    url: '/maintain/bao-cao-thu-chi',
+    icon: 'fa fa-money',
+  },
+  {
+    name: 'Công nợ',
+    url: '/maintain/cong-no',
+    icon: 'fa fa-book',
+  },
+  {
     name: 'Báo cáo tồn kho',
     url: '/report',
     icon: 'fa fa-calendar-check-o',

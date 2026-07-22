@@ -16,6 +16,7 @@ namespace API.Models
         [StringLength(100)]
         public string Email { get; set; }
         public string Ma_KH { get; set; }
-       
+        public int? SoNgayCongNo { get; set; }
+        public decimal? HanMucCongNo { get; set; }
     }
 }

@@ -136,6 +136,49 @@
                   </div>
                 </div>
               </div>
+              <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                <label class="badge badge-warning">Nhà cung cấp:</label>
+                <ng-select [items]="nccList"
+                           [multiple]="true"
+                           name="idNCC"
+                           groupBy="allGroup"
+                           [selectableGroup]="true"
+                           [selectableGroupAsModel]="false"
+                           [closeOnSelect]="false"
+                           bindLabel="value"
+                           bindValue="key"
+                           [(ngModel)]="selectedNCC"
+                           placeholder="Vui lòng chọn nhà cung cấp">
+                  <ng-template ng-optgroup-tmp
+                               let-item="item"
+                               let-item$="item$"
+                               let-index="index">
+                    <div class="custom-control custom-checkbox pe-none">
+                      <input id="item-ncc-{{ index }}"
+                             type="checkbox"
+                             class="custom-control-input"
+                             name="item-ncc-{{ index }}"
+                             [ngModel]="item$.selected" />
+                      <label class="custom-control-label"
+                             for="item-ncc-{{ index }}">Chọn tất cả</label>
+                    </div>
+                  </ng-template>
+                  <ng-template ng-option-tmp
+                               let-item="item"
+                               let-item$="item$"
+                               let-index="index">
+                    <div class="custom-control custom-checkbox pe-none">
+                      <input id="item-ncc-opt-{{ index }}"
+                             name="item-ncc-opt-{{ index }}"
+                             type="checkbox"
+                             class="custom-control-input"
+                             [ngModel]="item$.selected" />
+                      <label class="custom-control-label"
+                             for="item-ncc-opt-{{ index }}">{{ item.value }}</label>
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
               <div class="col-12">
                 <label class="d-block">&nbsp;</label>
                 <button type="submit"
@@ -181,7 +224,7 @@
                       <td class="col-stt">{{ ((pagination.pageNumber - 1) * pagination.pageSize) + i + 1 }}</td>
                       <td class="align-middle">{{item.ten_NCC}}</td>
                       <td class="col-date">{{item.date | date: 'dd/MM/YYYY'}}</td>
-                      <td class="col-date">{{item.create_Time | date: 'dd/MM/YYYY hh:mm:ss'}}</td>
+                      <td class="col-date">{{item.create_Time | date: 'dd/MM/YYYY HH:mm:ss'}}</td>
                       <td class="text-right">{{item.tongTien | number}} VNĐ</td>
 
                       <td class="align-middle">
@@ -248,7 +291,8 @@
                             previousText="&lsaquo;"
                             nextText="&rsaquo;"
                             firstText="&laquo;"
-                            lastText="&raquo;">
+                            lastText="&raquo;"
+                            [maxSize]="10">
                 </pagination>
               </div>
             </div>

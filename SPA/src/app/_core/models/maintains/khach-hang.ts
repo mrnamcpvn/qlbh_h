@@ -5,4 +5,6 @@ export interface KhachHang {
   diaChi: string;
   email: string;
   ma_KH: string;
+  soNgayCongNo?: number;
+  hanMucCongNo?: number;
 }

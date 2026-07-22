@@ -90,6 +90,7 @@ namespace API._Services.Services
                 {
                     var firstItem = item.FirstOrDefault();
                     var t = item.OrderByDescending(x => x.Updated_time).FirstOrDefault(x => x.Loai == 1);
+                    var lastItem = item.OrderByDescending(x => x.Updated_time).FirstOrDefault();
                     var itemRP = new ReportDTO
                     {
                         Stt = i + 1,
@@ -103,7 +104,7 @@ namespace API._Services.Services
                         TongTienNhap = item.Where(x => x.Loai == 1).Sum(x => x.SoLuong * x.Gia),
                         TongTienXuat = item.Where(x => x.Loai == 2).Sum(x => x.SoLuong * x.Gia),
                         SoLuongTonDau = item.OrderBy(x => x.Updated_time).FirstOrDefault()?.SLTonDau ?? 0,
-                        SoLuongTonCuoi = firstItem?.SoLuongTrongKho ?? 0
+                        SoLuongTonCuoi = lastItem?.SLTonCuoi ?? 0
                     };
                     itemRP.DoanhThu = (itemRP.TongTienXuat ?? 0) - (itemRP.TongTienNhap ?? 0);
                     return itemRP;

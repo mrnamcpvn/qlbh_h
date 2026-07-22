@@ -1,0 +1,32 @@
+.container_date {
+  flex-direction: row;
+  display: flex;
+}
+
+.group-header:hover {
+  background-color: #f0f0f0 !important;
+  transition: background-color 0.2s ease;
+}
+.group-header i {
+  width: 15px;
+  display: inline-block;
+  text-align: center;
+}
+.group-header td {
+  border-right: none;
+}
+.group-header td:last-child {
+  border-right: 1px dotted #ccc;
+}
+
+.product-detail-row {
+  background-color: #f8f9fa;
+}
+
+.product-detail-row td {
+  border-top: none;
+}
+
+.product-detail-row.table-danger > td {
+  background-color: #fff5f5 !important;
+}

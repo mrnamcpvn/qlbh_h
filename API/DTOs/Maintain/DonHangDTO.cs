@@ -36,6 +36,8 @@ namespace API.DTOs.Maintain
         public string Ma_DH { get; set; }
         public int? PayType { get; set; }
         public int? DateType { get; set; }
+        public List<int> IdKH { get; set; }
+        public List<int> IdNCC { get; set; }
     }
 
     public class DonHangPaginationResult
