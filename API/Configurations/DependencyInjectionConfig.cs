@@ -28,6 +28,7 @@ namespace API.Configurations
             services.AddScoped<I_LichSuHangHoa, S_LichSuHangHoa>();
             services.AddScoped<I_BaoCaoThuChi, S_BaoCaoThuChi>();
             services.AddScoped<I_CongNo, S_CongNo>();
+            services.AddScoped<I_Dashboard, S_Dashboard>();
         }
     }
 }

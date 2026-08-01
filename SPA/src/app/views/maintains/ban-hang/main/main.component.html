@@ -226,7 +226,7 @@
                       <th class=" text-center">Mã hóa đơn</th>
                       <th class=" text-center">Khách hàng</th>
                       <th class="text-center">Ngày xuất</th>
-                      <th class="text-center">Ngày lập</th>
+                      <th class="text-center">Ngày hẹn TT</th>
                       <th class=" text-center">Tổng tiền</th>
                       <th class=" text-center col-payment">Thanh toán</th>
                       <th class=" text-center">Tình trạng</th>
@@ -239,7 +239,20 @@
                       <td class="align-middle">{{item.ma_DH}}</td>
                       <td class="align-middle">{{item.ten_KH}}</td>
                       <td class="col-date">{{item.date | date: 'dd/MM/YYYY'}}</td>
-                      <td class="col-date">{{item.create_Time | date: 'dd/MM/YYYY HH:mm:ss'}}</td>
+                      <td class="col-date text-center align-middle">
+                        <ng-container *ngIf="item.soNgayCongNo != null && item.date; else noDueDate">
+                          <span *ngIf="getOverdueDays(item) > 0; else dueDateNormal"
+                                class="badge badge-danger">
+                            Quá hạn: {{ getOverdueDays(item) }} ngày
+                          </span>
+                          <ng-template #dueDateNormal>
+                            {{ (getDueDate(item) | date: 'dd/MM/yyyy') }}
+                          </ng-template>
+                        </ng-container>
+                        <ng-template #noDueDate>
+                          <span class="text-muted">-</span>
+                        </ng-template>
+                      </td>
                       <td class="text-right">{{item.tongTien | number}} VNĐ</td>
 
                       <td class="align-middle">

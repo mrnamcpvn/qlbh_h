@@ -6,27 +6,59 @@ export interface TheoDoiNhanVienBanHang_Param {
   toDate_Str: string;
   idNV: number[];
   idSP: number[];
+  idKH: number[];
+  ma_DH: string;
+  trangThai: string;
 }
 export interface TheoDoiNhanVienBanHang_Data {
   fromDate_Str: string;
   toDate_Str: string;
+  tong_So_Don: number;
   tong_SL_Ban: number;
   tong_DS_Ban: number;
+  tong_DaThu: number;
+  tong_CongNo: number;
+  soDon_DaThanhToan: number;
+  soDon_ChuaThanhToan: number;
+  soDon_TreHan: number;
   pagination: Pagination
-  result: TheoDoiNhanVienBanHang_SP[]
+  result: TheoDoiNhanVienBanHang_NV[]
   nVs: string;
+}
+export interface TheoDoiNhanVienBanHang_NV {
+  iD_NV: number;
+  ten_NV: string;
+  sdT_NV: string;
+  so_Don: number;
+  sL_Ban: number;
+  soLoaiSP: number;
+  dS_Ban: number;
+  daThu: number;
+  congNo: number;
+  soDon_DaThanhToan: number;
+  soDon_ChuaThanhToan: number;
+  soDon_TreHan: number;
+  donHang_List: TheoDoiNhanVienBanHang_DonHang[];
+  isExpanded?: boolean;
+}
+export interface TheoDoiNhanVienBanHang_DonHang {
+  id: number;
+  ma_DH: string;
+  date: string;
+  ten_KH: string;
+  soLoaiSP: number;
+  tongTien: number;
+  daThanhToan: number;
+  congNo: number;
+  isDaThanhToan: boolean;
+  isTreHan: boolean;
+  sP_List: TheoDoiNhanVienBanHang_SP[];
+  isExpanded?: boolean;
 }
 export interface TheoDoiNhanVienBanHang_SP {
   ten_SP: string;
-  sL_Ban: number;
-  dS_Ban: number;
-  nV_List: TheoDoiNhanVienBanHang_NV[];
-  isExpanded?: boolean;
-}
-export interface TheoDoiNhanVienBanHang_NV {
-  ten_NV: string;
-  sdT_NV: string;
   dvt: string;
-  sL_Ban: number;
-  dS_Ban: number;
+  soLuong: number;
+  gia: number;
+  thanhTien: number;
 }

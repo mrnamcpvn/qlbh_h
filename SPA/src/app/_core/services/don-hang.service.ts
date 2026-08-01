@@ -115,6 +115,10 @@ export class DonHangService {
     return this.http.get<KeyValuePair[]>(`${this.apiUrl}/GetListKhachHang`);
   }
 
+  getById(id: number) {
+    return this.http.get<DonHang>(`${this.apiUrl}/GetById`, { params: { id } });
+  }
+
   changeSDonHang(model: DonHang) {
     this.s_DonHang.next(model);
   }

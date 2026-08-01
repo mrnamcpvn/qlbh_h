@@ -25,22 +25,36 @@
               <form class="form-group row p-2"
                     #paramForm="ngForm"
                     autocomplete="off">
-                <div class="col-md-5">
+                <div class="col-xl-5 col-lg-5 col-md-6 col-sm-12">
                   <div class="form-group">
                     <label for="khach-hang"
                            class="badge badge-primary">Khách hàng <i class="text-danger text-bold">*</i></label>
-                    <ng-select name="khach-hang"
-                               [items]="khachHangs"
-                               bindLabel="ten"
-                               bindValue="id"
-                               [(ngModel)]="data.iD_KH"
-                               (ngModelChange)="onCustomerChange($event)"
-                               placeholder="Chọn Khách Hàng"
-                               required>
-                     </ng-select>
+                      <ng-select name="khach-hang"
+                                 [items]="khachHangs"
+                                 bindLabel="ten"
+                                 bindValue="id"
+                                 [(ngModel)]="data.iD_KH"
+                                 (ngModelChange)="onCustomerChange($event)"
+                                 placeholder="Chọn Khách Hàng"
+                                 required>
+                       <ng-template ng-option-tmp
+                                    let-kh="item">
+                         <div>{{kh.ma_KH}} - {{kh.ten}}</div>
+                         <div class="small">
+                           <span *ngIf="kh.soNgayCongNo > 0">
+                             <i class="text-dark font-italic">Công nợ: </i>
+                             <i class="font-weight-bold">{{kh.soNgayCongNo}} ngày</i>
+                           </span>
+                           <span *ngIf="kh.hanMucCongNo > 0" class="ml-2">
+                             <i class="text-dark font-italic">Hạn mức: </i>
+                             <i class="font-weight-bold">{{kh.hanMucCongNo | number}}₫</i>
+                           </span>
+                         </div>
+                       </ng-template>
+                      </ng-select>
                    </div>
                  </div>
-                <div class="col-md-4">
+                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                   <div class="form-group">
                     <label for="nhan-vien"
                            class="badge badge-primary">Nhân viên Phụ Trách</label>
@@ -53,44 +67,45 @@
                     </ng-select>
                   </div>
                 </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <label for="date"
-                           class="badge badge-primary">Ngày Xuất</label>
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+                   <div class="form-group">
+                     <label for="date"
+                            class="badge badge-primary">Ngày Xuất</label>
+                     <div class="input-group">
+                       <input type="text"
+                              placeholder="Chọn ngày xuất"
+                              name="date"
+                              [bsConfig]="bsConfig"
+                              class="form-control"
+                              bsDatepicker
+                              [(ngModel)]="date">
+                       <div class="input-group-append">
+                         <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+                <div class="col-xl-5 col-lg-5 col-md-6 col-sm-12 so-ngay-cong-no">
+                  <div class="form-group mb-0">
+                    <label for="soNgayCongNo"
+                           class="badge badge-warning">Số ngày công nợ <i class="fa fa-bell"></i></label>
                     <div class="input-group">
-                      <input type="text"
-                             placeholder="Chọn ngày xuất"
-                             name="date"
-                             [bsConfig]="bsConfig"
-                             class="form-control"
-                             bsDatepicker
-                             [(ngModel)]="date">
+                      <input type="number"
+                             placeholder="Số ngày"
+                             name="soNgayCongNo"
+                             class="form-control text-center"
+                             [(ngModel)]="soNgayCongNo"
+                             (ngModelChange)="onSoNgayCongNoChange($event)"
+                             min="0"
+                             [disabled]="!data.iD_KH">
                       <div class="input-group-append">
-                        <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
+                        <span class="input-group-text">Ngày đến hạn: <strong class="ml-1">{{ ngayDenHan ? (ngayDenHan | date: 'dd/MM/yyyy') : 'Không' }}</strong></span>
                       </div>
                     </div>
                   </div>
                 </div>
-               </form>
-               <div class="row mt-1 no-gutters ml-2">
-                 <div class="col-6">
-                     <div *ngIf="soNgayCongNo > 0" class="text-info font-weight-bold small d-flex">
-                        <div>
-                          <div>Công nợ {{soNgayCongNo}} ngày
-                            <span *ngIf="ngayDenHan"> — Hạn thanh toán: {{ngayDenHan | date:'dd/MM/yyyy'}}</span>
-                          </div>
-                          <div class="text-muted" *ngIf="debtInfo?.soNgayCongNo > 0 && debtInfo.creditLimit > 0">
-                           Hạn mức: {{debtInfo.creditLimit | number}}₫
-                           | Dư nợ: {{debtInfo.currentDebt | number}}₫
-                           <span *ngIf="debtInfo.remainingCredit > 0" class="text-success">
-                             (Còn: {{debtInfo.remainingCredit | number}}₫)
-                           </span>
-                         </div>
-                       </div>
-                     </div>
-                 </div>
-                </div>
-              <form class="form-group row p-2"
+              </form>
+               <form class="form-group row p-2"
                     #tableForm="ngForm"
                     autocomplete="off">
                 <div class="col-12 mt-3">

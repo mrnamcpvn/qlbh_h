@@ -18,6 +18,7 @@ export interface DonHang {
   iD_NV: number;
   ma_DH: string;
   paymentSummary?: { key: string; value: number }[];
+  soNgayCongNo?: number;
 }
 
 export interface DonHangFilter {

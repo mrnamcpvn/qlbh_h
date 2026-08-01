@@ -48,4 +48,7 @@ export class TheoDoiNhanVienBanHangService {
   getListSanPham() {
     return this.http.get<KeyValuePair[]>(`${this.apiUrl}/GetListSanPham`);
   }
+  getListKhachHang() {
+    return this.http.get<KeyValuePair[]>(`${this.apiUrl}/GetListKhachHang`);
+  }
 }

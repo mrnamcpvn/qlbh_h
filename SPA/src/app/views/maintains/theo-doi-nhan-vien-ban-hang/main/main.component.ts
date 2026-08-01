@@ -46,8 +46,14 @@ export class MainComponent extends InjectBase implements OnInit, OnDestroy, Afte
     { key: "4", value: 'Tuần' },
     { key: "5", value: 'Ngày' },
   ];
+  trangThaiList: KeyValuePair[] = [
+    { key: "", value: 'Tất cả' },
+    { key: "1", value: 'Đã thanh toán' },
+    { key: "2", value: 'Chưa thanh toán' },
+  ];
   sPList: KeyValuePair[] = []
   nVList: KeyValuePair[] = []
+  kHList: KeyValuePair[] = []
   constructor(private service: TheoDoiNhanVienBanHangService) {
     super();
   }
@@ -60,6 +66,7 @@ export class MainComponent extends InjectBase implements OnInit, OnDestroy, Afte
     } else {
       this.getListSanPham()
       this.getListNhanVien()
+      this.getListKhachHang()
       this.clear();
     }
   }
@@ -113,6 +120,14 @@ export class MainComponent extends InjectBase implements OnInit, OnDestroy, Afte
       next: (res) => {
         this.nVList = res;
         this.functionUtility.getNgSelectAllCheckbox(this.nVList)
+      }
+    });
+  }
+  getListKhachHang() {
+    this.service.getListKhachHang().subscribe({
+      next: (res) => {
+        this.kHList = res;
+        this.functionUtility.getNgSelectAllCheckbox(this.kHList)
       }
     });
   }
@@ -209,7 +224,10 @@ export class MainComponent extends InjectBase implements OnInit, OnDestroy, Afte
     this.param = <TheoDoiNhanVienBanHang_Param>{
       filterBy: '0',
       idSP: [],
-      idNV: []
+      idNV: [],
+      idKH: [],
+      ma_DH: '',
+      trangThai: ''
     }
     this.data = <TheoDoiNhanVienBanHang_Data>{
       result: [],
@@ -224,6 +242,7 @@ export class MainComponent extends InjectBase implements OnInit, OnDestroy, Afte
   private restoreState(state: any) {
     this.getListSanPham();
     this.getListNhanVien();
+    this.getListKhachHang();
     this.fromDate = state.fromDate;
     this.toDate = state.toDate;
     this.param = state.param;

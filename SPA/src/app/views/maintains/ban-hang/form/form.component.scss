@@ -12,3 +12,17 @@
 .form-group {
   margin-bottom: 0rem;
 }
+
+.so-ngay-cong-no {
+  .input-group-text {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #5c6873;
+    white-space: nowrap;
+
+    strong {
+      font-weight: 600;
+      color: #e74c3c;
+    }
+  }
+}

@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
+import { Subject } from 'rxjs';
 
 import { IconSetService } from '@coreui/icons-angular';
 import { freeSet } from '@coreui/icons';
+import { SignalRService } from '@services/signalr.service';
 
 @Component({
   // tslint:disable-next-line
@@ -14,21 +16,31 @@ import { freeSet } from '@coreui/icons';
   `,
   providers: [IconSetService],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   constructor(
     private router: Router,
-    public iconSet: IconSetService
+    public iconSet: IconSetService,
+    private signalRService: SignalRService,
   ) {
     // iconSet singleton
     iconSet.icons = { ...freeSet };
   }
 
   ngOnInit() {
+    this.signalRService.start();
     this.router.events.subscribe((evt) => {
       if (!(evt instanceof NavigationEnd)) {
         return;
       }
       window.scrollTo(0, 0);
     });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.signalRService.stop();
   }
 }

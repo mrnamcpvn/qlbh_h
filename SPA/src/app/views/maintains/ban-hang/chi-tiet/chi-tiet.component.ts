@@ -25,12 +25,20 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
   cuaHang: CuaHang = <CuaHang>{};
   tongSL: number;
   get printDate() {
-    if (this.donHang.date) {
+    if (this.donHang?.date) {
       return new Date(this.donHang.date);
     } else return new Date();
   }
+  get ngayDenHan(): Date {
+    if (this.donHang?.soNgayCongNo != null && this.donHang?.date) {
+      const d = new Date(this.donHang.date);
+      d.setDate(d.getDate() + this.donHang.soNgayCongNo);
+      return d;
+    }
+    return null;
+  }
   get ten_NV() {
-    if (this.donHang.iD_NV != null && this.nhanViens.length > 0) {
+    if (this.donHang?.iD_NV != null && this.nhanViens.length > 0) {
       const nvId = this.donHang.iD_NV;
       return this.nhanViens.find(x => x.id === nvId)?.ten || '';
     }
@@ -45,22 +53,36 @@ export class ChiTietComponent extends InjectBase implements OnInit, AfterViewIni
   ) { super() }
 
   ngOnInit() {
+    this.id = this.route.snapshot.params['id'];
     this.donHangService.current_DH.subscribe({
       next: res => {
-        if (res)
-          this.donHang = res
-        else this.router.navigate(['/maintain/ban-hang'])
+        if (res) {
+          this.donHang = res;
+          this.tienChu = this.toVNService.toVietnamese(this.donHang.tongTien);
+          this.tienChu = this.tienChu.charAt(0).toUpperCase() + this.tienChu.slice(1);
+        }
       },
-      error: err => this.router.navigate(['/maintain/ban-hang'])
+      error: () => {}
     })
     this.getAllNV();
     this.getShop();
-    this.tienChu = this.toVNService.toVietnamese(this.donHang.tongTien)
-    this.tienChu = this.tienChu.charAt(0).toUpperCase() + this.tienChu.slice(1);
   }
 
   ngAfterViewInit(): void {
-    this.id = this.route.snapshot.params['id'];
+    if (!this.donHang) {
+      this.donHangService.getById(this.id).subscribe({
+        next: dh => {
+          if (dh) {
+            this.donHang = dh;
+            this.tienChu = this.toVNService.toVietnamese(this.donHang.tongTien);
+            this.tienChu = this.tienChu.charAt(0).toUpperCase() + this.tienChu.slice(1);
+          } else {
+            this.router.navigate(['/maintain/ban-hang']);
+          }
+        },
+        error: () => this.router.navigate(['/maintain/ban-hang'])
+      });
+    }
     this.getData();
   }
 

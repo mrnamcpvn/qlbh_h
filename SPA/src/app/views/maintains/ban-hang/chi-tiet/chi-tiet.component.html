@@ -1,7 +1,7 @@
 <div class="animated fadeIn">
   <div class="row pt-4">
     <div class="col-lg-12">
-      <div class="card">
+      <div class="card" *ngIf="donHang">
         <div class="card-header">
           <div class="row">
             <div class="col-md-6 col-sm-12">
@@ -61,6 +61,15 @@
                   <div>
                     <small class="text-muted d-block">Ngày Lập</small>
                     <strong>{{donHang.create_Time | date: 'dd/MM/YYYY HH:mm:ss' }}</strong>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-2 col-lg-3 col-md-6 col-sm-12 mb-2">
+                <div class="d-flex align-items-center">
+                  <i class="fa fa-clock-o text-primary mr-2"></i>
+                  <div>
+                    <small class="text-muted d-block">Ngày Hẹn Thanh Toán</small>
+                    <strong>{{ ngayDenHan ? (ngayDenHan | date: 'dd/MM/YYYY') : '' }}</strong>
                   </div>
                 </div>
               </div>

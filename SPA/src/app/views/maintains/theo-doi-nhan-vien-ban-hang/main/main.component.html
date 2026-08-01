@@ -13,7 +13,7 @@
             </div>
 
             <div class="form-group row">
-              <div class="col-xl-3 col-lg-3 col-md-6 col-sm-12">
+              <div class="col-xl-2 col-lg-6 col-md-6 col-sm-12">
                 <label class="badge badge-warning">Kỳ Báo Cáo:</label>
                 <ng-select name="filterBy"
                            [(ngModel)]="param.filterBy"
@@ -24,7 +24,7 @@
                              [value]="item.key">{{ item.value }}</ng-option>
                 </ng-select>
               </div>
-              <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+              <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
                 <label class="badge badge-warning">
                   Ngày:
                 </label>
@@ -63,7 +63,33 @@
                   </div>
                 </div>
               </div>
-              <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12">
+              <div class="col-xl-2 col-lg-6 col-md-6 col-sm-12">
+                <label class="badge badge-warning">Mã Đơn Hàng:</label>
+                <input type="text"
+                       name="ma_DH"
+                       class="form-control"
+                       [(ngModel)]="param.ma_DH"
+                       placeholder="Nhập mã đơn hàng...">
+              </div>
+              <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                <label class="badge badge-warning">Trạng Thái:</label>
+                <div class="d-flex align-items-center">
+                  <div *ngFor="let item of trangThaiList; index as i"
+                       class="custom-control custom-radio pt-2 mr-3">
+                    <input [id]="'tt' + i"
+                           class="custom-control-input"
+                           type="radio"
+                           name="trangThai"
+                           [value]="item.key"
+                           [(ngModel)]="param.trangThai" />
+                    <label class="custom-control-label"
+                           [for]="'tt' + i">
+                      <strong>{{ item.value }}</strong>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12">
                 <div class="row">
                   <div class="col-12">
                     <label for="idSP"
@@ -79,8 +105,7 @@
                                bindLabel="value"
                                bindValue="key"
                                [(ngModel)]="param.idSP"
-                               placeholder="Vui lòng chọn sản phẩm"
-                               required>
+                               placeholder="Vui lòng chọn sản phẩm">
                       <ng-template ng-optgroup-tmp
                                    let-item="item"
                                    let-item$="item$"
@@ -113,7 +138,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12">
+              <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12">
                 <div class="row">
                   <div class="col-12">
                     <label for="idNV"
@@ -129,8 +154,7 @@
                                bindLabel="value"
                                bindValue="key"
                                [(ngModel)]="param.idNV"
-                               placeholder="Vui lòng chọn nhân viên"
-                               required>
+                               placeholder="Vui lòng chọn nhân viên">
                       <ng-template ng-optgroup-tmp
                                    let-item="item"
                                    let-item$="item$"
@@ -157,6 +181,55 @@
                                  [ngModel]="item$.selected" />
                           <label class="custom-control-label"
                                  for="item-idNV-{{ index }}"> {{ item.value }}</label>
+                        </div>
+                      </ng-template>
+                    </ng-select>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-4 col-lg-12 col-md-12 col-sm-12">
+                <div class="row">
+                  <div class="col-12">
+                    <label for="idKH"
+                           class="badge badge-warning"> Khách Hàng
+                    </label>
+                    <ng-select [items]="kHList"
+                               [multiple]="true"
+                               name="idKH"
+                               groupBy="allGroup"
+                               [selectableGroup]="true"
+                               [selectableGroupAsModel]="false"
+                               [closeOnSelect]="false"
+                               bindLabel="value"
+                               bindValue="key"
+                               [(ngModel)]="param.idKH"
+                               placeholder="Vui lòng chọn khách hàng">
+                      <ng-template ng-optgroup-tmp
+                                   let-item="item"
+                                   let-item$="item$"
+                                   let-index="index">
+                        <div class="custom-control custom-checkbox pe-none">
+                          <input id="item-idKH-{{ index }}"
+                                 type="checkbox"
+                                 class="custom-control-input"
+                                 name="item-idKH-{{ index }}"
+                                 [ngModel]="item$.selected" />
+                          <label class="custom-control-label"
+                                 for="item-idKH-{{ index }}">Chọn tất cả</label>
+                        </div>
+                      </ng-template>
+                      <ng-template ng-option-tmp
+                                   let-item="item"
+                                   let-item$="item$"
+                                   let-index="index">
+                        <div class="custom-control custom-checkbox pe-none">
+                          <input id="item-idKH-{{ index }}"
+                                 name="item-idKH-{{ index }}"
+                                 type="checkbox"
+                                 class="custom-control-input"
+                                 [ngModel]="item$.selected" />
+                          <label class="custom-control-label"
+                                 for="item-idKH-{{ index }}"> {{ item.value }}</label>
                         </div>
                       </ng-template>
                     </ng-select>
@@ -191,7 +264,7 @@
           <div class="row justify-content-md-center">
             <div class="col-12 text-center"
                  *ngIf="data.result?.length > 0">
-              <h5>TỔNG HỢP BÁN HÀNG THEO MẶT HÀNG VÀ NHÂN VIÊN</h5>
+              <h5>TỔNG HỢP BÁN HÀNG THEO NHÂN VIÊN</h5>
               <h6>Nhân viên : {{data.nVs}}, từ ngày {{data.fromDate_Str}} đến ngày {{data.toDate_Str}}</h6>
             </div>
             <div class="col-12">
@@ -199,49 +272,88 @@
                 <table class="table table-bordered">
                   <thead>
                     <tr>
-                      <th class="text-center">Tên Nhân Viên</th>
-                      <th class="text-center">Số Điện Thoại</th>
-                      <th class=" text-center">Đvt</th>
-                      <th class=" text-center">Số Lượng Bán</th>
-                      <th class=" text-center">Doanh Số Bán</th>
+                      <th class="text-center">Nhân Viên</th>
+                      <th class="text-center">Đơn Hàng</th>
+                      <th class="text-center">Sản Phẩm</th>
+                      <th class="text-center">Đvt</th>
+                      <th class="text-center">SL</th>
+                      <th class="text-center">Thành Tiền</th>
+                      <th class="text-center">Đã Thu</th>
+                      <th class="text-center">Còn Nợ</th>
+                      <th class="text-center">Trạng Thái</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <ng-container *ngFor="let product of data.result">
+                    <ng-container *ngFor="let nv of data.result">
                       <tr class="group-header"
-                          (click)="product.isExpanded = product.isExpanded === false ? true : false"
+                          (click)="nv.isExpanded = nv.isExpanded === false ? true : false"
                           style="cursor: pointer;">
-                        <td colspan="3">
-                          <i class="fa"
-                             [ngClass]="product.isExpanded !== false ? 'fa fa-caret-down' : 'fa fa-caret-right'"
-                             class="mr-2"></i>
-                          <b>Tên hàng: {{ product.ten_SP }} ({{ product.nV_List.length }})</b>
+                        <td>
+                          <i class="fa mr-2"
+                             [ngClass]="nv.isExpanded !== false ? 'fa-caret-down' : 'fa-caret-right'"></i>
+                          <b>NV: {{ nv.ten_NV }} ({{ nv.sdT_NV }})</b>
                         </td>
-                        <td class="text-center"><b>{{ product.sL_Ban | number:'1.0-0' }}</b></td>
-                        <td class="text-right"><b>{{ product.dS_Ban | number:'1.0-0' }}</b></td>
+                        <td><b>{{ nv.so_Don }} đơn</b></td>
+                        <td colspan="3"><b>{{ nv.soLoaiSP }} sản phẩm</b></td>
+                        <td class="text-right"><b>{{ nv.dS_Ban | number:'1.0-0' }}</b></td>
+                        <td class="text-right"><b>{{ nv.daThu | number:'1.0-0' }}</b></td>
+                        <td class="text-right"><b>{{ nv.congNo | number:'1.0-0' }}</b></td>
+                        <td class="text-center">
+                          <b>Đã TT: {{ nv.soDon_DaThanhToan }} | Chưa TT: {{ nv.soDon_ChuaThanhToan }}</b>
+                        </td>
                       </tr>
-                      <ng-container *ngIf="product.isExpanded !== false">
-                        <tr class="product-detail-row" *ngFor="let nv of product.nV_List">
-                          <td>{{ nv.ten_NV }}</td>
-                          <td>{{ nv.sdT_NV }}</td>
-                          <td class="text-center">{{ nv.dvt }}</td>
-                          <td class="text-center">{{ nv.sL_Ban | number:'1.0-0' }}</td>
-                          <td class="text-right">{{ nv.dS_Ban | number:'1.0-0' }}</td>
-                        </tr>
+                      <ng-container *ngIf="nv.isExpanded !== false">
+                        <ng-container *ngFor="let dh of nv.donHang_List">
+                          <tr class="order-row"
+                              (click)="dh.isExpanded = dh.isExpanded === false ? true : false"
+                              style="cursor: pointer;">
+                            <td></td>
+                            <td>
+                              <i class="fa mr-2"
+                                 [ngClass]="dh.isExpanded !== false ? 'fa-caret-down' : 'fa-caret-right'"></i>
+                              {{ dh.ma_DH }} | Ngày xuất: {{ dh.date | date: 'dd/MM/yyyy' }}
+                            </td>
+                            <td colspan="3">{{ dh.soLoaiSP }} sản phẩm</td>
+                            <td class="text-right">{{ dh.tongTien | number:'1.0-0' }}</td>
+                            <td class="text-right">{{ dh.daThanhToan | number:'1.0-0' }}</td>
+                            <td class="text-right">{{ dh.congNo | number:'1.0-0' }}</td>
+                            <td class="text-center">
+                              <span *ngIf="dh.isDaThanhToan"
+                                    class="badge badge-success">Đã thanh toán</span>
+                              <span *ngIf="!dh.isDaThanhToan"
+                                    class="badge badge-warning">Chưa thanh toán</span>
+                            </td>
+                          </tr>
+                          <ng-container *ngIf="dh.isExpanded !== false">
+                            <tr class="product-row"
+                                *ngFor="let sp of dh.sP_List">
+                              <td colspan="2"></td>
+                              <td>{{ sp.ten_SP }}</td>
+                              <td class="text-center">{{ sp.dvt }}</td>
+                              <td class="text-center">{{ sp.soLuong | number:'1.0-0' }}</td>
+                              <td class="text-right">{{ sp.thanhTien | number:'1.0-0' }}</td>
+                              <td colspan="3"></td>
+                            </tr>
+                          </ng-container>
+                        </ng-container>
                       </ng-container>
                     </ng-container>
 
                     <tr *ngIf="data.result?.length > 0"
                         class="row-total">
-                      <td colspan="3">
+                      <td colspan="5">
                         <b>Tổng cộng:</b>
-                      </td>
-                      <td class="text-center">
-                        <b>{{ data.tong_SL_Ban | number:'1.0-0' }}</b>
                       </td>
                       <td class="text-right">
                         <b>{{ data.tong_DS_Ban | number:'1.0-0' }}</b>
                       </td>
+                      <td class="text-right">
+                        <b>{{ data.tong_DaThu | number:'1.0-0' }}</b>
+                      </td>
+                      <td class="text-right">
+                        <b>{{ data.tong_CongNo | number:'1.0-0' }}</b>
+                      </td>
+                      <td></td>
                     </tr>
 
                     <tr *ngIf="data.result?.length == 0">
@@ -264,7 +376,7 @@
                                 nextText="&rsaquo;"
                                 firstText="&laquo;"
                                 lastText="&raquo;"
-                                 [maxSize]="10"
+                                [maxSize]="10"
                                 [(ngModel)]="data.pagination.pageNumber"
                                 (pageChanged)="pageChanged($event)"
                                 [ngModelOptions]="{standalone: true}">

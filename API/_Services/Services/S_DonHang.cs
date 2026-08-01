@@ -6,8 +6,10 @@ using API.DTOs.Maintain;
 using API.Helper.Mappers;
 using API.Helper.Utilities;
 using API.Helpers.Params;
+using API.Hubs;
 using API.Models;
 using LinqKit;
+using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -19,10 +21,12 @@ namespace API._Services.Services
     public class S_DonHang : I_DonHang
     {
         private readonly IRepositoryAccessor _repoAccessor;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public S_DonHang(IRepositoryAccessor repoAccessor)
+        public S_DonHang(IRepositoryAccessor repoAccessor, IHubContext<NotificationHub> hubContext)
         {
             _repoAccessor = repoAccessor;
+            _hubContext = hubContext;
         }
         #region Download
         public async Task<OperationResult> DownloadExcel(DonHangRequestDTO filter)
@@ -75,6 +79,8 @@ namespace API._Services.Services
                 predicateDonHang = predicateDonHang.And(x => (x.ChuyenKhoan ?? 0) + (x.TienMat ?? 0) >= (x.TongTien ?? 0));
             else if (filter.TinhTrang == "2")
                 predicateDonHang = predicateDonHang.And(x => (x.ChuyenKhoan ?? 0) + (x.TienMat ?? 0) < (x.TongTien ?? 0));
+            else if (filter.TinhTrang == "4")
+                predicateDonHang = predicateDonHang.And(x => x.Date.HasValue && x.SoNgayCongNo != null && x.Date.Value.AddDays(x.SoNgayCongNo.Value).Date < DateTime.Now.Date && (x.ChuyenKhoan ?? 0) + (x.TienMat ?? 0) < (x.TongTien ?? 0));
             if (filter.IdNCC != null && filter.IdNCC.Count > 0)
                 predicateDonHang = predicateDonHang.And(x => x.ID_NCC.HasValue && filter.IdNCC.Contains(x.ID_NCC.Value));
             if (filter.IdKH != null && filter.IdKH.Count > 0)
@@ -104,33 +110,74 @@ namespace API._Services.Services
                 }).ToListAsync();
 
             }
-            List<DonHangO> result = donHangs
-                .Join(info,
-                    x => x.Loai == 1 ? x.ID_NCC : x.ID_KH,
-                    y => y.ID,
-                    (x, y) => new { donHang = x, info = y })
-                .Select(x => new DonHangO
+            var infoDict = info.ToDictionary(x => x.ID);
+            List<DonHangO> result = donHangs.Select(dh =>
+            {
+                InfoDTO matchedInfo = null;
+                int? infoId = dh.Loai == 1 ? dh.ID_NCC : dh.ID_KH;
+                if (infoId.HasValue && infoDict.TryGetValue(infoId.Value, out var i))
+                    matchedInfo = i;
+
+                return new DonHangO
                 {
-                    ID = x.donHang.ID,
-                    ID_KH = x.donHang.ID_KH,
-                    ID_NCC = x.donHang.ID_NCC,
-                    Ten_NCC = x.donHang.Loai == 1 ? x.info.Ten : null,
-                    Ten_KH = x.donHang.Loai == 2 ? x.info.Ten : null,
-                    DiaChi = x.info.DiaChi,
-                    Loai = x.donHang.Loai,
-                    TongTien = x.donHang.TongTien,
-                    TienMat = x.donHang.TienMat,
-                    ChuyenKhoan = x.donHang.ChuyenKhoan,
-                    ID_NV = x.donHang.ID_NV,
-                    Status = (x.donHang.ChuyenKhoan ?? 0) + (x.donHang.TienMat ?? 0) >= (x.donHang.TongTien ?? 0),
-                    Ma_DH = x.donHang.Ma_DH,
-                    Date = x.donHang.Date, // Ngày Nhập/Xuất Hàng
-                    Create_Time = x.donHang.Create_Time
-                }).ToList();
+                    ID = dh.ID,
+                    ID_KH = dh.ID_KH,
+                    ID_NCC = dh.ID_NCC,
+                    Ten_NCC = dh.Loai == 1 ? (matchedInfo?.Ten ?? $"NCC #{dh.ID_NCC}") : null,
+                    Ten_KH = dh.Loai == 2 ? (matchedInfo?.Ten ?? $"KH #{dh.ID_KH}") : null,
+                    DiaChi = matchedInfo?.DiaChi,
+                    Loai = dh.Loai,
+                    TongTien = dh.TongTien,
+                    TienMat = dh.TienMat,
+                    ChuyenKhoan = dh.ChuyenKhoan,
+                    ID_NV = dh.ID_NV,
+                    Status = (dh.ChuyenKhoan ?? 0) + (dh.TienMat ?? 0) >= (dh.TongTien ?? 0),
+                    Ma_DH = dh.Ma_DH,
+                    Date = dh.Date,
+                    Create_Time = dh.Create_Time,
+                    SoNgayCongNo = dh.SoNgayCongNo,
+                };
+            }).ToList();
             result = dateType == 1
                 ? result.OrderByDescending(x => x.Create_Time).ToList()
                 : result.OrderByDescending(x => x.Date).ToList();
             return result;
+        }
+        public async Task<DonHangO> GetById(int id)
+        {
+            var dh = await _repoAccessor.DonHang.FindAll(x => x.ID == id).FirstOrDefaultAsync();
+            if (dh == null) return null;
+
+            string ten = "";
+            if (dh.Loai == 1)
+            {
+                var ncc = await _repoAccessor.NhaCungCap.FindById(dh.ID_NCC);
+                ten = ncc?.Ten ?? "";
+            }
+            else if (dh.Loai == 2)
+            {
+                var kh = await _repoAccessor.KhachHang.FindById(dh.ID_KH);
+                ten = kh?.Ten ?? "";
+            }
+
+            return new DonHangO
+            {
+                ID = dh.ID,
+                ID_KH = dh.ID_KH,
+                ID_NCC = dh.ID_NCC,
+                Ten_NCC = dh.Loai == 1 ? ten : null,
+                Ten_KH = dh.Loai == 2 ? ten : null,
+                Loai = dh.Loai,
+                TongTien = dh.TongTien,
+                TienMat = dh.TienMat,
+                ChuyenKhoan = dh.ChuyenKhoan,
+                ID_NV = dh.ID_NV,
+                Status = (dh.ChuyenKhoan ?? 0) + (dh.TienMat ?? 0) >= (dh.TongTien ?? 0),
+                Ma_DH = dh.Ma_DH,
+                Date = dh.Date,
+                Create_Time = dh.Create_Time,
+                SoNgayCongNo = dh.SoNgayCongNo,
+            };
         }
         public async Task<List<ChiTietDonHangDTO>> GetDetail(int id)
         {
@@ -170,7 +217,7 @@ namespace API._Services.Services
             var now = DateTime.Now;
             DonHang dh = new()
             {
-                Date = !string.IsNullOrWhiteSpace(model.Date_Str) ? Convert.ToDateTime(model.Date_Str) : null,
+                SoNgayCongNo = model.SoNgayCongNo,
                 TongTien = model.TongTien,
                 Loai = model.Loai,
                 ID_NV = model.ID_NV,
@@ -188,6 +235,7 @@ namespace API._Services.Services
                 var last = await _repoAccessor.DonHang.FindAll(x => x.Ma_DH.StartsWith(p)).Select(x => x.Ma_DH).MaxAsync();
                 dh.Ma_DH = p + (last == null ? 1 : int.Parse(last[p.Length..]) + 1).ToString("D4");
             }
+            dh.Date = !string.IsNullOrWhiteSpace(model.Date_Str) ? Convert.ToDateTime(model.Date_Str) : null;
             _repoAccessor.DonHang.Add(dh);
             await _repoAccessor.Save();
             var idDH = dh.ID;
@@ -219,6 +267,7 @@ namespace API._Services.Services
                 TienMat = dh.TienMat,
                 ChuyenKhoan = dh.ChuyenKhoan,
                 Create_Time = dh.Create_Time,
+                SoNgayCongNo = dh.SoNgayCongNo,
             };
             if (model.Loai == 1)
             {
@@ -244,6 +293,7 @@ namespace API._Services.Services
             try
             {
                 await _repoAccessor.Save();
+                await NotifyOrderChanged("create", res);
                 return res;
             }
             catch
@@ -273,6 +323,7 @@ namespace API._Services.Services
             dh.ID_NV = model.ID_NV;
             dh.Ma_DH = model.Ma_DH;
             dh.Date = !string.IsNullOrWhiteSpace(model.Date_Str) ? Convert.ToDateTime(model.Date_Str) : null;
+            dh.SoNgayCongNo = model.SoNgayCongNo;
             _repoAccessor.DonHang.Update(dh);
             var items = model.ChiTiet.Where(x => x.ID_SP > 0 && x.SoLuong > 0).ToList();
 
@@ -354,6 +405,7 @@ namespace API._Services.Services
                 TienMat = dh.TienMat,
                 ChuyenKhoan = dh.ChuyenKhoan,
                 Create_Time = dh.Create_Time,
+                SoNgayCongNo = dh.SoNgayCongNo,
             };
             if (model.Loai == 1)
             {
@@ -379,6 +431,7 @@ namespace API._Services.Services
             try
             {
                 await _repoAccessor.Save();
+                await NotifyOrderChanged("update", res);
                 return res;
             }
             catch
@@ -393,10 +446,13 @@ namespace API._Services.Services
             var dh = await _repoAccessor.DonHang.FindSingle(x => x.ID == id);
             if (dh == null) return true;
             var listChitiet = await _repoAccessor.ChiTietDonHang.FindAll(x => x.ID_DH == id).ToListAsync();
+            bool saved;
             if (!listChitiet.Any())
             {
                 _repoAccessor.DonHang.Remove(dh);
-                return await _repoAccessor.Save();
+                saved = await _repoAccessor.Save();
+                if (saved) await NotifyOrderChanged("delete", BuildRes(dh));
+                return saved;
             }
             var productDeltas = listChitiet.GroupBy(x => x.ID_SP)
                 .ToDictionary(g => g.Key, g => g.Sum(x => x.SoLuong));
@@ -439,12 +495,33 @@ namespace API._Services.Services
                 _repoAccessor.ChiTietDonHang.UpdateMultiple(remainingCTs);
                 _repoAccessor.ChiTietDonHang.RemoveMultiple(listChitiet);
                 _repoAccessor.DonHang.Remove(dh);
-                return await _repoAccessor.Save();
+                saved = await _repoAccessor.Save();
+                if (saved) await NotifyOrderChanged("delete", BuildRes(dh));
+                return saved;
             }   
             catch
             {
                 return false;
             }
+        }
+
+        private DonHangO BuildRes(DonHang dh)
+        {
+            return new DonHangO
+            {
+                ID = dh.ID,
+                Date = dh.Date,
+                ID_KH = dh.ID_KH,
+                ID_NCC = dh.ID_NCC,
+                TongTien = dh.TongTien,
+                Loai = dh.Loai,
+                ID_NV = dh.ID_NV,
+                Ma_DH = dh.Ma_DH,
+                TienMat = dh.TienMat,
+                ChuyenKhoan = dh.ChuyenKhoan,
+                Create_Time = dh.Create_Time,
+                SoNgayCongNo = dh.SoNgayCongNo,
+            };
         }
 
         public async Task<bool> DeleteItem(int id)
@@ -483,7 +560,13 @@ namespace API._Services.Services
                 item.TienMat = model.TienMat;
                 item.ChuyenKhoan = model.ChuyenKhoan;
                 _repoAccessor.DonHang.Update(item);
-                return await _repoAccessor.Save();
+                var saved = await _repoAccessor.Save();
+                if (saved)
+                {
+                    var res = await GetById(model.ID);
+                    await NotifyOrderChanged("update", res);
+                }
+                return saved;
             }
             else return false;
         }
@@ -500,6 +583,22 @@ namespace API._Services.Services
             return await _repoAccessor.KhachHang.FindAll().AsNoTracking().OrderBy(x => x.ID)
                 .Select(x => new KeyValuePair<int, string>(x.ID, $"{x.Ten} ({x.Ma_KH})"))
                 .Distinct().ToListAsync();
+        }
+
+        private async Task NotifyOrderChanged(string action, DonHangO res)
+        {
+            await _hubContext.Clients.All.SendAsync("OrderChanged", new
+            {
+                Action = action,
+                Id = res.ID,
+                Ma_DH = res.Ma_DH,
+                Loai = res.Loai,
+                TongTien = res.TongTien,
+                Ten_KH = res.Ten_KH,
+                Ten_NCC = res.Ten_NCC,
+                Date = res.Date,
+                SoNgayCongNo = res.SoNgayCongNo
+            });
         }
     }
     #endregion

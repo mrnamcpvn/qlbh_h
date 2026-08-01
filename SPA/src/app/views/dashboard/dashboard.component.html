@@ -1,0 +1,259 @@
+<div class="dashboard-wrapper p-4">
+
+  
+
+  <!-- Header & Filters -->
+  <div class="dash-header">
+    <div class="d-flex align-items-center justify-content-end flex-wrap gap-3">
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-primary btn-sm"
+                (click)="loadData()"
+                [disabled]="isLoading">
+          <i class="fa fa-refresh mr-1"
+             [class.fa-spin]="isLoading"></i>Làm mới
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading overlay -->
+  <div *ngIf="isLoading"
+       class="dash-loading py-5 text-center">
+    <div class="spinner-border text-primary"
+         role="status"></div>
+    <p class="mt-2 text-muted">Đang tải dữ liệu...</p>
+  </div>
+
+  <!-- Group: Thu Chi -->
+  <div class="dash-section-title d-flex justify-content-between align-items-center">
+    <div>Thu Chi
+      <span class="text-muted"
+            style="font-size:0.85rem;font-weight:400;"> · {{ summary.filterPeriodName || 'Tháng này' }}</span>
+    </div>
+    <div class="btn-group"
+         role="group"
+         aria-label="Thời gian lọc">
+      <button *ngFor="let opt of filterOptions"
+              type="button"
+              class="btn btn-sm"
+              [class.btn-primary]="selectedFilter === opt.value"
+              [class.btn-outline-secondary]="selectedFilter !== opt.value"
+              (click)="setFilter(opt.value)">
+        {{ opt.label }}
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="row kpi-row p-2"
+       *ngIf="!isLoading">
+    <!-- Tổng thu -->
+    <div class="col-xl-4 col-md-6 p-2">
+      <div class="kpi-card kpi-thu">
+        <div class="kpi-icon"><i class="fa fa-arrow-circle-up"></i></div>
+        <div class="kpi-content">
+          <div class="kpi-label">Tổng thu</div>
+          <div class="kpi-value">{{ summary.tongThuKy | number }}₫</div>
+        </div>
+      </div>
+    </div>
+    <!-- Tổng chi -->
+    <div class="col-xl-4 col-md-6 p-2">
+      <div class="kpi-card kpi-chi">
+        <div class="kpi-icon"><i class="fa fa-arrow-circle-down"></i></div>
+        <div class="kpi-content">
+          <div class="kpi-label">Tổng chi</div>
+          <div class="kpi-value">{{ summary.tongChiKy | number }}₫</div>
+        </div>
+      </div>
+    </div>
+    <!-- Lợi nhuận -->
+    <div class="col-xl-4 col-md-6 p-2">
+      <div class="kpi-card"
+           [class.kpi-loi-nhuan-pos]="loiNhuan >= 0"
+           [class.kpi-loi-nhuan-neg]="loiNhuan < 0">
+        <div class="kpi-icon"><i class="fa fa-line-chart"></i></div>
+        <div class="kpi-content">
+          <div class="kpi-label">Lợi nhuận</div>
+          <div class="kpi-value">{{ loiNhuan | number }}₫</div>
+        </div>
+      </div>
+    </div>
+    <!-- Bar chart theo kỳ -->
+    <div class="col-xl-8 p-2">
+      <div class="dash-card">
+        <div class="dash-card-header d-flex justify-content-between align-items-center">
+          <div>
+            <i class="fa fa-bar-chart mr-2 text-primary"></i>
+            <strong>Phân tích Thu Chi</strong>
+          </div>
+        </div>
+        <div class="dash-card-body chart-container">
+          <canvas baseChart
+                  [datasets]="chartDatasets"
+                  [labels]="chartLabels"
+                  [options]="chartOptions"
+                  [colors]="chartColors"
+                  [chartType]="chartType">
+          </canvas>
+        </div>
+      </div>
+    </div>
+    <!-- Quick Stats -->
+    <div class="col-xl-4 p-2">
+      <div class="dash-card h-100">
+        <div class="dash-card-header">
+          <i class="fa fa-info-circle mr-2 text-info"></i>
+          <strong>Thống kê thu chi</strong>
+        </div>
+        <div class="dash-card-body">
+          <div class="quick-stat-item border-bottom-0 pb-1 pt-2">
+            <span class="font-weight-bold text-uppercase"
+                  style="font-size:0.75rem;color:#6c757d;">Kỳ trước</span>
+            <span></span>
+          </div>
+          <div class="quick-stat-item">
+            <span class="quick-label"><i class="fa fa-money mr-1 text-muted"></i>Thu</span>
+            <span class="quick-value text-muted">{{ summary.tongThuKyTruoc | number }}₫</span>
+          </div>
+          <div class="quick-stat-item">
+            <span class="quick-label"><i class="fa fa-shopping-cart mr-1 text-muted"></i>Chi</span>
+            <span class="quick-value text-muted">{{ summary.tongChiKyTruoc | number }}₫</span>
+          </div>
+          <div class="quick-stat-item">
+            <span class="quick-label"><i class="fa fa-line-chart mr-1 text-muted"></i>Lợi nhuận</span>
+            <span class="quick-value text-muted">{{ (summary.tongThuKyTruoc - summary.tongChiKyTruoc) | number }}₫</span>
+          </div>
+          <div class="quick-stat-item border-bottom-0 pb-1 pt-2">
+            <span class="font-weight-bold text-uppercase"
+                  style="font-size:0.75rem;color:#6c757d;">So với {{ summary.prevPeriodName }}</span>
+            <span></span>
+          </div>
+          <div class="quick-stat-item">
+            <span class="quick-label"><i class="fa fa-money mr-1 text-success"></i>Thu</span>
+            <span class="quick-value"
+                  [class.text-success]="getGrowthPct(summary.tongThuKy, summary.tongThuKyTruoc) >= 0"
+                  [class.text-danger]="getGrowthPct(summary.tongThuKy, summary.tongThuKyTruoc) < 0">
+              <i class="fa"
+                 [class.fa-caret-up]="getGrowthPct(summary.tongThuKy, summary.tongThuKyTruoc) >= 0"
+                 [class.fa-caret-down]="getGrowthPct(summary.tongThuKy, summary.tongThuKyTruoc) < 0"></i>
+              {{ getGrowthPct(summary.tongThuKy, summary.tongThuKyTruoc) }}%
+            </span>
+          </div>
+          <div class="quick-stat-item">
+            <span class="quick-label"><i class="fa fa-shopping-cart mr-1 text-danger"></i>Chi</span>
+            <span class="quick-value"
+                  [class.text-success]="getGrowthPct(summary.tongChiKy, summary.tongChiKyTruoc) >= 0"
+                  [class.text-danger]="getGrowthPct(summary.tongChiKy, summary.tongChiKyTruoc) < 0">
+              <i class="fa"
+                 [class.fa-caret-up]="getGrowthPct(summary.tongChiKy, summary.tongChiKyTruoc) >= 0"
+                 [class.fa-caret-down]="getGrowthPct(summary.tongChiKy, summary.tongChiKyTruoc) < 0"></i>
+              {{ getGrowthPct(summary.tongChiKy, summary.tongChiKyTruoc) }}%
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Group: Công Nợ -->
+  <div class="dash-section-title">Công Nợ
+  </div>
+
+  <!-- Công Nợ: Dư nợ + Thống kê (trái) | Tổng hợp KH (phải) -->
+  <div class="row dash-card-row p-2"
+       *ngIf="!isLoading">
+    <div class="col-xl-4 p-2">
+      <div class="kpi-card kpi-no mb-3"
+           [class.kpi-no-alert]="overdueCount > 0">
+        <div class="kpi-icon">
+          <i class="fa fa-exclamation-triangle"></i>
+          <span *ngIf="overdueCount > 0"
+                class="kpi-badge">{{ overdueCount }}</span>
+        </div>
+        <div class="kpi-content">
+          <div class="kpi-label">Tổng dư nợ công nợ</div>
+          <div class="kpi-value">{{ summary.tongDuNo | number }}₫</div>
+        </div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <i class="fa fa-book mr-2 text-warning"></i>
+          <strong>Thống kê công nợ</strong>
+        </div>
+        <div class="dash-card-body">
+          <div class="quick-stat-item">
+            <span class="quick-label"><i class="fa fa-files-o mr-1 text-warning"></i>Đơn chưa thanh toán</span>
+            <span class="quick-value text-warning">{{ summary.soDonChuaThanhToan }}</span>
+          </div>
+          <div class="quick-stat-item">
+            <span class="quick-label"><i class="fa fa-exclamation-circle mr-1 text-danger"></i>Đã quá hạn</span>
+            <span class="quick-value text-danger font-weight-bold">{{ overdueCount }}</span>
+          </div>
+          <div class="quick-stat-item">
+            <span class="quick-label"><i class="fa fa-clock-o mr-1 text-warning"></i>Sắp quá hạn</span>
+            <span class="quick-value text-warning font-weight-bold">{{ upcomingCount }}</span>
+          </div>
+          <div class="quick-stat-item">
+            <span class="quick-label"><i class="fa fa-check-circle mr-1 text-success"></i>Đơn còn hạn</span>
+            <span class="quick-value text-success font-weight-bold">{{ summary.soDonChuaThanhToan - overdueCount - upcomingCount }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-8 p-2">
+      <div class="dash-card">
+        <div class="dash-card-header d-flex justify-content-between align-items-center">
+          <div>
+            <i class="fa fa-book mr-2 text-warning"></i>
+            <strong>Tổng hợp Công nợ Khách hàng</strong>
+            <span *ngIf="summary.topCongNoKhachHang?.length > 0"
+                  class="badge badge-warning ml-2">
+              {{ summary.topCongNoKhachHang.length }} khách hàng
+            </span>
+          </div>
+        </div>
+        <div class="dash-card-body p-0">
+
+          <div *ngIf="!summary.topCongNoKhachHang || summary.topCongNoKhachHang.length === 0"
+               class="text-center py-4">
+            <i class="fa fa-check-circle text-success"
+               style="font-size:2.5rem;"></i>
+            <p class="text-muted mt-2 mb-0">Không có dư nợ khách hàng nào!</p>
+          </div>
+
+          <div *ngIf="summary.topCongNoKhachHang?.length > 0"
+               class="congno-list-wrap">
+            <div class="congno-list">
+              <div *ngFor="let item of summary.topCongNoKhachHang"
+                   class="congno-list-item"
+                   (click)="goToKhachHangCongNo(item)">
+                <div class="congno-item-icon"
+                     [class.icon-danger]="item.trangThai === 'QuaHan'"
+                     [class.icon-warning]="item.trangThai === 'SapDenHan'"
+                     [class.icon-success]="item.trangThai === 'ConHan'">
+                  <i class="fa fa-user"></i>
+                </div>
+                <div class="congno-item-info">
+                  <span class="congno-item-name">{{ item.tenKhachHang }}</span>
+                  <span class="congno-item-meta"
+                        *ngIf="item.sdt">&nbsp;| {{ item.sdt }}</span>
+                </div>
+                <div class="congno-item-count">{{ item.soDonNo }} đơn</div>
+                <div class="congno-item-debt">{{ item.tongConNo | number }}₫</div>
+                <span class="badge"
+                      [class.badge-danger]="item.trangThai === 'QuaHan'"
+                      [class.badge-warning]="item.trangThai === 'SapDenHan'"
+                      [class.badge-success]="item.trangThai === 'ConHan'">
+                  {{ item.trangThaiText }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -20,42 +20,53 @@ namespace API._Services.Services
 
         public async Task<List<CongNoSummaryDTO>> GetSummary()
         {
-            var khachHangs = await _repoAccessor.KhachHang
-                .FindAll(x => x.SoNgayCongNo.HasValue && x.SoNgayCongNo > 0)
-                .ToListAsync();
-
             var donHangs = await _repoAccessor.DonHang
                 .FindAll(x => x.Loai == 2)
                 .ToListAsync();
 
-            var result = khachHangs.Select(kh =>
+            var ordersWithDebt = donHangs
+                .Where(d => d.ID_KH.HasValue && (d.TongTien ?? 0) > (d.TienMat ?? 0) + (d.ChuyenKhoan ?? 0))
+                .GroupBy(d => d.ID_KH!.Value)
+                .ToList();
+
+            if (!ordersWithDebt.Any())
+                return new List<CongNoSummaryDTO>();
+
+            var khIds = ordersWithDebt.Select(g => g.Key).ToList();
+            var khachHangs = await _repoAccessor.KhachHang
+                .FindAll(x => khIds.Contains(x.ID))
+                .ToListAsync();
+            var khDict = khachHangs.ToDictionary(x => x.ID);
+
+            var today = DateTime.Today;
+            var result = ordersWithDebt.Select(g =>
             {
-                var orders = donHangs.Where(d => d.ID_KH == kh.ID);
-                var ordersWithDebt = orders.Where(d =>
-                    (d.TongTien ?? 0) - (d.TienMat ?? 0) - (d.ChuyenKhoan ?? 0) > 0).ToList();
+                var khId = g.Key;
+                var kh = khDict.GetValueOrDefault(khId);
+                var orders = g.ToList();
+                var soNgayCongNo = kh?.SoNgayCongNo ?? 0;
 
-                if (!ordersWithDebt.Any()) return null;
-
-                var ngayDenHanList = ordersWithDebt
-                    .Where(d => d.Date.HasValue)
-                    .Select(d => d.Date.Value.AddDays(kh.SoNgayCongNo ?? 0))
+                DateTime? ngayDenHanGanNhat = null;
+                var dueDates = orders
+                    .Select(d => d.Date.HasValue && d.SoNgayCongNo.HasValue ? d.Date.Value.AddDays(d.SoNgayCongNo.Value) : (DateTime?)null)
+                    .Where(d => d.HasValue)
+                    .Select(d => d!.Value)
                     .ToList();
-
-                var ngayDenHanGanNhat = ngayDenHanList.Any() ? ngayDenHanList.Min() : (DateTime?)null;
+                if (dueDates.Any())
+                    ngayDenHanGanNhat = dueDates.Min();
 
                 return new CongNoSummaryDTO
                 {
-                    KhachHangID = kh.ID,
-                    TenKhachHang = kh.Ten,
-                    SDT = kh.SDT,
-                    SoNgayCongNo = kh.SoNgayCongNo ?? 0,
-                    SoDonNo = ordersWithDebt.Count,
-                    TongConNo = ordersWithDebt.Sum(d => (d.TongTien ?? 0) - (d.TienMat ?? 0) - (d.ChuyenKhoan ?? 0)),
+                    KhachHangID = khId,
+                    TenKhachHang = kh?.Ten ?? $"KH #{khId}",
+                    SDT = kh?.SDT ?? "",
+                    SoNgayCongNo = soNgayCongNo,
+                    SoDonNo = orders.Count,
+                    TongConNo = orders.Sum(d => (d.TongTien ?? 0) - (d.TienMat ?? 0) - (d.ChuyenKhoan ?? 0)),
                     NgayDenHanGanNhat = ngayDenHanGanNhat,
                     TrangThai = GetTrangThai(ngayDenHanGanNhat)
                 };
             })
-            .Where(x => x != null)
             .OrderBy(x => x.NgayDenHanGanNhat)
             .ToList();
 
@@ -65,7 +76,7 @@ namespace API._Services.Services
         public async Task<List<CongNoChiTietDTO>> GetDetail(int khachHangID)
         {
             var kh = await _repoAccessor.KhachHang.FindSingle(x => x.ID == khachHangID);
-            if (kh == null || !(kh.SoNgayCongNo > 0))
+            if (kh == null)
                 return new List<CongNoChiTietDTO>();
 
             var orders = await _repoAccessor.DonHang
@@ -74,11 +85,12 @@ namespace API._Services.Services
                 .OrderBy(d => d.Date)
                 .ToListAsync();
 
+            var soNgayCongNo = kh.SoNgayCongNo ?? 0;
             var today = DateTime.Today;
             return orders.Select(d =>
             {
                 var ngayXuat = d.Date ?? today;
-                var ngayDenHan = ngayXuat.AddDays(kh.SoNgayCongNo ?? 0);
+                var ngayDenHan = (DateTime?)ngayXuat.AddDays(soNgayCongNo);
                 var conNo = (d.TongTien ?? 0) - (d.TienMat ?? 0) - (d.ChuyenKhoan ?? 0);
 
                 return new CongNoChiTietDTO
@@ -90,7 +102,7 @@ namespace API._Services.Services
                     TongTien = d.TongTien ?? 0,
                     DaThanhToan = (d.TienMat ?? 0) + (d.ChuyenKhoan ?? 0),
                     ConNo = conNo,
-                    SoNgayQuaHan = ngayDenHan < today ? (today - ngayDenHan).Days : 0
+                    SoNgayQuaHan = ngayDenHan.HasValue && ngayDenHan.Value < today ? (today - ngayDenHan.Value).Days : 0
                 };
             }).ToList();
         }
@@ -101,14 +113,6 @@ namespace API._Services.Services
             if (DateTime.TryParse(filter?.FromDate, out var fd)) fromDate = fd;
             if (DateTime.TryParse(filter?.ToDate, out var td)) toDate = td;
 
-            var query = _repoAccessor.KhachHang
-                .FindAll(x => x.SoNgayCongNo.HasValue && x.SoNgayCongNo > 0);
-
-            if (filter?.IdKH?.Any() == true)
-                query = query.Where(x => filter.IdKH.Contains(x.ID));
-
-            var khachHangs = await query.ToListAsync();
-
             var donHangQuery = _repoAccessor.DonHang.FindAll(x => x.Loai == 2);
 
             if (fromDate.HasValue)
@@ -118,35 +122,60 @@ namespace API._Services.Services
 
             var donHangs = await donHangQuery.ToListAsync();
 
+            var ordersWithDebtByKH = donHangs
+                .Where(d => d.ID_KH.HasValue && (d.TongTien ?? 0) > (d.TienMat ?? 0) + (d.ChuyenKhoan ?? 0))
+                .GroupBy(d => d.ID_KH!.Value)
+                .ToList();
+
+            if (!ordersWithDebtByKH.Any())
+                return new List<CongNoCustomerDTO>();
+
+            var khIds = ordersWithDebtByKH.Select(g => g.Key).ToList();
+            if (filter?.IdKH?.Any() == true)
+                khIds = khIds.Intersect(filter.IdKH).ToList();
+
+            var khachHangs = await _repoAccessor.KhachHang
+                .FindAll(x => khIds.Contains(x.ID))
+                .ToListAsync();
+            var khDict = khachHangs.ToDictionary(x => x.ID);
+
             var today = DateTime.Today;
             var result = new List<CongNoCustomerDTO>();
 
-            foreach (var kh in khachHangs)
+            foreach (var g in ordersWithDebtByKH)
             {
-                var orders = donHangs.Where(d => d.ID_KH == kh.ID);
-                var ordersWithDebt = orders.Where(d =>
-                    (d.TongTien ?? 0) - (d.TienMat ?? 0) - (d.ChuyenKhoan ?? 0) > 0).ToList();
+                var khId = g.Key;
+                if (filter?.IdKH?.Any() == true && !filter.IdKH.Contains(khId)) continue;
 
-                if (!ordersWithDebt.Any()) continue;
+                var kh = khDict.GetValueOrDefault(khId);
+                var orders = g.ToList();
+                var soNgayCongNo = kh?.SoNgayCongNo ?? 0;
 
-                var ngayDenHanList = ordersWithDebt
-                    .Where(d => d.Date.HasValue)
-                    .Select(d => d.Date.Value.AddDays(kh.SoNgayCongNo ?? 0))
+                DateTime? ngayDenHanGanNhat = null;
+                var dueDates = orders
+                    .Select(d => d.Date.HasValue && d.SoNgayCongNo.HasValue ? d.Date.Value.AddDays(d.SoNgayCongNo.Value) : (DateTime?)null)
+                    .Where(d => d.HasValue)
+                    .Select(d => d!.Value)
                     .ToList();
-
-                var ngayDenHanGanNhat = ngayDenHanList.Any() ? ngayDenHanList.Min() : (DateTime?)null;
+                if (dueDates.Any())
+                    ngayDenHanGanNhat = dueDates.Min();
 
                 var trangThai = GetTrangThai(ngayDenHanGanNhat);
 
-                if (filter?.TrangThai == "QuaHan" && !ordersWithDebt.Any(o =>
-                    o.Date.HasValue && o.Date.Value.AddDays(kh.SoNgayCongNo ?? 0) < today)) continue;
-                if (filter?.TrangThai == "ConHan" && !ordersWithDebt.Any(o =>
-                    o.Date.HasValue && o.Date.Value.AddDays(kh.SoNgayCongNo ?? 0) >= today)) continue;
+                bool isOverdue(Models.DonHang o)
+                {
+                    if (o.Date.HasValue && o.SoNgayCongNo.HasValue) return o.Date.Value.AddDays(o.SoNgayCongNo.Value).Date < today;
+                    if (o.Date.HasValue) return o.Date.Value.AddDays(soNgayCongNo).Date < today;
+                    return false;
+                }
 
-                var detailList = ordersWithDebt.Select(d =>
+                if (filter?.TrangThai == "QuaHan" && !orders.Any(o => isOverdue(o))) continue;
+                if (filter?.TrangThai == "ConHan" && !orders.Any(o => !isOverdue(o))) continue;
+
+                var detailList = orders.Select(d =>
                 {
                     var ngayXuat = d.Date ?? today;
-                    var ngayDenHan = ngayXuat.AddDays(kh.SoNgayCongNo ?? 0);
+                    DateTime? ngayDenHan = d.Date.HasValue && d.SoNgayCongNo.HasValue ? d.Date.Value.AddDays(d.SoNgayCongNo.Value) : null;
                     var conNo = (d.TongTien ?? 0) - (d.TienMat ?? 0) - (d.ChuyenKhoan ?? 0);
                     return new CongNoChiTietDTO
                     {
@@ -157,19 +186,19 @@ namespace API._Services.Services
                         TongTien = d.TongTien ?? 0,
                         DaThanhToan = (d.TienMat ?? 0) + (d.ChuyenKhoan ?? 0),
                         ConNo = conNo,
-                        SoNgayQuaHan = ngayDenHan < today ? (today - ngayDenHan).Days : 0
+                        SoNgayQuaHan = ngayDenHan.HasValue && ngayDenHan.Value < today ? (today - ngayDenHan.Value).Days : 0
                     };
                 }).OrderBy(x => x.NgayDenHan).ToList();
 
                 result.Add(new CongNoCustomerDTO
                 {
-                    KhachHangID = kh.ID,
-                    TenKhachHang = kh.Ten,
-                    SDT = kh.SDT,
-                    SoNgayCongNo = kh.SoNgayCongNo ?? 0,
-                    HanMucCongNo = kh.HanMucCongNo,
-                    SoDonNo = ordersWithDebt.Count,
-                    TongConNo = ordersWithDebt.Sum(d => (d.TongTien ?? 0) - (d.TienMat ?? 0) - (d.ChuyenKhoan ?? 0)),
+                    KhachHangID = khId,
+                    TenKhachHang = kh?.Ten ?? $"KH #{khId}",
+                    SDT = kh?.SDT ?? "",
+                    SoNgayCongNo = soNgayCongNo,
+                    HanMucCongNo = kh?.HanMucCongNo,
+                    SoDonNo = orders.Count,
+                    TongConNo = orders.Sum(d => (d.TongTien ?? 0) - (d.TienMat ?? 0) - (d.ChuyenKhoan ?? 0)),
                     NgayDenHanGanNhat = ngayDenHanGanNhat,
                     TrangThai = trangThai,
                     Orders = detailList

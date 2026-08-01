@@ -8,6 +8,7 @@ import { IconButton } from "@constants/common.constants";
 import { Pagination } from '@utilities/pagination-utility';
 import { PageChangedEvent } from 'ngx-bootstrap/pagination';
 import { KeyValuePair } from '@utilities/key-value-pair';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-main',
@@ -39,6 +40,7 @@ export class MainComponent extends InjectBase implements OnInit, OnDestroy {
   tinhTrangList: KeyValuePair[] = [
     { key: '1', value: 'Đã Thanh Toán' },
     { key: '2', value: 'Chưa Thanh Toán' },
+    { key: '4', value: 'Quá hạn thanh toán' },
     { key: '3', value: 'Tất cả' },
   ];
   dateTypeList: KeyValuePair[] = [
@@ -62,7 +64,11 @@ export class MainComponent extends InjectBase implements OnInit, OnDestroy {
   tongTienTT: number;
   data: DonHang[] = [];
   editData: DonHang = <DonHang>{};
-  constructor(private donHangService: DonHangService, private modalService: ModalService) {
+  constructor(
+    private donHangService: DonHangService,
+    private modalService: ModalService,
+    private route: ActivatedRoute
+  ) {
     super();
   }
   openModal(id: string, item: DonHang) {
@@ -71,13 +77,22 @@ export class MainComponent extends InjectBase implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    const savedState = this.donHangService.getMainState('ban-hang');
-    this.donHangService.clearMainState('ban-hang');
-    if (savedState) {
-      this.restoreState(savedState);
-    } else {
+    const searchParam = this.route.snapshot.queryParamMap.get('search');
+    if (searchParam) {
+      this.param.ma_DH = searchParam;
+      this.fromDate = new Date(2000, 0, 1);
+      this.toDate = new Date(2099, 11, 31);
       this.getListKhachHang();
-      this.clear();
+      this.getData();
+    } else {
+      const savedState = this.donHangService.getMainState('ban-hang');
+      this.donHangService.clearMainState('ban-hang');
+      if (savedState) {
+        this.restoreState(savedState);
+      } else {
+        this.getListKhachHang();
+        this.clear();
+      }
     }
   }
 
@@ -278,6 +293,25 @@ export class MainComponent extends InjectBase implements OnInit, OnDestroy {
       default:
         break;
     }
+  }
+  getDueDate(item: DonHang): Date | null {
+    if (item.soNgayCongNo == null || !item.date) return null;
+    const dueDate = new Date(item.date);
+    dueDate.setDate(dueDate.getDate() + item.soNgayCongNo);
+    return dueDate;
+  }
+  getOverdueDays(item: DonHang): number {
+    if (item.soNgayCongNo == null || !item.date) return null;
+    const dueDate = new Date(item.date);
+    dueDate.setDate(dueDate.getDate() + item.soNgayCongNo);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    dueDate.setHours(0, 0, 0, 0);
+    const diffTime = today.getTime() - dueDate.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const isPaid = (item.tienMat || 0) + (item.chuyenKhoan || 0) >= (item.tongTien || 0);
+    if (isPaid || diffDays <= 0) return null;
+    return diffDays;
   }
   changeData($event) {
     this.search();

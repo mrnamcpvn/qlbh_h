@@ -7,7 +7,6 @@ import { P404Component } from './views/error/404.component';
 import { P500Component } from './views/error/500.component';
 import { LoginComponent } from './views/login/login.component';
 import { AuthGuard } from '../app/_core/guards/auth/auth.guard';
-import { DashboardComponent } from './views/dashboard/dashboard.component';
 export const routes: Routes = [
   {
     path: '',
@@ -24,7 +23,7 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        component: DashboardComponent
+        loadChildren: () => import('./views/dashboard/dashboard.module').then(m => m.DashboardModule)
       },
       {
         path: 'maintain',

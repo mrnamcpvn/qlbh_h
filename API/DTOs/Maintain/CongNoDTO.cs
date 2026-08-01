@@ -17,7 +17,7 @@ namespace API.DTOs.Maintain
         public int DonHangID { get; set; }
         public string Ma_DH { get; set; }
         public DateTime NgayXuat { get; set; }
-        public DateTime NgayDenHan { get; set; }
+        public DateTime? NgayDenHan { get; set; }
         public decimal TongTien { get; set; }
         public decimal DaThanhToan { get; set; }
         public decimal ConNo { get; set; }

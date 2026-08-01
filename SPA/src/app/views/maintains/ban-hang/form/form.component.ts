@@ -35,10 +35,10 @@ export class FormComponent extends InjectBase implements OnInit, AfterViewInit, 
   listChiTiet: ChiTietDonHang[] = [];
   date: Date = new Date();
   tongTien: number = 0;
-  soNgayCongNo: number = 0;
+  soNgayCongNo: number = null;
   debtInfo: CustomerDebtInfo = <CustomerDebtInfo>{};
   get ngayDenHan(): Date {
-    if (this.date && this.soNgayCongNo > 0) {
+    if (this.soNgayCongNo != null && this.date) {
       const d = new Date(this.date);
       d.setDate(d.getDate() + this.soNgayCongNo);
       return d;
@@ -97,19 +97,33 @@ export class FormComponent extends InjectBase implements OnInit, AfterViewInit, 
       .subscribe({
         next: res => {
           if (res) {
-            this.donHang = res;
-            this.data.iD_KH = res.iD_KH;
-            this.onCustomerChange(res.iD_KH);
-            this.data.iD_NV = res.iD_NV;
-            this.data.ma_DH = res.ma_DH;
-            if (res.date) this.date = new Date(res.date);
-            this.tongTien = res.tongTien;
+            this.applyOrder(res);
           } else {
-            this.router.navigate(['/maintain/ban-hang']);
+            this.donHangService.getById(this.id).subscribe({
+              next: dh => {
+                if (dh) {
+                  this.applyOrder(dh);
+                } else {
+                  this.router.navigate(['/maintain/ban-hang']);
+                }
+              },
+              error: () => this.router.navigate(['/maintain/ban-hang'])
+            });
           }
         },
         error: () => this.router.navigate(['/maintain/ban-hang'])
       });
+  }
+
+  private applyOrder(res: DonHang) {
+    this.donHang = res;
+    this.data.iD_KH = res.iD_KH;
+    this.onCustomerChange(res.iD_KH);
+    this.data.iD_NV = res.iD_NV;
+    this.data.ma_DH = res.ma_DH;
+    if (res.date) this.date = new Date(res.date);
+    this.soNgayCongNo = res.soNgayCongNo ?? null;
+    this.tongTien = res.tongTien;
   }
 
   private getDetail() {
@@ -132,14 +146,19 @@ export class FormComponent extends InjectBase implements OnInit, AfterViewInit, 
 
   onCustomerChange(khId: number) {
     const kh = this.khachHangs.find(x => x.id === khId);
-    this.soNgayCongNo = kh?.soNgayCongNo || 0;
     if (khId) {
+      this.soNgayCongNo = kh?.soNgayCongNo ?? null;
       this.congNoService.getCustomerDebtInfo(khId).subscribe({
         next: res => this.debtInfo = res
       });
     } else {
+      this.soNgayCongNo = null;
       this.debtInfo = <CustomerDebtInfo>{};
     }
+  }
+
+  onSoNgayCongNoChange(value: number) {
+    this.soNgayCongNo = value ?? null;
   }
 
   private getAllKH() {
@@ -314,6 +333,7 @@ export class FormComponent extends InjectBase implements OnInit, AfterViewInit, 
     this.data.tongTien = this.tongTien;
     this.data.chitiet = this.listChiTiet;
     if (this.date) this.data.date_Str = this.functionUtility.getDateFormat(this.date);
+    this.data.soNgayCongNo = this.soNgayCongNo;
 
     if (this.isEdit) {
       this.data.id = this.donHang.id;

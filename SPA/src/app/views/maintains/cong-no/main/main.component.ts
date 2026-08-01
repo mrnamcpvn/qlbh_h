@@ -156,6 +156,7 @@ export class MainComponent extends InjectBase implements OnInit, OnDestroy, Afte
   }
 
   soNgayConHan(order: CongNoChiTiet): number {
+    if (!order.ngayDenHan) return 0;
     const now = new Date();
     const denHan = new Date(order.ngayDenHan);
     const diff = denHan.getTime() - now.getTime();
@@ -164,6 +165,11 @@ export class MainComponent extends InjectBase implements OnInit, OnDestroy, Afte
 
   hasOverdue(item: CongNoCustomer): boolean {
     return item.orders?.some(o => o.soNgayQuaHan > 0) ?? false;
+  }
+
+  viewChiTiet(order: CongNoChiTiet) {
+    const url = `/#/maintain/ban-hang?search=${order.ma_DH}`;
+    window.open(url, '_blank');
   }
 
   onFilterByChange() {

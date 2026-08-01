@@ -27,10 +27,25 @@
   border-right: 1px dotted #ccc;
 }
 
-.product-detail-row {
+.order-row {
+  background-color: #f1f3f5;
+  font-weight: 500;
+}
+
+.order-row i {
+  width: 15px;
+  display: inline-block;
+  text-align: center;
+}
+
+.order-row td {
+  border-top: none;
+}
+
+.product-row {
   background-color: #f8f9fa;
 }
 
-.product-detail-row td {
+.product-row td {
   border-top: none;
 }

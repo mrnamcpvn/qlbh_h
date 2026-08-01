@@ -2,6 +2,11 @@ import { INavData } from '@coreui/angular';
 
 export const navItems: INavData[] = [
   {
+    name: 'Tổng hợp',
+    url: '/dashboard',
+    icon: 'fa fa-tachometer',
+  },
+  {
     name: 'Quản lý quản trị',
     url: '/maintain/nguoi-dung',
     icon: 'fa fa-cogs',

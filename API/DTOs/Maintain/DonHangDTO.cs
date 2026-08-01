@@ -20,6 +20,7 @@ namespace API.DTOs.Maintain
         public string DiaChi { get; set; }
         public bool Status { get; set; }
         public string StatusName { get; set; }
+        public int? SoNgayCongNo { get; set; }
     }
     public class DonHangDTO : DonHangO
     {

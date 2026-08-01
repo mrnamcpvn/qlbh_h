@@ -2,7 +2,9 @@
   <div class="row pt-4">
     <div class="col-lg-12">
       <div class="card">
-        <form class="form-horizontal" autocomplete="off" #mainForm="ngForm">
+        <form class="form-horizontal"
+              autocomplete="off"
+              #mainForm="ngForm">
           <div class="card-header">
             <div class="row mb-3">
               <div class="col-md-6 col-sm-12">
@@ -17,7 +19,8 @@
                            (ngModelChange)="onFilterByChange()"
                            (clear)="filterBy = '0'"
                            [clearable]="filterBy != '0'">
-                  <ng-option *ngFor="let item of filterByList" [value]="item.key">{{ item.value }}</ng-option>
+                  <ng-option *ngFor="let item of filterByList"
+                             [value]="item.key">{{ item.value }}</ng-option>
                 </ng-select>
               </div>
               <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
@@ -25,23 +28,31 @@
                 <div class="full-width">
                   <div class="container_date">
                     <div class="input-group mr-1">
-                      <input type="text" placeholder="Từ ngày..."
+                      <input type="text"
+                             placeholder="Từ ngày..."
                              [maxDate]="filterBy == '0' ? toDate : null"
-                             name="date_start" [bsConfig]="bsConfig"
-                             class="form-control" bsDatepicker
+                             name="date_start"
+                             [bsConfig]="bsConfig"
+                             class="form-control"
+                             bsDatepicker
                              [(ngModel)]="fromDate"
-                             (ngModelChange)="onFromDateChange()" required>
+                             (ngModelChange)="onFromDateChange()"
+                             required>
                       <div class="input-group-append">
                         <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
                       </div>
                     </div>
                     <div class="input-group ml-1">
-                      <input type="text" placeholder="Đến ngày..."
+                      <input type="text"
+                             placeholder="Đến ngày..."
                              [minDate]="filterBy == '0' ? fromDate : null"
-                             name="date_end" [bsConfig]="bsConfig"
-                             class="form-control" bsDatepicker
+                             name="date_end"
+                             [bsConfig]="bsConfig"
+                             class="form-control"
+                             bsDatepicker
                              [(ngModel)]="toDate"
-                             (ngModelChange)="onToDateChange()" required>
+                             (ngModelChange)="onToDateChange()"
+                             required>
                       <div class="input-group-append">
                         <span class="input-group-text"><i class="{{iconButton.CALENDAR}}"></i></span>
                       </div>
@@ -54,9 +65,14 @@
                 <div class="d-flex align-items-center">
                   <div *ngFor="let item of trangThaiList; index as i"
                        class="custom-control custom-radio pt-2 mr-3">
-                    <input [id]="'tt' + i" class="custom-control-input" type="radio"
-                           name="trangThai" [value]="item.key" [(ngModel)]="trangThai" />
-                    <label class="custom-control-label" [for]="'tt' + i">
+                    <input [id]="'tt' + i"
+                           class="custom-control-input"
+                           type="radio"
+                           name="trangThai"
+                           [value]="item.key"
+                           [(ngModel)]="trangThai" />
+                    <label class="custom-control-label"
+                           [for]="'tt' + i">
                       <strong>{{ item.value }}</strong>
                     </label>
                   </div>
@@ -65,61 +81,88 @@
               <div class="col-xl-4 col-lg-4 col-md-12 col-sm-12">
                 <label class="badge badge-warning">Khách hàng:</label>
                 <ng-select [items]="khachHangList"
-                           [multiple]="true" name="khachHang"
-                           groupBy="allGroup" [selectableGroup]="true"
-                           [selectableGroupAsModel]="false" [closeOnSelect]="false"
-                           bindLabel="value" bindValue="key"
+                           [multiple]="true"
+                           name="khachHang"
+                           groupBy="allGroup"
+                           [selectableGroup]="true"
+                           [selectableGroupAsModel]="false"
+                           [closeOnSelect]="false"
+                           bindLabel="value"
+                           bindValue="key"
                            [(ngModel)]="selectedKH"
                            placeholder="Vui lòng chọn khách hàng">
-                  <ng-template ng-optgroup-tmp let-item="item" let-item$="item$" let-index="index">
+                  <ng-template ng-optgroup-tmp
+                               let-item="item"
+                               let-item$="item$"
+                               let-index="index">
                     <div class="custom-control custom-checkbox pe-none">
-                      <input id="item-KH-{{ index }}" type="checkbox" class="custom-control-input"
-                             name="item-KH-{{ index }}" [ngModel]="item$.selected" />
-                      <label class="custom-control-label" for="item-KH-{{ index }}">Chọn tất cả</label>
+                      <input id="item-KH-{{ index }}"
+                             type="checkbox"
+                             class="custom-control-input"
+                             name="item-KH-{{ index }}"
+                             [ngModel]="item$.selected" />
+                      <label class="custom-control-label"
+                             for="item-KH-{{ index }}">Chọn tất cả</label>
                     </div>
                   </ng-template>
-                  <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+                  <ng-template ng-option-tmp
+                               let-item="item"
+                               let-item$="item$"
+                               let-index="index">
                     <div class="custom-control custom-checkbox pe-none">
-                      <input id="item-KH-{{ index }}" name="item-KH-{{ index }}" type="checkbox"
-                             class="custom-control-input" [ngModel]="item$.selected" />
-                      <label class="custom-control-label" for="item-KH-{{ index }}">{{ item.value }}</label>
+                      <input id="item-KH-{{ index }}"
+                             name="item-KH-{{ index }}"
+                             type="checkbox"
+                             class="custom-control-input"
+                             [ngModel]="item$.selected" />
+                      <label class="custom-control-label"
+                             for="item-KH-{{ index }}">{{ item.value }}</label>
                     </div>
                   </ng-template>
                 </ng-select>
               </div>
               <div class="col">
                 <label class="d-block">&nbsp;</label>
-                <button type="submit" (click)="search()" class="{{classButton.SEARCH}}">
+                <button type="submit"
+                        (click)="search()"
+                        class="{{classButton.SEARCH}}">
                   <i class="{{iconButton.SEARCH}}"></i> Xem công nợ
                 </button>
-                <button type="button" (click)="clear()" class="{{classButton.CLEAR}}">
+                <button type="button"
+                        (click)="clear()"
+                        class="{{classButton.CLEAR}}">
                   <i class="{{iconButton.CLEAR}}"></i> Xóa
                 </button>
               </div>
             </div>
           </div>
         </form>
-         <div class="card-body">
-           <div *ngIf="data?.length > 0" class="mb-2">
-             <span class="alert alert-warning py-1 mb-0 rounded-0 small d-inline-block">
-               Tổng: <strong>{{data.length}}</strong> khách hàng,
-               <strong>{{tongDonNo()}}</strong> đơn còn nợ,
-               tổng dư nợ: <strong class="text-danger">{{tongCongNo() | number}}₫</strong>
-             </span>
-           </div>
-           <div class="row justify-content-md-center">
-             <div class="col-12">
+        <div class="card-body">
+          <div *ngIf="data?.length > 0"
+               class="mb-2">
+            <span class="alert alert-warning py-1 mb-0 rounded-0 small d-inline-block">
+              Tổng: <strong>{{data.length}}</strong> khách hàng,
+              <strong>{{tongDonNo()}}</strong> đơn còn nợ,
+              tổng dư nợ: <strong class="text-danger">{{tongCongNo() | number}}₫</strong>
+            </span>
+          </div>
+          <div class="row justify-content-md-center">
+            <div class="col-12">
               <div class="table-responsive">
                 <table class="table table-bordered">
-                   <thead>
-                     <tr>
-                       <th class="text-center" colspan="3">Khách hàng</th>
-                       <th class="text-center">Đơn hàng</th>
-                        <th class="text-center" colspan="2">Công nợ (ngày)</th>
-                        <th class="text-center" colspan="3">Tổng còn nợ</th>
-                        <th class="text-center">Trạng thái</th>
-                     </tr>
-                   </thead>
+                  <thead>
+                    <tr>
+                      <th class="text-center"
+                          colspan="3">Khách hàng</th>
+                      <th class="text-center">Đơn hàng</th>
+                      <th class="text-center"
+                          colspan="2">Công nợ (ngày)</th>
+                      <th class="text-center"
+                          colspan="3">Tổng còn nợ</th>
+                      <th class="text-center">Trạng thái</th>
+                      <th class="text-center">Thao tác</th>
+                    </tr>
+                  </thead>
                   <tbody>
                     <ng-container *ngFor="let item of data; let i = index">
                       <tr class="group-header"
@@ -127,48 +170,66 @@
                           [ngClass]="{'table-danger': hasOverdue(item)}"
                           style="cursor: pointer;">
                         <td colspan="3">
-                          <i class="fa mr-2" [ngClass]="item.isExpanded ? 'fa-caret-down' : 'fa-caret-right'"></i>
+                          <i class="fa mr-2"
+                             [ngClass]="item.isExpanded ? 'fa-caret-down' : 'fa-caret-right'"></i>
                           <b>{{item.tenKhachHang}}</b>
                           <span class="text-muted mx-2">|</span>
                           <b>{{item.sdt}}</b>
                         </td>
                         <td class="text-center"><b>{{item.soDonNo}} đơn hàng</b></td>
-                          <td class="text-center" colspan="2"><b>{{item.soNgayCongNo}} ngày</b></td>
-                          <td class="text-right text-danger font-weight-bold" colspan="3">{{item.tongConNo | number}}</td>
-                          <td></td>
+                        <td class="text-center"
+                            colspan="2">
+                          <b *ngIf="item.soNgayCongNo > 0">{{item.soNgayCongNo}} ngày</b>
+                        </td>
+                        <td class="text-right text-danger font-weight-bold"
+                            colspan="3">{{item.tongConNo | number}}</td>
+                        <td></td>
+                        <td></td>
                       </tr>
                       <ng-container *ngIf="item.isExpanded">
-                         <tr *ngFor="let order of item.orders; let j = index"
-                             class="product-detail-row"
-                             [ngClass]="{'table-danger': order.soNgayQuaHan > 0}">
+                        <tr *ngFor="let order of item.orders; let j = index"
+                            class="product-detail-row"
+                            [ngClass]="{'table-danger': order.soNgayQuaHan > 0}">
                           <td colspan="3"></td>
                           <td class="pl-4">
                             <span>{{order.ma_DH}}</span>
                           </td>
-                           <td class="text-center">
-                             <span class="small text-muted">Xuất:</span> {{order.ngayXuat | date:'dd/MM/yyyy'}}
-                           </td>
-                           <td class="text-center">
-                             <span class="small text-muted">Hạn:</span> {{order.ngayDenHan | date:'dd/MM/yyyy'}}
-                           </td>
-                           <td class="text-right">
-                             <span class="small text-muted">Tổng: </span><b>{{order.tongTien | number}}</b>
-                           </td>
-                           <td class="text-right">
-                             <span class="small text-muted">Đã TT: </span><span class="text-success">{{order.daThanhToan | number}}</span>
-                           </td>
-                           <td class="text-right">
-                             <span class="small text-muted">Còn: </span><span class="text-danger font-weight-bold">{{order.conNo | number}}</span>
-                           </td>
-                           <td class="text-center">
-                             <span *ngIf="order.soNgayQuaHan > 0" class="badge badge-danger">Quá hạn: {{order.soNgayQuaHan}} ngày</span>
-                             <span *ngIf="order.soNgayQuaHan === 0" class="badge badge-success">Còn hạn: {{soNgayConHan(order)}} ngày</span>
-                           </td>
+                          <td class="text-center">
+                            <span class="small text-muted">Xuất:</span> {{order.ngayXuat | date:'dd/MM/yyyy'}}
+                          </td>
+                          <td class="text-center">
+                            <span class="small text-muted"
+                                  *ngIf="order.ngayDenHan">Hạn:</span> {{order.ngayDenHan | date:'dd/MM/yyyy'}}
+                          </td>
+                          <td class="text-right">
+                            <span class="small text-muted">Tổng: </span><b>{{order.tongTien | number}}</b>
+                          </td>
+                          <td class="text-right">
+                            <span class="small text-muted">Đã TT: </span><span class="text-success">{{order.daThanhToan | number}}</span>
+                          </td>
+                          <td class="text-right">
+                            <span class="small text-muted">Còn: </span><span class="text-danger font-weight-bold">{{order.conNo | number}}</span>
+                          </td>
+                          <td class="text-center">
+                            <span *ngIf="order.soNgayQuaHan > 0"
+                                  class="badge badge-danger">Quá hạn: {{order.soNgayQuaHan}} ngày</span>
+                            <span *ngIf="order.soNgayQuaHan === 0 && item.soNgayCongNo > 0"
+                                  class="badge badge-success">Còn hạn: {{soNgayConHan(order)}} ngày</span>
+                            <span *ngIf="order.soNgayQuaHan === 0 && item.soNgayCongNo === 0"
+                                  class="badge badge-warning">Chưa Thanh Toán</span>
+                          </td>
+                          <td class="text-center">
+                            <button type="button"
+                                    class="btn btn-primary btn-sm"
+                                    (click)="viewChiTiet(order)">
+                              <i class="fa fa-search"></i>&nbsp;Chi Tiết </button>
+                          </td>
                         </tr>
                       </ng-container>
                     </ng-container>
-                     <tr *ngIf="data?.length === 0">
-                        <td colspan="10" class="table-warning text-center font-weight-bold">Không có dữ liệu!</td>
+                    <tr *ngIf="data?.length === 0">
+                      <td colspan="11"
+                          class="table-warning text-center font-weight-bold">Không có dữ liệu!</td>
                     </tr>
                   </tbody>
                 </table>

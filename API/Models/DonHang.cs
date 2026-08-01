@@ -20,5 +20,6 @@ namespace API.Models
         public DateTime? Create_Time { get; set; }
         public int? ID_KH { get; set; }
         public int? ID_NCC { get; set; }
+        public int? SoNgayCongNo { get; set; }
     }
 }

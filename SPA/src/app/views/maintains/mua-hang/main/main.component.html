@@ -212,7 +212,6 @@
                       <th class="text-center">Stt</th>
                       <th class=" text-center">Nhà cung cấp</th>
                       <th class="text-center">Ngày nhập</th>
-                      <th class="text-center">Ngày lập</th>
                       <th class=" text-center">Tổng tiền</th>
                       <th class=" text-center col-payment">Thanh toán</th>
                       <th class=" text-center">Tình trạng</th>
@@ -224,7 +223,6 @@
                       <td class="col-stt">{{ ((pagination.pageNumber - 1) * pagination.pageSize) + i + 1 }}</td>
                       <td class="align-middle">{{item.ten_NCC}}</td>
                       <td class="col-date">{{item.date | date: 'dd/MM/YYYY'}}</td>
-                      <td class="col-date">{{item.create_Time | date: 'dd/MM/YYYY HH:mm:ss'}}</td>
                       <td class="text-right">{{item.tongTien | number}} VNĐ</td>
 
                       <td class="align-middle">
@@ -268,7 +266,7 @@
                     </tr>
                     <tr *ngIf="data?.length > 0"
                         class="row-total">
-                      <td colspan="4"> <b>Tổng tiền: </b> </td>
+                      <td colspan="3"> <b>Tổng tiền: </b> </td>
                       <td class="text-right"><b>{{tongTien | number}} VNĐ</b></td>
                       <td colspan="3"></td>
                     </tr>

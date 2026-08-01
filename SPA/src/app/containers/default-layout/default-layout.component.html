@@ -1,27 +1,124 @@
-<app-header [navbarBrandRouterLink]="['/dashboard']" [fixed]="true"
-  [navbarBrandFull]="{src: 'assets/img/logo/favicon.png', width: 40, height: 40, alt: 'Logo'}"
-  [navbarBrandMinimized]="{src: 'assets/img/logo/favicon.png', width: 40, height: 30, alt: 'Logo'}"
-  [sidebarToggler]="'lg'" [mobileAsideMenuToggler]="false" [asideMenuToggler]="false">
+<app-header [navbarBrandRouterLink]="['/dashboard']"
+            [fixed]="true"
+            [navbarBrandFull]="{src: 'assets/img/logo/favicon.png', width: 40, height: 40, alt: 'Logo'}"
+            [navbarBrandMinimized]="{src: 'assets/img/logo/favicon.png', width: 40, height: 30, alt: 'Logo'}"
+            [sidebarToggler]="'lg'"
+            [mobileAsideMenuToggler]="false"
+            [asideMenuToggler]="false">
 
   <h4 class="app-title">Quản lý bán hàng</h4>
   <ul class="nav navbar-nav ml-auto">
-    <!-- <li class="nav-item d-md-down-none">
-      <a class="nav-link" href="#"><i class="icon-bell"></i><span class="badge badge-pill badge-danger">5</span></a>
-    </li> -->
-    <li class="nav-item dropdown" dropdown placement="bottom right">
-      <a class="nav-link" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" dropdownToggle>
+    <li class="nav-item dropdown"
+        dropdown
+        placement="bottom right">
+      <a class="nav-link"
+         data-toggle="dropdown"
+         role="button"
+         aria-haspopup="true"
+         aria-expanded="false"
+         dropdownToggle>
         <h6 class="username">{{user?.name}}</h6>
-        <img src="assets/img/avatars/user.png" class="img-avatar" alt="avatar" />
+        <img src="assets/img/avatars/user.png"
+             class="img-avatar"
+             alt="avatar" />
       </a>
-      <div class="dropdown-menu dropdown-menu-right" *dropdownMenu aria-labelledby="simple-dropdown">
-        <a class="dropdown-item" (click)="logout()"><i class="fa fa-sign-out"></i> Đăng xuất</a>
+      <div class="dropdown-menu dropdown-menu-right"
+           *dropdownMenu
+           aria-labelledby="simple-dropdown">
+        <a class="dropdown-item"
+           (click)="logout()"><i class="fa fa-sign-out"></i> Đăng xuất</a>
       </div>
     </li>
   </ul>
 </app-header>
+
+<!-- Floating Notification -->
+<div #notifContainer
+     class="notif-float">
+  <div class="notif-float-btn"
+       (click)="notifExpanded = !notifExpanded"
+       [class.notif-has-alert]="overdueCount > 0"
+       [class.btn-hidden]="notifExpanded">
+    <i class="fa fa-bell"></i>
+    <span *ngIf="overdueCount + upcomingCount > 0"
+          class="notif-badge"
+          @badgeAnimation>
+      {{ overdueCount + upcomingCount }}
+    </span>
+  </div>
+
+  <div class="notif-float-panel"
+       *ngIf="notifExpanded"
+       @panelAnimation>
+    <div class="notif-panel-header">
+      <span>Thông báo đơn hàng</span>
+      <button class="notif-header-close"
+              (click)="notifExpanded = false">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+    <div class="notif-panel-body">
+      <div class="notif-summary mb-2">
+        <span *ngIf="overdueCount > 0"
+              class="badge badge-danger mr-1">{{ overdueCount }} quá hạn</span>
+        <span *ngIf="upcomingCount > 0"
+              class="badge badge-warning">{{ upcomingCount }} sắp quá hạn</span>
+        <span *ngIf="overdueCount + upcomingCount === 0"
+              class="text-muted small">Không có đơn quá hạn</span>
+      </div>
+
+      <div *ngIf="donQuaHan.length > 0"
+           class="notif-list-wrap">
+        <div class="notif-list">
+          <div *ngFor="let item of donQuaHan"
+               class="notif-list-item"
+               (click)="goToOrder(item)">
+            <div class="notif-item-left">
+              <div class="notif-item-icon"
+                   [class.icon-overdue]="item.isOverdue">
+                <i class="fa"
+                   [class.fa-exclamation]="item.isOverdue"
+                   [class.fa-clock-o]="!item.isOverdue"></i>
+              </div>
+              <div class="notif-item-info">
+                <div class="notif-item-title">
+                  <span class="notif-ma-dh">{{ item.ma_DH }}</span>
+                </div>
+                <div class="notif-item-meta">{{ item.ten_KH }}</div>
+              </div>
+            </div>
+            <div class="notif-item-right">
+              <div class="notif-item-right-top">
+                <div class="notif-item-date"
+                     [class.text-danger]="item.isOverdue"
+                     [class.text-warning]="!item.isOverdue">
+                   {{ item.ngayDenHanStr }}
+                </div>
+                <span *ngIf="item.isOverdue"
+                      class="badge badge-danger notif-badge-sm">Trễ {{ item.soNgayTre }}d</span>
+                <span *ngIf="!item.isOverdue && item.soNgayTre === 0"
+                      class="badge badge-warning notif-badge-sm">Hôm nay</span>
+                <span *ngIf="!item.isOverdue && item.soNgayTre < 0"
+                      class="badge badge-warning notif-badge-sm">Còn {{ -item.soNgayTre }}d</span>
+              </div>
+              <div class="notif-item-amount">{{ item.tongTien | number }}₫</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="app-body">
-  <app-sidebar #appSidebar [fixed]="true" [display]="'lg'" [minimized]="sidebarMinimized" (minimizedChange)="toggleMinimize($event)">
-    <app-sidebar-nav [navItems]="navItems" [perfectScrollbar] [disabled]="appSidebar.minimized"></app-sidebar-nav>
+  <app-sidebar #appSidebar
+               [fixed]="true"
+               [display]="'lg'"
+               [minimized]="sidebarMinimized"
+               (minimizedChange)="toggleMinimize($event)">
+    <app-sidebar-nav [navItems]="navItems"
+                     [perfectScrollbar]
+                     [disabled]="appSidebar.minimized"></app-sidebar-nav>
     <app-sidebar-minimizer></app-sidebar-minimizer>
   </app-sidebar>
   <!-- Main content -->
@@ -29,7 +126,7 @@
     <!-- Breadcrumb -->
     <!-- breaking change 'cui-breadcrumb' -->
     <!-- <cui-breadcrumb></cui-breadcrumb> -->
-    <div class="container-fluid pt-2">
+    <div class="container-fluid pt-2 pb-2">
       <router-outlet></router-outlet>
     </div><!-- /.container-fluid -->
   </main>

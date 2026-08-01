@@ -71,6 +71,13 @@ namespace API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("GetById")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var result = await _service.GetById(id);
+            return Ok(result);
+        }
+
         [HttpGet("GetListNhaCungCap")]
         public async Task<IActionResult> GetListNhaCungCap()
         {

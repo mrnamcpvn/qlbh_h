@@ -44,7 +44,7 @@ export interface CongNoChiTiet {
   donHangID: number;
   ma_DH: string;
   ngayXuat: string | Date;
-  ngayDenHan: string | Date;
+  ngayDenHan: string | Date | null;
   tongTien: number;
   daThanhToan: number;
   conNo: number;
