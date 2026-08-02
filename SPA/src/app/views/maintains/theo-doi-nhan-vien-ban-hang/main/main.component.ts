@@ -1,6 +1,7 @@
 import {
   TheoDoiNhanVienBanHang_Param,
-  TheoDoiNhanVienBanHang_Data
+  TheoDoiNhanVienBanHang_Data,
+  TheoDoiNhanVienBanHang_SP
 } from '@models/maintains/theo-doi-nhan-vien-ban-hang';
 import { Component, OnInit, OnDestroy, AfterViewChecked, ViewChild } from '@angular/core';
 import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
@@ -95,12 +96,39 @@ export class MainComponent extends InjectBase implements OnInit, OnDestroy, Afte
     this.service.getDataPagination(this.data.pagination, this.param).subscribe({
       next: (res) => {
         this.data = res;
+        this.buildSubtotals();
         this.spinnerService.hide();
       }
     });
   }
   search() {
     this.data.pagination.pageNumber !== 1 ? this.data.pagination.pageNumber = 1 : this.getData();
+  }
+
+  buildSubtotals() {
+    const aggregate = (source: TheoDoiNhanVienBanHang_SP[]): TheoDoiNhanVienBanHang_SP[] => {
+      const map = new Map<string, TheoDoiNhanVienBanHang_SP>();
+      source.forEach(sp => {
+        const key = `${sp.ten_SP}|${sp.dvt}`;
+        if (map.has(key)) {
+          map.get(key)!.soLuong += sp.soLuong;
+          map.get(key)!.thanhTien += sp.thanhTien;
+        } else {
+          map.set(key, { ten_SP: sp.ten_SP, dvt: sp.dvt, soLuong: sp.soLuong, gia: 0, thanhTien: sp.thanhTien });
+        }
+      });
+      return Array.from(map.values());
+    };
+
+    this.data.result?.forEach(nv => {
+      const allSP: TheoDoiNhanVienBanHang_SP[] = [];
+      nv.donHang_List?.forEach(dh => allSP.push(...(dh.sP_List || [])));
+      nv.subTotal_List = aggregate(allSP);
+    });
+
+    const all: TheoDoiNhanVienBanHang_SP[] = [];
+    this.data.result?.forEach(nv => all.push(...(nv.subTotal_List || [])));
+    this.data.tong_SP = aggregate(all);
   }
 
   pageChanged(e: PageChangedEvent) {

@@ -24,6 +24,8 @@ export interface TheoDoiNhanVienBanHang_Data {
   pagination: Pagination
   result: TheoDoiNhanVienBanHang_NV[]
   nVs: string;
+  isTotalExpanded?: boolean;
+  tong_SP: TheoDoiNhanVienBanHang_SP[];
 }
 export interface TheoDoiNhanVienBanHang_NV {
   iD_NV: number;
@@ -40,6 +42,8 @@ export interface TheoDoiNhanVienBanHang_NV {
   soDon_TreHan: number;
   donHang_List: TheoDoiNhanVienBanHang_DonHang[];
   isExpanded?: boolean;
+  isSubTotalExpanded?: boolean;
+  subTotal_List: TheoDoiNhanVienBanHang_SP[];
 }
 export interface TheoDoiNhanVienBanHang_DonHang {
   id: number;

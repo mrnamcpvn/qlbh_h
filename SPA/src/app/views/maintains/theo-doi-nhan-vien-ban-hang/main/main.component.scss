@@ -7,19 +7,21 @@
   display: flex;
 }
 
-/* Trong file CSS */
+/* Level 1: Header nhân viên / đơn (collapse) */
+.group-header {
+  background-color: #dbe6f1;
+  font-weight: 600;
+}
 .group-header:hover {
-  background-color: #f0f0f0 !important;
-  /* Đổi màu nhẹ khi rê chuột vào */
+  background-color: #cfe0f0 !important;
   transition: background-color 0.2s ease;
 }
 .group-header i {
   width: 15px;
-  /* Để icon không bị nhảy khi đổi loại icon */
   display: inline-block;
   text-align: center;
 }
-/* Ẩn bớt các đường chấm chấm ở hàng Group để trông gọn hơn (tùy chọn) */
+/* Ẩn bớt đường chấm chấm ở hàng Group để trông gọn */
 .group-header td {
   border-right: none;
 }
@@ -27,8 +29,9 @@
   border-right: 1px dotted #ccc;
 }
 
+/* Level 2: Dòng đơn hàng */
 .order-row {
-  background-color: #f1f3f5;
+  background-color: #eef2f5;
   font-weight: 500;
 }
 
@@ -42,10 +45,61 @@
   border-top: none;
 }
 
+/* Level 3: Dòng sản phẩm (data) */
 .product-row {
-  background-color: #f8f9fa;
+  background-color: #ffffff;
 }
 
 .product-row td {
+  border-top: none;
+}
+
+/* Tổng của riêng đơn hàng (dòng cuối trong 1 đơn) — cùng màu với dòng sản phẩm */
+.order-total {
+  background-color: #ffffff;
+  font-weight: 600;
+}
+
+.order-total td {
+  border-top: none;
+}
+
+/* Sub Total của nhân viên (header + dòng kết summary) — màu xanh dương */
+.subtotal-row {
+  background-color: #e4eef9;
+  font-weight: 600;
+}
+
+.subtotal-row td {
+  border-top: none;
+}
+
+.subtotal-row.group-header td {
+  border-right: none;
+}
+
+/* Chi tiết số lượng sản phẩm bên trong Sub Total — xanh dương nhạt */
+.product-row.subtotal {
+  background-color: #eef5fc;
+}
+
+/* Tổng cộng cuối cùng (Tổng) — màu cam */
+.row-total {
+  background-color: #fce8c9 !important;
+  font-weight: 700;
+}
+
+.row-total td {
+  background-color: #fce8c9 !important;
+  border-top: none;
+}
+
+/* Chi tiết số lượng sản phẩm bên trong Tổng — cam nhạt */
+.grand-detail {
+  background-color: #fdf3e4 !important;
+}
+
+.grand-detail td {
+  background-color: #fdf3e4 !important;
   border-top: none;
 }

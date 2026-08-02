@@ -274,9 +274,10 @@
                     <tr>
                       <th class="text-center">Nhân Viên</th>
                       <th class="text-center">Đơn Hàng</th>
+                      <th class="text-center">Khách Hàng</th>
                       <th class="text-center">Sản Phẩm</th>
                       <th class="text-center">Đvt</th>
-                      <th class="text-center">SL</th>
+                      <th class="text-center">Số Lượng Bán</th>
                       <th class="text-center">Thành Tiền</th>
                       <th class="text-center">Đã Thu</th>
                       <th class="text-center">Còn Nợ</th>
@@ -293,14 +294,8 @@
                              [ngClass]="nv.isExpanded !== false ? 'fa-caret-down' : 'fa-caret-right'"></i>
                           <b>NV: {{ nv.ten_NV }} ({{ nv.sdT_NV }})</b>
                         </td>
-                        <td><b>{{ nv.so_Don }} đơn</b></td>
-                        <td colspan="3"><b>{{ nv.soLoaiSP }} sản phẩm</b></td>
-                        <td class="text-right"><b>{{ nv.dS_Ban | number:'1.0-0' }}</b></td>
-                        <td class="text-right"><b>{{ nv.daThu | number:'1.0-0' }}</b></td>
-                        <td class="text-right"><b>{{ nv.congNo | number:'1.0-0' }}</b></td>
-                        <td class="text-center">
-                          <b>Đã TT: {{ nv.soDon_DaThanhToan }} | Chưa TT: {{ nv.soDon_ChuaThanhToan }}</b>
-                        </td>
+                        <td colspan="2"><b>{{ nv.so_Don }} đơn</b></td>
+                        <td colspan="7"><b>{{ nv.soLoaiSP }} sản phẩm</b></td>
                       </tr>
                       <ng-container *ngIf="nv.isExpanded !== false">
                         <ng-container *ngFor="let dh of nv.donHang_List">
@@ -313,26 +308,69 @@
                                  [ngClass]="dh.isExpanded !== false ? 'fa-caret-down' : 'fa-caret-right'"></i>
                               {{ dh.ma_DH }} | Ngày xuất: {{ dh.date | date: 'dd/MM/yyyy' }}
                             </td>
+                            <td>{{ dh.ten_KH }}</td>
                             <td colspan="3">{{ dh.soLoaiSP }} sản phẩm</td>
-                            <td class="text-right">{{ dh.tongTien | number:'1.0-0' }}</td>
-                            <td class="text-right">{{ dh.daThanhToan | number:'1.0-0' }}</td>
-                            <td class="text-right">{{ dh.congNo | number:'1.0-0' }}</td>
-                            <td class="text-center">
-                              <span *ngIf="dh.isDaThanhToan"
-                                    class="badge badge-success">Đã thanh toán</span>
-                              <span *ngIf="!dh.isDaThanhToan"
-                                    class="badge badge-warning">Chưa thanh toán</span>
-                            </td>
+                            <td colspan="4"></td>
                           </tr>
                           <ng-container *ngIf="dh.isExpanded !== false">
                             <tr class="product-row"
                                 *ngFor="let sp of dh.sP_List">
-                              <td colspan="2"></td>
+                              <td colspan="3"></td>
                               <td>{{ sp.ten_SP }}</td>
                               <td class="text-center">{{ sp.dvt }}</td>
                               <td class="text-center">{{ sp.soLuong | number:'1.0-0' }}</td>
                               <td class="text-right">{{ sp.thanhTien | number:'1.0-0' }}</td>
                               <td colspan="3"></td>
+                            </tr>
+                            <tr class="order-total">
+                              <td colspan="6"></td>
+                              <td class="text-right"><b>{{ dh.tongTien | number:'1.0-0' }}</b></td>
+                              <td class="text-right"><b>{{ dh.daThanhToan | number:'1.0-0' }}</b></td>
+                              <td class="text-right"><b>{{ dh.congNo | number:'1.0-0' }}</b></td>
+                              <td class="text-center">
+                                <span *ngIf="dh.isDaThanhToan"
+                                      class="badge badge-success">Đã thanh toán</span>
+                                <span *ngIf="!dh.isDaThanhToan"
+                                      class="badge badge-danger">Chưa thanh toán</span>
+                              </td>
+                            </tr>
+                          </ng-container>
+                        </ng-container>
+                        <ng-container *ngIf="nv.isExpanded !== false && nv.subTotal_List?.length">
+                          <tr class="subtotal-row group-header"
+                              (click)="nv.isSubTotalExpanded = nv.isSubTotalExpanded === false ? true : false"
+                              style="cursor: pointer;">
+                            <td></td>
+                            <td colspan="9">
+                              <b>
+                                <i class="fa mr-2"
+                                   [ngClass]="nv.isSubTotalExpanded !== false ? 'fa-caret-down' : 'fa-caret-right'"></i>
+                                Sub Total:
+                              </b>
+                            </td>
+                          </tr>
+                          <ng-container *ngIf="nv.isSubTotalExpanded !== false">
+<tr class="product-row subtotal"
+                                *ngFor="let sp of nv.subTotal_List">
+                              <td colspan="3"></td>
+                              <td><b>{{ sp.ten_SP }}</b></td>
+                              <td class="text-center">{{ sp.dvt }}</td>
+                              <td class="text-center"><b>{{ sp.soLuong | number:'1.0-0' }}</b></td>
+                              <td class="text-right"><b>{{ sp.thanhTien | number:'1.0-0' }}</b></td>
+                              <td colspan="3"></td>
+                            </tr>
+                            <tr class="product-row subtotal">
+                              <td colspan="6"></td>
+                              <td class="text-right"><b>{{ nv.dS_Ban | number:'1.0-0' }}</b></td>
+                              <td class="text-right"><b>{{ nv.daThu | number:'1.0-0' }}</b></td>
+                              <td class="text-right"><b>{{ nv.congNo | number:'1.0-0' }}</b></td>
+<td class="text-center">
+                                <b>
+                                  <span class="text-success">Đã TT: {{ nv.soDon_DaThanhToan }}</span>
+                                  |
+                                  <span class="text-danger">Chưa TT: {{ nv.soDon_ChuaThanhToan }}</span>
+                                </b>
+                              </td>
                             </tr>
                           </ng-container>
                         </ng-container>
@@ -340,21 +378,43 @@
                     </ng-container>
 
                     <tr *ngIf="data.result?.length > 0"
-                        class="row-total">
-                      <td colspan="5">
-                        <b>Tổng cộng:</b>
+                        class="row-total"
+                        (click)="data.isTotalExpanded = data.isTotalExpanded === false ? true : false"
+                        style="cursor: pointer;">
+                      <td colspan="10">
+                        <b>
+                          <i class="fa mr-2"
+                             [ngClass]="data.isTotalExpanded !== false ? 'fa-caret-down' : 'fa-caret-right'"></i>
+                          Tổng:
+                        </b>
                       </td>
-                      <td class="text-right">
-                        <b>{{ data.tong_DS_Ban | number:'1.0-0' }}</b>
-                      </td>
-                      <td class="text-right">
-                        <b>{{ data.tong_DaThu | number:'1.0-0' }}</b>
-                      </td>
-                      <td class="text-right">
-                        <b>{{ data.tong_CongNo | number:'1.0-0' }}</b>
-                      </td>
-                      <td></td>
                     </tr>
+                    <ng-container *ngIf="data.result?.length > 0 && data.tong_SP?.length">
+                      <ng-container *ngIf="data.isTotalExpanded !== false">
+                        <tr class="grand-detail"
+                            *ngFor="let sp of data.tong_SP">
+                          <td colspan="3"></td>
+                          <td><b>{{ sp.ten_SP }}</b></td>
+                          <td class="text-center">{{ sp.dvt }}</td>
+                          <td class="text-center"><b>{{ sp.soLuong | number:'1.0-0' }}</b></td>
+                          <td class="text-right"><b>{{ sp.thanhTien | number:'1.0-0' }}</b></td>
+                          <td colspan="3"></td>
+                        </tr>
+                        <tr class="grand-detail">
+                          <td colspan="6"></td>
+                          <td class="text-right"><b>{{ data.tong_DS_Ban | number:'1.0-0' }}</b></td>
+                          <td class="text-right"><b>{{ data.tong_DaThu | number:'1.0-0' }}</b></td>
+                          <td class="text-right"><b>{{ data.tong_CongNo | number:'1.0-0' }}</b></td>
+                          <td class="text-center">
+                            <b>
+                              <span class="text-success">Đã TT: {{ data.soDon_DaThanhToan }}</span>
+                              |
+                              <span class="text-danger">Chưa TT: {{ data.soDon_ChuaThanhToan }}</span>
+                            </b>
+                          </td>
+                        </tr>
+</ng-container>
+                    </ng-container>
 
                     <tr *ngIf="data.result?.length == 0">
                       <td colspan="100%"

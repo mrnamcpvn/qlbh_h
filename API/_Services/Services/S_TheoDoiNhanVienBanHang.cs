@@ -40,7 +40,7 @@ namespace API._Services.Services
             titleStyle.HorizontalAlignment = TextAlignmentType.Center;
             titleStyle.VerticalAlignment = TextAlignmentType.Center;
 
-            ws.Cells.Merge(0, 0, 1, 9);
+            ws.Cells.Merge(0, 0, 1, 10);
             ws.Cells[0, 0].PutValue("BÁO CÁO THEO DÕI NHÂN VIÊN BÁN HÀNG");
             ws.Cells[0, 0].GetMergedRange().SetStyle(titleStyle);
 
@@ -48,11 +48,11 @@ namespace API._Services.Services
             infoStyle.Font.Size = 11;
             infoStyle.Font.IsBold = true;
             infoStyle.HorizontalAlignment = TextAlignmentType.Center;
-            ws.Cells.Merge(1, 0, 1, 9);
+            ws.Cells.Merge(1, 0, 1, 10);
             ws.Cells[1, 0].PutValue($"Nhân viên: {nvs}, từ ngày {fromDate} đến ngày {toDate}");
             ws.Cells[1, 0].GetMergedRange().SetStyle(infoStyle);
 
-            var headers = new[] { "Nhân Viên", "Đơn Hàng", "Sản Phẩm", "Đvt", "SL", "Thành Tiền", "Đã Thu", "Còn Nợ", "Trạng Thái" };
+            var headers = new[] { "Nhân Viên", "Đơn Hàng", "Khách Hàng", "Sản Phẩm", "Đvt", "Số Lượng Bán", "Thành Tiền", "Đã Thu", "Còn Nợ", "Trạng Thái" };
             Style headerStyle = new CellsFactory().CreateStyle();
             headerStyle.SetAllBorders();
             headerStyle.Font.IsBold = true;
@@ -75,9 +75,10 @@ namespace API._Services.Services
             var orderStyle = new CellsFactory().CreateStyle();
             orderStyle.SetAllBorders();
             orderStyle.Pattern = BackgroundType.Solid;
-            orderStyle.ForegroundColor = System.Drawing.Color.FromArgb(241, 243, 245);
+            orderStyle.ForegroundColor = System.Drawing.Color.FromArgb(238, 242, 245);
             var productStyle = new CellsFactory().CreateStyle();
             productStyle.SetAllBorders();
+            productStyle.ForegroundColor = System.Drawing.Color.White;
             var nvNumStyle = new CellsFactory().CreateStyle();
             nvNumStyle.SetAllBorders();
             nvNumStyle.Font.IsBold = true;
@@ -88,31 +89,103 @@ namespace API._Services.Services
             var orderNumStyle = new CellsFactory().CreateStyle();
             orderNumStyle.SetAllBorders();
             orderNumStyle.Pattern = BackgroundType.Solid;
-            orderNumStyle.ForegroundColor = System.Drawing.Color.FromArgb(241, 243, 245);
+            orderNumStyle.ForegroundColor = System.Drawing.Color.FromArgb(238, 242, 245);
             orderNumStyle.HorizontalAlignment = TextAlignmentType.Right;
             orderNumStyle.Custom = "#,##0";
             var productNumStyle = new CellsFactory().CreateStyle();
             productNumStyle.SetAllBorders();
+            productNumStyle.ForegroundColor = System.Drawing.Color.White;
             productNumStyle.HorizontalAlignment = TextAlignmentType.Right;
             productNumStyle.Custom = "#,##0";
+
+            // Sub-total nhân viên
+            var subtotalStyle = new CellsFactory().CreateStyle();
+            subtotalStyle.SetAllBorders();
+            subtotalStyle.Font.IsBold = true;
+            subtotalStyle.Pattern = BackgroundType.Solid;
+            subtotalStyle.ForegroundColor = System.Drawing.Color.FromArgb(228, 238, 249);
+            var subtotalProductStyle = new CellsFactory().CreateStyle();
+            subtotalProductStyle.SetAllBorders();
+            subtotalProductStyle.Pattern = BackgroundType.Solid;
+            subtotalProductStyle.ForegroundColor = System.Drawing.Color.FromArgb(238, 245, 252);
+            var subtotalNumStyle = new CellsFactory().CreateStyle();
+            subtotalNumStyle.SetAllBorders();
+            subtotalNumStyle.Font.IsBold = true;
+            subtotalNumStyle.Pattern = BackgroundType.Solid;
+            subtotalNumStyle.ForegroundColor = System.Drawing.Color.FromArgb(238, 245, 252);
+            subtotalNumStyle.HorizontalAlignment = TextAlignmentType.Right;
+            subtotalNumStyle.Custom = "#,##0";
+
+            // Tổng cộng cuối cùng
+            var totalStyle = new CellsFactory().CreateStyle();
+            totalStyle.SetAllBorders();
+            totalStyle.Font.IsBold = true;
+            totalStyle.Pattern = BackgroundType.Solid;
+            totalStyle.ForegroundColor = System.Drawing.Color.FromArgb(252, 232, 201);
+            var totalNumStyle = new CellsFactory().CreateStyle();
+            totalNumStyle.SetAllBorders();
+            totalNumStyle.Font.IsBold = true;
+            totalNumStyle.Pattern = BackgroundType.Solid;
+            totalNumStyle.ForegroundColor = System.Drawing.Color.FromArgb(252, 232, 201);
+            totalNumStyle.HorizontalAlignment = TextAlignmentType.Right;
+            totalNumStyle.Custom = "#,##0";
+            var totalDetailStyle = new CellsFactory().CreateStyle();
+            totalDetailStyle.SetAllBorders();
+            totalDetailStyle.Pattern = BackgroundType.Solid;
+            totalDetailStyle.ForegroundColor = System.Drawing.Color.FromArgb(253, 243, 228);
+            var totalDetailNumStyle = new CellsFactory().CreateStyle();
+            totalDetailNumStyle.SetAllBorders();
+            totalDetailNumStyle.Pattern = BackgroundType.Solid;
+            totalDetailNumStyle.ForegroundColor = System.Drawing.Color.FromArgb(253, 243, 228);
+            totalDetailNumStyle.HorizontalAlignment = TextAlignmentType.Right;
+            totalDetailNumStyle.Custom = "#,##0";
+
+            Dictionary<string, (string Ten, string Dvt, int SoLuong, decimal ThanhTien)> BuildAgg(IEnumerable<TheoDoiNhanVienBanHang_SP> source)
+            {
+                var map = new Dictionary<string, (string, string, int, decimal)>();
+                foreach (var sp in source)
+                {
+                    var key = $"{sp.Ten_SP}|{sp.Dvt}";
+                    if (map.TryGetValue(key, out var cur))
+                        map[key] = (cur.Item1, cur.Item2, cur.Item3 + sp.SoLuong, cur.Item4 + sp.ThanhTien);
+                    else
+                        map[key] = (sp.Ten_SP, sp.Dvt, sp.SoLuong, sp.ThanhTien);
+                }
+                return map.ToDictionary(x => x.Key, x => (x.Value.Item1, x.Value.Item2, x.Value.Item3, x.Value.Item4));
+            }
+
+            void WriteAggDetails(int row, Dictionary<string, (string Ten, string Dvt, int SoLuong, decimal ThanhTien)> agg, Style cellStyle, Style numStyle)
+            {
+                foreach (var kv in agg.Values)
+                {
+                    ws.Cells.Merge(row, 0, 1, 3);
+                    ws.Cells[row, 0].GetMergedRange().SetStyle(cellStyle);
+                    ws.Cells[row, 3].PutValue(kv.Ten);
+                    ws.Cells[row, 3].SetStyle(cellStyle);
+                    ws.Cells[row, 4].PutValue(kv.Dvt);
+                    ws.Cells[row, 4].SetStyle(cellStyle);
+                    ws.Cells[row, 5].PutValue(kv.SoLuong);
+                    ws.Cells[row, 5].SetStyle(numStyle);
+                    ws.Cells[row, 6].PutValue(kv.ThanhTien);
+                    ws.Cells[row, 6].SetStyle(numStyle);
+                    ws.Cells.Merge(row, 7, 1, 3);
+                    ws.Cells[row, 7].GetMergedRange().SetStyle(cellStyle);
+                    row++;
+                }
+            }
+
+            var grandSP = data.SelectMany(nv => nv.DonHang_List.SelectMany(dh => dh.SP_List));
 
             foreach (var nv in data)
             {
                 ws.Cells[rowIndex, 0].PutValue($"NV: {nv.Ten_NV} ({nv.SDT_NV})");
                 ws.Cells[rowIndex, 0].SetStyle(nvStyle);
+                ws.Cells.Merge(rowIndex, 1, 1, 2);
                 ws.Cells[rowIndex, 1].PutValue($"{nv.So_Don} đơn");
-                ws.Cells[rowIndex, 1].SetStyle(nvStyle);
-                ws.Cells.Merge(rowIndex, 2, 1, 3);
-                ws.Cells[rowIndex, 2].PutValue($"{nv.SoLoaiSP} sản phẩm");
-                ws.Cells[rowIndex, 2].GetMergedRange().SetStyle(nvStyle);
-                ws.Cells[rowIndex, 5].PutValue(nv.DS_Ban);
-                ws.Cells[rowIndex, 5].SetStyle(nvNumStyle);
-                ws.Cells[rowIndex, 6].PutValue(nv.DaThu);
-                ws.Cells[rowIndex, 6].SetStyle(nvNumStyle);
-                ws.Cells[rowIndex, 7].PutValue(nv.CongNo);
-                ws.Cells[rowIndex, 7].SetStyle(nvNumStyle);
-                ws.Cells[rowIndex, 8].PutValue($"Đã TT: {nv.SoDon_DaThanhToan} | Chưa TT: {nv.SoDon_ChuaThanhToan}");
-                ws.Cells[rowIndex, 8].SetStyle(nvStyle);
+                ws.Cells[rowIndex, 1].GetMergedRange().SetStyle(nvStyle);
+                ws.Cells.Merge(rowIndex, 3, 1, 7);
+                ws.Cells[rowIndex, 3].PutValue($"{nv.SoLoaiSP} sản phẩm");
+                ws.Cells[rowIndex, 3].GetMergedRange().SetStyle(nvStyle);
                 rowIndex++;
 
                 foreach (var dh in nv.DonHang_List)
@@ -120,60 +193,87 @@ namespace API._Services.Services
                     ws.Cells[rowIndex, 0].SetStyle(orderStyle);
                     ws.Cells[rowIndex, 1].PutValue($"{dh.Ma_DH} | Ngày xuất: {dh.Date?.ToString("dd/MM/yyyy")}");
                     ws.Cells[rowIndex, 1].SetStyle(orderStyle);
-                    ws.Cells.Merge(rowIndex, 2, 1, 3);
-                    ws.Cells[rowIndex, 2].PutValue($"{dh.SoLoaiSP} sản phẩm");
-                    ws.Cells[rowIndex, 2].GetMergedRange().SetStyle(orderStyle);
-                    ws.Cells[rowIndex, 5].PutValue(dh.TongTien);
-                    ws.Cells[rowIndex, 5].SetStyle(orderNumStyle);
-                    ws.Cells[rowIndex, 6].PutValue(dh.DaThanhToan);
-                    ws.Cells[rowIndex, 6].SetStyle(orderNumStyle);
-                    ws.Cells[rowIndex, 7].PutValue(dh.CongNo);
-                    ws.Cells[rowIndex, 7].SetStyle(orderNumStyle);
-                    ws.Cells[rowIndex, 8].PutValue(dh.IsDaThanhToan ? "Đã thanh toán" : "Chưa thanh toán");
-                    ws.Cells[rowIndex, 8].SetStyle(orderStyle);
+                    ws.Cells[rowIndex, 2].PutValue(dh.Ten_KH);
+                    ws.Cells[rowIndex, 2].SetStyle(orderStyle);
+                    ws.Cells.Merge(rowIndex, 3, 1, 3);
+                    ws.Cells[rowIndex, 3].PutValue($"{dh.SoLoaiSP} sản phẩm");
+                    ws.Cells[rowIndex, 3].GetMergedRange().SetStyle(orderStyle);
+                    ws.Cells.Merge(rowIndex, 6, 1, 4);
+                    ws.Cells[rowIndex, 6].GetMergedRange().SetStyle(orderStyle);
                     rowIndex++;
 
                     foreach (var sp in dh.SP_List)
                     {
-                        ws.Cells.Merge(rowIndex, 0, 1, 2);
+                        ws.Cells.Merge(rowIndex, 0, 1, 3);
                         ws.Cells[rowIndex, 0].GetMergedRange().SetStyle(productStyle);
-                        ws.Cells[rowIndex, 2].PutValue(sp.Ten_SP);
-                        ws.Cells[rowIndex, 2].SetStyle(productStyle);
-                        ws.Cells[rowIndex, 3].PutValue(sp.Dvt);
+                        ws.Cells[rowIndex, 3].PutValue(sp.Ten_SP);
                         ws.Cells[rowIndex, 3].SetStyle(productStyle);
-                        ws.Cells[rowIndex, 4].PutValue(sp.SoLuong);
+                        ws.Cells[rowIndex, 4].PutValue(sp.Dvt);
                         ws.Cells[rowIndex, 4].SetStyle(productStyle);
-                        ws.Cells[rowIndex, 5].PutValue(sp.ThanhTien);
-                        ws.Cells[rowIndex, 5].SetStyle(productNumStyle);
-                        ws.Cells.Merge(rowIndex, 6, 1, 3);
-                        ws.Cells[rowIndex, 6].GetMergedRange().SetStyle(productStyle);
+                        ws.Cells[rowIndex, 5].PutValue(sp.SoLuong);
+                        ws.Cells[rowIndex, 5].SetStyle(productStyle);
+                        ws.Cells[rowIndex, 6].PutValue(sp.ThanhTien);
+                        ws.Cells[rowIndex, 6].SetStyle(productNumStyle);
+                        ws.Cells.Merge(rowIndex, 7, 1, 3);
+                        ws.Cells[rowIndex, 7].GetMergedRange().SetStyle(productStyle);
                         rowIndex++;
                     }
+
+                    // Tổng của đơn
+                    ws.Cells.Merge(rowIndex, 0, 1, 6);
+                    ws.Cells[rowIndex, 0].GetMergedRange().SetStyle(orderStyle);
+                    ws.Cells[rowIndex, 6].PutValue(dh.TongTien);
+                    ws.Cells[rowIndex, 6].SetStyle(orderNumStyle);
+                    ws.Cells[rowIndex, 7].PutValue(dh.DaThanhToan);
+                    ws.Cells[rowIndex, 7].SetStyle(orderNumStyle);
+                    ws.Cells[rowIndex, 8].PutValue(dh.CongNo);
+                    ws.Cells[rowIndex, 8].SetStyle(orderNumStyle);
+                    ws.Cells[rowIndex, 9].PutValue(dh.IsDaThanhToan ? "Đã thanh toán" : "Chưa thanh toán");
+                    ws.Cells[rowIndex, 9].SetStyle(orderStyle);
+                    rowIndex++;
                 }
+
+                // Sub Total của nhân viên
+                var nvAgg = BuildAgg(nv.DonHang_List.SelectMany(d => d.SP_List));
+                ws.Cells[rowIndex, 0].SetStyle(subtotalStyle);
+                ws.Cells.Merge(rowIndex, 1, 1, 9);
+                ws.Cells[rowIndex, 1].PutValue("Sub Total:");
+                ws.Cells[rowIndex, 1].GetMergedRange().SetStyle(subtotalStyle);
+                rowIndex++;
+                WriteAggDetails(rowIndex, nvAgg, subtotalProductStyle, subtotalNumStyle);
+                rowIndex += nvAgg.Count;
+                ws.Cells.Merge(rowIndex, 0, 1, 6);
+                ws.Cells[rowIndex, 0].GetMergedRange().SetStyle(subtotalProductStyle);
+                ws.Cells[rowIndex, 6].PutValue(nv.DS_Ban);
+                ws.Cells[rowIndex, 6].SetStyle(subtotalNumStyle);
+                ws.Cells[rowIndex, 7].PutValue(nv.DaThu);
+                ws.Cells[rowIndex, 7].SetStyle(subtotalNumStyle);
+                ws.Cells[rowIndex, 8].PutValue(nv.CongNo);
+                ws.Cells[rowIndex, 8].SetStyle(subtotalNumStyle);
+                ws.Cells[rowIndex, 9].PutValue($"Đã TT: {nv.SoDon_DaThanhToan} | Chưa TT: {nv.SoDon_ChuaThanhToan}");
+                ws.Cells[rowIndex, 9].SetStyle(subtotalProductStyle);
+                rowIndex++;
             }
 
-            Style totalStyle = new CellsFactory().CreateStyle();
-            totalStyle.SetAllBorders();
-            totalStyle.Font.IsBold = true;
-            totalStyle.Pattern = BackgroundType.Solid;
-            totalStyle.ForegroundColor = System.Drawing.Color.FromArgb(220, 230, 240);
-            var totalNumStyle = new CellsFactory().CreateStyle();
-            totalNumStyle.SetAllBorders();
-            totalNumStyle.Font.IsBold = true;
-            totalNumStyle.Pattern = BackgroundType.Solid;
-            totalNumStyle.ForegroundColor = System.Drawing.Color.FromArgb(220, 230, 240);
-            totalNumStyle.HorizontalAlignment = TextAlignmentType.Right;
-            totalNumStyle.Custom = "#,##0";
-            ws.Cells.Merge(rowIndex, 0, 1, 5);
-            ws.Cells[rowIndex, 0].PutValue("TỔNG CỘNG");
+            // Tổng cộng cuối cùng
+            var grandAgg = BuildAgg(grandSP);
+            ws.Cells.Merge(rowIndex, 0, 1, 10);
+            ws.Cells[rowIndex, 0].PutValue("Tổng:");
             ws.Cells[rowIndex, 0].GetMergedRange().SetStyle(totalStyle);
-            ws.Cells[rowIndex, 5].PutValue(data.Sum(x => x.DS_Ban));
-            ws.Cells[rowIndex, 5].SetStyle(totalNumStyle);
-            ws.Cells[rowIndex, 6].PutValue(data.Sum(x => x.DaThu));
+            rowIndex++;
+            WriteAggDetails(rowIndex, grandAgg, totalDetailStyle, totalDetailNumStyle);
+            rowIndex += grandAgg.Count;
+            ws.Cells.Merge(rowIndex, 0, 1, 6);
+            ws.Cells[rowIndex, 0].GetMergedRange().SetStyle(totalDetailStyle);
+            ws.Cells[rowIndex, 6].PutValue(data.Sum(x => x.DS_Ban));
             ws.Cells[rowIndex, 6].SetStyle(totalNumStyle);
-            ws.Cells[rowIndex, 7].PutValue(data.Sum(x => x.CongNo));
+            ws.Cells[rowIndex, 7].PutValue(data.Sum(x => x.DaThu));
             ws.Cells[rowIndex, 7].SetStyle(totalNumStyle);
-            ws.Cells[rowIndex, 8].SetStyle(totalStyle);
+            ws.Cells[rowIndex, 8].PutValue(data.Sum(x => x.CongNo));
+            ws.Cells[rowIndex, 8].SetStyle(totalNumStyle);
+            ws.Cells[rowIndex, 9].PutValue($"Đã TT: {data.Sum(x => x.SoDon_DaThanhToan)} | Chưa TT: {data.Sum(x => x.SoDon_ChuaThanhToan)}");
+            ws.Cells[rowIndex, 9].SetStyle(totalDetailStyle);
+            rowIndex++;
 
             ws.AutoFitColumns();
             workbook.Save(stream, SaveFormat.Xlsx);
