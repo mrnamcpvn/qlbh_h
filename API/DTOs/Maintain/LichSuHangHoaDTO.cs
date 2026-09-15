@@ -32,6 +32,7 @@ namespace API.DTOs.Maintain
         public int? SL_Ton_Dau { get; set; }
         public int? SL_Ton_Cuoi { get; set; }
         public DateTime? Date { get; set; }
+        public DateTime? Create_Time { get; set; }
         public DateTime? Updated_Time { get; set; }
     }
 

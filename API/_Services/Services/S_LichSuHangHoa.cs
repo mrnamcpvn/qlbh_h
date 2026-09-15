@@ -229,10 +229,17 @@ namespace API._Services.Services
                     SL_Ton_Dau = x.ct.SL_Ton_Dau,
                     SL_Ton_Cuoi = x.ct.SL_Ton_Cuoi,
                     Date = x.dh.Date,
+                    Create_Time = x.dh.Create_Time,
                     Updated_Time = x.ct.Updated_Time
                 });
 
-            return await query.OrderBy(x => x.Date).ThenBy(x => x.Updated_Time).ToListAsync();
+            return await query
+                .OrderBy(x => x.Date)
+                .ThenBy(x => x.Create_Time)
+                .ThenBy(x => x.Ma_DH)
+                .ThenBy(x => x.Updated_Time)
+                .ThenBy(x => x.ID)
+                .ToListAsync();
         }
 
         public async Task<List<KeyValuePair<int, string>>> GetListSanPham()
