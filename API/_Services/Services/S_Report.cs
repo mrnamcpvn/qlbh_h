@@ -55,13 +55,14 @@ namespace API._Services.Services
         {
             var fromDate = Convert.ToDateTime(param.FromDate);
             var toDate = Convert.ToDateTime(param.ToDate);
+
             var predicate = PredicateBuilder.New<DonHang>(x =>
                 x.Date.HasValue &&
                 fromDate.Date <= x.Date.Value.Date &&
                 x.Date.Value.Date <= toDate.Date);
             var predicateChiTiet = PredicateBuilder.New<ChiTietDonHang>(true);
             if (param.ID_SP > 0)
-                predicateChiTiet.And(x => x.ID_SP == param.ID_SP);
+                predicateChiTiet = predicateChiTiet.And(x => x.ID_SP == param.ID_SP);
             var data = await _repoAccessor.DonHang.FindAll(predicate)
                 .Join(_repoAccessor.ChiTietDonHang.FindAll(predicateChiTiet),
                     x => x.ID,
@@ -78,37 +79,52 @@ namespace API._Services.Services
                     Ten_SP = x.sp.Ten,
                     DVT = x.sp.Dvt,
                     Gia = x.ct.Gia,
+                    GiaSP = x.sp.Gia,
                     SoLuong = x.ct.SoLuong,
                     SLTonDau = x.ct.SL_Ton_Dau,
                     SLTonCuoi = x.ct.SL_Ton_Cuoi,
                     Loai = x.dh.Loai,
                     Updated_time = x.ct.Updated_Time,
-                    SoLuongTrongKho = x.sp.SoLuong ?? 0
-                }).AsNoTracking().OrderByDescending(x => x.ID_SP).ToListAsync();
+                    SoLuongTrongKho = x.sp.SoLuong ?? 0,
+                    CtId = x.ct.ID,
+                    OrderDate = x.dh.Date ?? x.dh.Create_Time,
+                    OrderCreateTime = x.dh.Create_Time,
+                    OrderMa = x.dh.Ma_DH,
+                }).AsNoTracking().ToListAsync();
+
             List<ReportDTO> reports = data.GroupBy(x => x.ID_SP)
-                .Select((item, i) =>
+                .OrderByDescending(g => g.Key)
+                .Select((g, i) =>
                 {
-                    var firstItem = item.FirstOrDefault();
-                    var t = item.OrderByDescending(x => x.Updated_time).FirstOrDefault(x => x.Loai == 1);
-                    var lastItem = item.OrderByDescending(x => x.Updated_time).FirstOrDefault();
+                    // Sắp theo đúng thứ tự tính SL_Ton trong S_DonHang để lấy đúng tồn đầu/cuối kỳ
+                    var ordered = g
+                        .OrderBy(x => x.OrderDate ?? DateTime.MinValue)
+                        .ThenBy(x => x.OrderCreateTime ?? DateTime.MinValue)
+                        .ThenBy(x => x.OrderMa)
+                        .ThenBy(x => x.Updated_time ?? DateTime.MinValue)
+                        .ThenBy(x => x.CtId)
+                        .ToList();
+                    var firstItem = ordered.FirstOrDefault();
+                    var lastInbound = ordered.LastOrDefault(x => x.Loai == 1);
                     var itemRP = new ReportDTO
                     {
                         Stt = i + 1,
-                        ID_SP = item.Key,
+                        ID_SP = g.Key,
                         MaSP = firstItem?.MaSP ?? "",
                         Ten_SP = firstItem?.Ten_SP ?? "",
                         DVT = firstItem?.DVT ?? "",
-                        GiaTon = t != null ? t.Gia : 0,
-                        SoLuongNhap = item.Where(x => x.Loai == 1).Sum(x => x.SoLuong),
-                        SoLuongXuat = item.Where(x => x.Loai == 2).Sum(x => x.SoLuong),
-                        TongTienNhap = item.Where(x => x.Loai == 1).Sum(x => x.SoLuong * x.Gia),
-                        TongTienXuat = item.Where(x => x.Loai == 2).Sum(x => x.SoLuong * x.Gia),
-                        SoLuongTonDau = item.OrderBy(x => x.Updated_time).FirstOrDefault()?.SLTonDau ?? 0,
-                        SoLuongTonCuoi = lastItem?.SLTonCuoi ?? 0
+                        GiaTon = lastInbound?.Gia ?? firstItem?.GiaSP,
+                        SoLuongNhap = g.Where(x => x.Loai == 1).Sum(x => x.SoLuong),
+                        SoLuongXuat = g.Where(x => x.Loai == 2).Sum(x => x.SoLuong),
+                        TongTienNhap = g.Where(x => x.Loai == 1).Sum(x => x.SoLuong * x.Gia),
+                        TongTienXuat = g.Where(x => x.Loai == 2).Sum(x => x.SoLuong * x.Gia),
+                        SoLuongTonDau = ordered.First().SLTonDau ?? 0,
+                        SoLuongTonCuoi = ordered.Last().SLTonCuoi ?? 0
                     };
                     itemRP.DoanhThu = (itemRP.TongTienXuat ?? 0) - (itemRP.TongTienNhap ?? 0);
                     return itemRP;
                 }).ToList();
+
             var resutl = new Report_Data
             {
                 Result = reports,

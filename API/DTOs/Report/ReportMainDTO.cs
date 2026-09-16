@@ -11,9 +11,14 @@ namespace API.DTOs.Report
         public int? SLTonDau { get; set; }
         public int? SLTonCuoi { get; set; }
         public decimal? Gia { get; set; }
+        public decimal? GiaSP { get; set; }
         public int? Loai { get; set; }
         public DateTime? Updated_time { get; set; }
         public int SoLuongTrongKho { get; set; }
+        public int CtId { get; set; }
+        public DateTime? OrderDate { get; set; }
+        public DateTime? OrderCreateTime { get; set; }
+        public string OrderMa { get; set; }
     }
     public class Report_Data
     {
