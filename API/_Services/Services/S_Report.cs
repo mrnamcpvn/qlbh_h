@@ -93,7 +93,7 @@ namespace API._Services.Services
                 }).AsNoTracking().ToListAsync();
 
             List<ReportDTO> reports = data.GroupBy(x => x.ID_SP)
-                .OrderByDescending(g => g.Key)
+                .OrderBy(g => g.Key)
                 .Select((g, i) =>
                 {
                     // Sắp theo đúng thứ tự tính SL_Ton trong S_DonHang để lấy đúng tồn đầu/cuối kỳ
