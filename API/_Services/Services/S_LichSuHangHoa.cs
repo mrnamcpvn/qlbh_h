@@ -1,26 +1,20 @@
 using API._Repositories;
 using API._Services.Interfaces;
 using API.DTOs.Maintain;
-using API.Helpers.Params;
-using API.Helpers.Utilities;
 using API.Models;
 using Aspose.Cells;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
-using SD3_API.Helpers.Utilities;
+using API.Data;
 
 namespace API._Services.Services
 {
-    public class S_LichSuHangHoa : I_LichSuHangHoa
+    public class S_LichSuHangHoa : BaseServices, I_LichSuHangHoa
     {
-        private readonly IRepositoryAccessor _repoAccessor;
 
-        public S_LichSuHangHoa(IRepositoryAccessor repoAccessor)
-        {
-            _repoAccessor = repoAccessor;
-        }
+        public S_LichSuHangHoa(DBContext dbContext) : base(dbContext) { }
 
-        public async Task<LichSuHangHoaData> GetDataPagination(PaginationParams pagination, LichSuHangHoaParam param)
+        public async Task<LichSuHangHoaData> GetDataPagination(PaginationParam pagination, LichSuHangHoaParam param)
         {
             var allData = await GetAllData(param);
             var dataPagination = PaginationUtility<LichSuHangHoaItem>.Create(allData, pagination.PageNumber, pagination.PageSize);
@@ -226,20 +220,64 @@ namespace API._Services.Services
                     SoLuong = x.ct.SoLuong,
                     Gia = x.ct.Gia ?? 0,
                     ThanhTien = x.ct.ThanhTien ?? 0,
-                    SL_Ton_Dau = x.ct.SL_Ton_Dau,
-                    SL_Ton_Cuoi = x.ct.SL_Ton_Cuoi,
                     Date = x.dh.Date,
                     Create_Time = x.dh.Create_Time,
                     Updated_Time = x.ct.Updated_Time
                 });
 
-            return await query
+            var result = await query
                 .OrderBy(x => x.Date)
                 .ThenBy(x => x.Create_Time)
                 .ThenBy(x => x.Ma_DH)
                 .ThenBy(x => x.Updated_Time)
                 .ThenBy(x => x.ID)
                 .ToListAsync();
+
+            var spIds = result.Select(x => x.ID_SP).Distinct().ToList();
+            if (spIds.Any())
+            {
+                var sanPhams = await _repoAccessor.SanPham.FindAll(x => spIds.Contains(x.ID)).ToDictionaryAsync(x => x.ID);
+
+                var allRecords = await _repoAccessor.ChiTietDonHang
+                    .FindAll(x => spIds.Contains(x.ID_SP))
+                    .Join(_repoAccessor.DonHang.FindAll(),
+                        ct => ct.ID_DH, dh => dh.ID,
+                        (ct, dh) => new { ct, dh })
+                    .Select(x => new { x.ct.ID, x.ct.ID_SP, x.ct.ID_DH, x.ct.SoLuong, x.dh.Loai, x.dh.Date, x.dh.Create_Time, x.dh.Ma_DH, x.ct.Updated_Time })
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var lookup = allRecords.ToLookup(x => x.ID_SP);
+                var resultDict = result.ToDictionary(x => x.ID);
+
+                foreach (var spId in spIds)
+                {
+                    if (!sanPhams.TryGetValue(spId, out var sp)) continue;
+                    var ordered = lookup[spId]
+                        .OrderBy(x => x.Date ?? DateTime.MinValue)
+                        .ThenBy(x => x.Create_Time ?? DateTime.MinValue)
+                        .ThenBy(x => x.Ma_DH)
+                        .ThenBy(x => x.Updated_Time ?? DateTime.MinValue)
+                        .ThenBy(x => x.ID)
+                        .ToList();
+                    int total = ordered.Sum(x => (x.Loai == 1 ? 1 : -1) * x.SoLuong);
+                    int stock = (sp.SoLuong ?? 0) - total;
+                    foreach (var r in ordered)
+                    {
+                        if (resultDict.TryGetValue(r.ID, out var item))
+                        {
+                            item.SL_Ton_Dau = stock;
+                        }
+                        stock += (r.Loai == 1 ? 1 : -1) * r.SoLuong;
+                        if (resultDict.TryGetValue(r.ID, out var item2))
+                        {
+                            item2.SL_Ton_Cuoi = stock;
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
 
         public async Task<List<KeyValuePair<int, string>>> GetListSanPham()

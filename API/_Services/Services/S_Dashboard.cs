@@ -1,18 +1,14 @@
-using API._Repositories;
 using API._Services.Interfaces;
 using API.DTOs.Maintain;
 using Microsoft.EntityFrameworkCore;
+using API.Data;
 
 namespace API._Services.Services
 {
-    public class S_Dashboard : I_Dashboard
+    public class S_Dashboard : BaseServices, I_Dashboard
     {
-        private readonly IRepositoryAccessor _repo;
 
-        public S_Dashboard(IRepositoryAccessor repo)
-        {
-            _repo = repo;
-        }
+        public S_Dashboard(DBContext dbContext) : base(dbContext) { }
 
         private (DateTime startCur, DateTime endCur, DateTime startPrev, DateTime endPrev, string filterPeriodName, string prevPeriodName) ComputeDateRange(string filterType, DateTime now, DateTime today)
         {
@@ -55,7 +51,7 @@ namespace API._Services.Services
             var today = DateTime.Today;
             var (startCur, endCur, startPrev, endPrev, filterPeriodName, prevPeriodName) = ComputeDateRange(filterType, now, today);
 
-            var allOrders = await _repo.DonHang.FindAll().AsNoTracking().ToListAsync();
+            var allOrders = await _repoAccessor.DonHang.FindAll().AsNoTracking().ToListAsync();
 
             var ordersCur = allOrders.Where(x => x.Date.HasValue && x.Date.Value >= startCur && x.Date.Value < endCur).ToList();
             var ordersPrev = allOrders.Where(x => x.Date.HasValue && x.Date.Value >= startPrev && x.Date.Value < endPrev).ToList();
@@ -77,7 +73,7 @@ namespace API._Services.Services
         {
             var result = await GetThuChiSummary(filterType);
 
-            var allOrders = await _repo.DonHang.FindAll().AsNoTracking().ToListAsync();
+            var allOrders = await _repoAccessor.DonHang.FindAll().AsNoTracking().ToListAsync();
 
             result.TongDuNo = allOrders
                 .Where(x => x.Loai == 2 && (x.TongTien ?? 0) > (x.TienMat ?? 0) + (x.ChuyenKhoan ?? 0))
@@ -106,7 +102,7 @@ namespace API._Services.Services
                 return new List<CongNoCustomerSummaryDTO>();
 
             var khIds = unpaidOrders.Select(x => x.ID_KH!.Value).Distinct().ToList();
-            var khachHangs = await _repo.KhachHang.FindAll(x => khIds.Contains(x.ID)).AsNoTracking().ToListAsync();
+            var khachHangs = await _repoAccessor.KhachHang.FindAll(x => khIds.Contains(x.ID)).AsNoTracking().ToListAsync();
             var khDict = khachHangs.ToDictionary(x => x.ID);
 
             var today = DateTime.Today;
@@ -252,7 +248,7 @@ namespace API._Services.Services
             var today = DateTime.Today;
             var maxDate = today.AddDays(3);
 
-            var unpaidRaw = await _repo.DonHang
+            var unpaidRaw = await _repoAccessor.DonHang
                 .FindAll(x =>
                     x.Loai == 2 &&
                     (x.TongTien ?? 0) > (x.TienMat ?? 0) + (x.ChuyenKhoan ?? 0))
@@ -264,7 +260,7 @@ namespace API._Services.Services
 
             var khIds = unpaidRaw.Where(x => x.ID_KH.HasValue).Select(x => x.ID_KH.Value).Distinct().ToList();
             var khList = khIds.Any()
-                ? await _repo.KhachHang.FindAll(x => khIds.Contains(x.ID))
+                ? await _repoAccessor.KhachHang.FindAll(x => khIds.Contains(x.ID))
                     .AsNoTracking()
                     .ToListAsync()
                 : new List<Models.KhachHang>();

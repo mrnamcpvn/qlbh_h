@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API._Services.Interfaces;
-using API.Helpers.Params;
 using API.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,7 +16,7 @@ namespace API.Controllers
             _service = service;
         }
         [HttpGet("GetDataPagination")]
-        public async Task<IActionResult> GetDataPagination([FromQuery] PaginationParams pagination, string name)
+        public async Task<IActionResult> GetDataPagination([FromQuery] PaginationParam pagination, string name)
         {
             var result = await _service.GetDataPagination(pagination, name);
             return Ok(result);

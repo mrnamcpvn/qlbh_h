@@ -1,6 +1,5 @@
 using API._Services.Interfaces;
 using API.DTOs.Maintain;
-using API.Helpers.Params;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -15,7 +14,7 @@ namespace API.Controllers
         }
 
         [HttpGet("GetDataPagination")]
-        public async Task<IActionResult> GetDataPagination([FromQuery] PaginationParams pagination, [FromQuery] LichSuHangHoaParam param)
+        public async Task<IActionResult> GetDataPagination([FromQuery] PaginationParam pagination, [FromQuery] LichSuHangHoaParam param)
         {
             var result = await _service.GetDataPagination(pagination, param);
             return Ok(result);

@@ -1,25 +1,22 @@
-
-using API.Data;
 using API.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace API._Repositories
 {
-    public class RepositoryAccessor : IRepositoryAccessor
+    public class RepositoryAccessor<_DBContext> : RepositoryAccessorBase<_DBContext>, IRepositoryAccessor where _DBContext : DbContext
     {
-        private DBContext _dbContext;
-        public RepositoryAccessor(DBContext dbContext)
+        public RepositoryAccessor(_DBContext dbContext)
         {
-            _dbContext = dbContext;
-            KhachHang = new Repository<KhachHang>(_dbContext);
-            SanPham = new Repository<SanPham>(_dbContext);
-            DonHang = new Repository<DonHang>(_dbContext);
-            NguoiDung = new Repository<NguoiDung>(_dbContext);
-            ChiTietDonHang = new Repository<ChiTietDonHang>(_dbContext);
-            NhanVien = new Repository<NhanVien>(_dbContext);
-            CuaHang = new Repository<CuaHang>(_dbContext);
-            NhaCungCap = new Repository<NhaCungCap>(_dbContext);
+            _context = dbContext;
+             KhachHang = new Repository<KhachHang, _DBContext>(_context);
+            SanPham = new Repository<SanPham, _DBContext>(_context);
+            DonHang = new Repository<DonHang, _DBContext>(_context);
+            NguoiDung = new Repository<NguoiDung, _DBContext>(_context);
+            ChiTietDonHang = new Repository<ChiTietDonHang, _DBContext>(_context);
+            NhanVien = new Repository<NhanVien, _DBContext>(_context);
+            CuaHang = new Repository<CuaHang, _DBContext>(_context);
+            NhaCungCap = new Repository<NhaCungCap, _DBContext>(_context);
         }
-
         public IRepository<KhachHang> KhachHang { get; set; }
         public IRepository<SanPham> SanPham { get; set; }
         public IRepository<DonHang> DonHang { get; set; }
@@ -28,9 +25,5 @@ namespace API._Repositories
         public IRepository<NhanVien> NhanVien { get; set; }
         public IRepository<CuaHang> CuaHang { get; }
         public IRepository<NhaCungCap> NhaCungCap { get; }
-        public async Task<bool> Save()
-        {
-            return await _dbContext.SaveChangesAsync() > 0;
-        }
     }
 }

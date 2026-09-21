@@ -3,24 +3,17 @@ using AgileObjects.AgileMapper.Extensions;
 using API._Repositories;
 using API._Services.Interfaces;
 using API.DTOs.Report;
-using API.Helper.Utilities;
-using API.Helpers.Utilities;
 using API.Models;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
-using SD3_API.Helpers.Utilities;
+using API.Data;
 
 namespace API._Services.Services
 {
-    public class S_Report : I_Report
+    public class S_Report : BaseServices, I_Report
     {
-        private readonly IRepositoryAccessor _repoAccessor;
 
-        public S_Report(IRepositoryAccessor repoAccessor)
-        {
-            _repoAccessor = repoAccessor;
-        }
+        public S_Report(DBContext dbContext) : base(dbContext) { }
 
         public async Task<OperationResult> Excel(ReportParam param)
         {
@@ -81,8 +74,6 @@ namespace API._Services.Services
                     Gia = x.ct.Gia,
                     GiaSP = x.sp.Gia,
                     SoLuong = x.ct.SoLuong,
-                    SLTonDau = x.ct.SL_Ton_Dau,
-                    SLTonCuoi = x.ct.SL_Ton_Cuoi,
                     Loai = x.dh.Loai,
                     Updated_time = x.ct.Updated_Time,
                     SoLuongTrongKho = x.sp.SoLuong ?? 0,
@@ -91,6 +82,47 @@ namespace API._Services.Services
                     OrderCreateTime = x.dh.Create_Time,
                     OrderMa = x.dh.Ma_DH,
                 }).AsNoTracking().ToListAsync();
+
+            var spIds = data.Select(x => x.ID_SP).Distinct().ToList();
+            if (spIds.Any())
+            {
+                var sanPhams = await _repoAccessor.SanPham
+                    .FindAll(x => spIds.Contains(x.ID)).ToDictionaryAsync(x => x.ID);
+
+                var allRecords = await _repoAccessor.ChiTietDonHang
+                    .FindAll(x => spIds.Contains(x.ID_SP))
+                    .Join(_repoAccessor.DonHang.FindAll(),
+                        ct => ct.ID_DH, dh => dh.ID,
+                        (ct, dh) => new { ct, dh })
+                    .Select(x => new { x.ct.ID, x.ct.ID_SP, x.ct.SoLuong, x.dh.Loai, x.dh.Date, x.dh.Create_Time, x.dh.Ma_DH, x.ct.Updated_Time })
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var lookup = allRecords.ToLookup(x => x.ID_SP);
+                var dataDict = data.ToDictionary(x => x.CtId);
+
+                foreach (var spId in spIds)
+                {
+                    if (!sanPhams.TryGetValue(spId, out var sp)) continue;
+                    var ordered = lookup[spId]
+                        .OrderBy(x => x.Date ?? DateTime.MinValue)
+                        .ThenBy(x => x.Create_Time ?? DateTime.MinValue)
+                        .ThenBy(x => x.Ma_DH)
+                        .ThenBy(x => x.Updated_Time ?? DateTime.MinValue)
+                        .ThenBy(x => x.ID)
+                        .ToList();
+                    int total = ordered.Sum(x => (x.Loai == 1 ? 1 : -1) * x.SoLuong);
+                    int stock = (sp.SoLuong ?? 0) - total;
+                    foreach (var r in ordered)
+                    {
+                        if (dataDict.TryGetValue(r.ID, out var item))
+                            item.SLTonDau = stock;
+                        stock += (r.Loai == 1 ? 1 : -1) * r.SoLuong;
+                        if (dataDict.TryGetValue(r.ID, out var item2))
+                            item2.SLTonCuoi = stock;
+                    }
+                }
+            }
 
             List<ReportDTO> reports = data.GroupBy(x => x.ID_SP)
                 .OrderBy(g => g.Key)

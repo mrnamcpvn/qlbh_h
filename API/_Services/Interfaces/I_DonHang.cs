@@ -1,10 +1,9 @@
 using API.DTOs.Maintain;
-using API.Helpers.Params;
 using API.Models;
-using SD3_API.Helpers.Utilities;
 
 namespace API._Services.Interfaces
 {
+    [DependencyInjection(ServiceLifetime.Scoped)]
     public interface I_DonHang
     {
         Task<DonHangPaginationResult> GetDataPagination(DonHangRequestDTO filter);

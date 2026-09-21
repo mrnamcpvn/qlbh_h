@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 namespace API._Services.Interfaces
 {
+    [DependencyInjection(ServiceLifetime.Scoped)]
     public interface I_CongNo
     {
         Task<List<CongNoSummaryDTO>> GetSummary();

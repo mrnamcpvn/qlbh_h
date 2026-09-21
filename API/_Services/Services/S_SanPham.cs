@@ -2,26 +2,20 @@ using System.Transactions;
 using API._Repositories;
 using API._Services.Interfaces;
 using API.DTOs.Maintain;
-using API.Helper.Utilities;
-using API.Helpers.Params;
 using API.Models;
 using Aspose.Cells;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
-using SD3_API.Helpers.Utilities;
+using API.Data;
 
 namespace API._Services.Services
 {
-    public class S_SanPham : I_SanPham
+    public class S_SanPham : BaseServices, I_SanPham
     {
-        private readonly IRepositoryAccessor _repoAccessor;
 
-        public S_SanPham(IRepositoryAccessor repoAccessor)
-        {
-            _repoAccessor = repoAccessor;
-        }
+        public S_SanPham(DBContext dbContext) : base(dbContext) { }
 
-        public async Task<PaginationUtility<SanPham>> GetDataPagination(PaginationParams pagination, string name)
+        public async Task<PaginationUtility<SanPham>> GetDataPagination(PaginationParam pagination, string name)
         {
             var predicateUser = PredicateBuilder.New<SanPham>(true);
 
@@ -47,7 +41,7 @@ namespace API._Services.Services
 
         public async Task<bool> Delete(int id)
         {
-            var cd = await _repoAccessor.SanPham.FindSingle(x => x.ID == id);
+            var cd = await _repoAccessor.SanPham.FirstOrDefaultAsync(x => x.ID == id);
             if (cd != null)
             {
                 _repoAccessor.SanPham.Remove(cd);

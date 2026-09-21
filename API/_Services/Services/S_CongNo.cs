@@ -2,6 +2,7 @@ using API._Repositories;
 using API._Services.Interfaces;
 using API.DTOs.Maintain;
 using Microsoft.EntityFrameworkCore;
+using API.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,14 +10,10 @@ using System.Threading.Tasks;
 
 namespace API._Services.Services
 {
-    public class S_CongNo : I_CongNo
+    public class S_CongNo : BaseServices, I_CongNo
     {
-        private readonly IRepositoryAccessor _repoAccessor;
 
-        public S_CongNo(IRepositoryAccessor repoAccessor)
-        {
-            _repoAccessor = repoAccessor;
-        }
+        public S_CongNo(DBContext dbContext) : base(dbContext) { }
 
         public async Task<List<CongNoSummaryDTO>> GetSummary()
         {
@@ -75,7 +72,7 @@ namespace API._Services.Services
 
         public async Task<List<CongNoChiTietDTO>> GetDetail(int khachHangID)
         {
-            var kh = await _repoAccessor.KhachHang.FindSingle(x => x.ID == khachHangID);
+            var kh = await _repoAccessor.KhachHang.FirstOrDefaultAsync(x => x.ID == khachHangID);
             if (kh == null)
                 return new List<CongNoChiTietDTO>();
 
@@ -210,7 +207,7 @@ namespace API._Services.Services
 
         public async Task<CustomerDebtInfoDTO> GetCustomerDebtInfo(int khachHangID)
         {
-            var kh = await _repoAccessor.KhachHang.FindSingle(x => x.ID == khachHangID);
+            var kh = await _repoAccessor.KhachHang.FirstOrDefaultAsync(x => x.ID == khachHangID);
             if (kh == null)
                 return new CustomerDebtInfoDTO();
 

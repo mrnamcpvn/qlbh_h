@@ -1,23 +1,18 @@
 using API._Repositories;
 using API._Services.Interfaces;
 using API.DTOs.Maintain;
-using API.Helpers.Utilities;
+using API.Data;
 using API.Models;
 using Aspose.Cells;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
-using SD3_API.Helpers.Utilities;
 
 namespace API._Services.Services
 {
-    public class S_BaoCaoThuChi : I_BaoCaoThuChi
+    public class S_BaoCaoThuChi : BaseServices, I_BaoCaoThuChi
     {
-        private readonly IRepositoryAccessor _repoAccessor;
 
-        public S_BaoCaoThuChi(IRepositoryAccessor repoAccessor)
-        {
-            _repoAccessor = repoAccessor;
-        }
+        public S_BaoCaoThuChi(DBContext dbContext) : base(dbContext) { }
 
         public async Task<BaoCaoThuChiData> GetData(BaoCaoThuChiParam param)
         {

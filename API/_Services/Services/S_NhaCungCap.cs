@@ -1,26 +1,20 @@
 using API._Repositories;
 using API._Services.Interfaces;
 using API.DTOs.Maintain;
-using API.Helper.Utilities;
-using API.Helpers.Params;
 using API.Models;
 using Aspose.Cells;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
-using SD3_API.Helpers.Utilities;
+using API.Data;
 
 namespace API._Services.Services
 {
-    public class S_NhaCungCap : I_NhaCungCap
+    public class S_NhaCungCap : BaseServices, I_NhaCungCap
     {
-        private readonly IRepositoryAccessor _repoAccessor;
 
-        public S_NhaCungCap(IRepositoryAccessor repoAccessor)
-        {
-            _repoAccessor = repoAccessor;
-        }
+        public S_NhaCungCap(DBContext dbContext) : base(dbContext) { }
 
-        public async Task<PaginationUtility<NhaCungCap>> GetDataPagination(PaginationParams pagination, string name)
+        public async Task<PaginationUtility<NhaCungCap>> GetDataPagination(PaginationParam pagination, string name)
         {
             var predicateUser = PredicateBuilder.New<NhaCungCap>(true);
 
@@ -58,7 +52,7 @@ namespace API._Services.Services
 
         public async Task<bool> Delete(int id)
         {
-            var NCC = await _repoAccessor.NhaCungCap.FindSingle(x => x.ID == id);
+            var NCC = await _repoAccessor.NhaCungCap.FirstOrDefaultAsync(x => x.ID == id);
             if (NCC != null)
             {
                 _repoAccessor.NhaCungCap.Remove(NCC);

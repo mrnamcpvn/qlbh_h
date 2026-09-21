@@ -1,4 +1,3 @@
-using static SD3_API.Helpers.Utilities.PaginationUtility<API.DTOs.Maintain.TheoDoiNhanVienBanHang_NV>;
 
 namespace API.DTOs.Maintain
 {

@@ -1,12 +1,11 @@
-using API.Helpers.Params;
 using API.Models;
-using SD3_API.Helpers.Utilities;
 
 namespace API._Services.Interfaces
 {
+    [DependencyInjection(ServiceLifetime.Scoped)]
     public interface I_KhachHang
     {
-        Task<PaginationUtility<KhachHang>> GetDataPagination(PaginationParams pagination, string name);
+        Task<PaginationUtility<KhachHang>> GetDataPagination(PaginationParam pagination, string name);
         Task<OperationResult> Create(KhachHang model);
         Task<OperationResult> Update(KhachHang model);
         Task<bool> Delete(int id);

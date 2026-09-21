@@ -1,22 +1,17 @@
 using API._Repositories;
 using API._Services.Interfaces;
-using API.Helpers.Params;
 using API.Models;
 using LinqKit;
-using SD3_API.Helpers.Utilities;
+using API.Data;
 
 namespace API._Services.Services
 {
-    public class S_User : I_User
+    public class S_User : BaseServices, I_User
     {
-        private readonly IRepositoryAccessor _repoAccessor;
 
-        public S_User(IRepositoryAccessor repoAccessor)
-        {
-            _repoAccessor = repoAccessor;
-        }
+        public S_User(DBContext dbContext) : base(dbContext) { }
 
-        public async Task<PaginationUtility<NguoiDung>> GetDataPagination(PaginationParams pagination, string name)
+        public async Task<PaginationUtility<NguoiDung>> GetDataPagination(PaginationParam pagination, string name)
         {
             var predicateUser = PredicateBuilder.New<NguoiDung>(true);
 
@@ -37,7 +32,7 @@ namespace API._Services.Services
 
         public async Task<bool> Delete(int id)
         {
-            var cd = await _repoAccessor.NguoiDung.FindSingle(x => x.ID == id);
+            var cd = await _repoAccessor.NguoiDung.FirstOrDefaultAsync(x => x.ID == id);
             if (cd != null)
             {
                 _repoAccessor.NguoiDung.Remove(cd);

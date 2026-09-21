@@ -1,26 +1,20 @@
 using API._Repositories;
 using API._Services.Interfaces;
 using API.DTOs.Maintain;
-using API.Helper.Utilities;
-using API.Helpers.Params;
 using API.Models;
 using Aspose.Cells;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
-using SD3_API.Helpers.Utilities;
+using API.Data;
 
 namespace API._Services.Services
 {
-    public class S_KhachHang : I_KhachHang
+    public class S_KhachHang : BaseServices, I_KhachHang
     {
-        private readonly IRepositoryAccessor _repoAccessor;
 
-        public S_KhachHang(IRepositoryAccessor repoAccessor)
-        {
-            _repoAccessor = repoAccessor;
-        }
+        public S_KhachHang(DBContext dbContext) : base(dbContext) { }
 
-        public async Task<PaginationUtility<KhachHang>> GetDataPagination(PaginationParams pagination, string name)
+        public async Task<PaginationUtility<KhachHang>> GetDataPagination(PaginationParam pagination, string name)
         {
             var predicateUser = PredicateBuilder.New<KhachHang>(true);
 
@@ -58,7 +52,7 @@ namespace API._Services.Services
 
         public async Task<bool> Delete(int id)
         {
-            var kh = await _repoAccessor.KhachHang.FindSingle(x => x.ID == id);
+            var kh = await _repoAccessor.KhachHang.FirstOrDefaultAsync(x => x.ID == id);
             if (kh != null)
             {
                 _repoAccessor.KhachHang.Remove(kh);

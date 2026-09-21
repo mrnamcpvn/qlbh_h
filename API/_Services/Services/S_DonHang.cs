@@ -4,28 +4,24 @@ using API._Repositories;
 using API._Services.Interfaces;
 using API.DTOs.Maintain;
 using API.Helper.Mappers;
-using API.Helper.Utilities;
-using API.Helpers.Params;
 using API.Hubs;
 using API.Models;
 using LinqKit;
 using Microsoft.AspNetCore.SignalR;
+using API.Data;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using SD3_API.Helpers.Utilities;
 
 namespace API._Services.Services
 {
-    public class S_DonHang : I_DonHang
+    public class S_DonHang : BaseServices, I_DonHang
     {
-        private readonly IRepositoryAccessor _repoAccessor;
         private readonly IHubContext<NotificationHub> _hubContext;
 
-        public S_DonHang(IRepositoryAccessor repoAccessor, IHubContext<NotificationHub> hubContext)
+        public S_DonHang(DBContext dbContext, IHubContext<NotificationHub> hubContext) : base(dbContext)
         {
-            _repoAccessor = repoAccessor;
             _hubContext = hubContext;
         }
         #region Download
@@ -181,29 +177,26 @@ namespace API._Services.Services
         }
         public async Task<List<ChiTietDonHangDTO>> GetDetail(int id)
         {
+            var dh = await _repoAccessor.DonHang.FirstOrDefaultAsync(x => x.ID == id, true);
+            if (dh == null) return new List<ChiTietDonHangDTO>();
+
             var data = await _repoAccessor.ChiTietDonHang
                 .FindAll(x => x.ID_DH == id)
                 .Join(_repoAccessor.SanPham.FindAll(),
                     ct => ct.ID_SP,
                     sp => sp.ID,
-                    (ct, sp) => new { ct, sp })
-                .Join(_repoAccessor.DonHang.FindAll(),
-                    temp => temp.ct.ID_DH,
-                    dh => dh.ID,
-                    (temp, dh) => new ChiTietDonHangDTO
+                    (ct, sp) => new ChiTietDonHangDTO
                     {
-                        ID = temp.ct.ID,
-                        ID_DH = temp.ct.ID_DH,
+                        ID = ct.ID,
+                        ID_DH = ct.ID_DH,
                         Ma_DH = dh.Ma_DH,
-                        ID_SP = temp.ct.ID_SP,
-                        Ten_SP = temp.sp.Ten,
-                        Dvt = temp.sp.Dvt,
-                        SoLuong = temp.ct.SoLuong,
-                        Gia = temp.ct.Gia,
-                        ThanhTien = temp.ct.ThanhTien,
-                        Updated_Time = temp.ct.Updated_Time,
-                        SL_Ton_Dau = temp.ct.SL_Ton_Dau,
-                        SL_Ton_Cuoi = temp.ct.SL_Ton_Cuoi,
+                        ID_SP = ct.ID_SP,
+                        Ten_SP = sp.Ten,
+                        Dvt = sp.Dvt,
+                        SoLuong = ct.SoLuong,
+                        Gia = ct.Gia,
+                        ThanhTien = ct.ThanhTien,
+                        Updated_Time = ct.Updated_Time,
                     })
                 .AsNoTracking()
                 .ToListAsync();
@@ -243,28 +236,10 @@ namespace API._Services.Services
             var items = model.ChiTiet.Where(x => x.ID_SP > 0 && x.SoLuong > 0).ToList();
             var spIds = items.Select(x => x.ID_SP).Distinct().ToList();
 
-            // ---- Load dữ liệu cần dùng ----
             var products = spIds.Any()
                 ? await _repoAccessor.SanPham.FindAll(x => spIds.Contains(x.ID)).ToDictionaryAsync(x => x.ID)
                 : new Dictionary<int, SanPham>();
 
-            var minDate = (dh.Date ?? dh.Create_Time ?? DateTime.Now).Date;
-            var otherRecords = spIds.Any()
-                ? await _repoAccessor.ChiTietDonHang
-                    .FindAll(x => spIds.Contains(x.ID_SP))
-                    .Join(_repoAccessor.DonHang.FindAll(), ct => ct.ID_DH, d => d.ID, (ct, d) => new { ct, d })
-                    .Where(x => (x.d.Date ?? x.d.Create_Time ?? DateTime.MinValue).Date >= minDate)
-                    .Select(x => x.ct)
-                    .ToListAsync()
-                : new List<ChiTietDonHang>();
-
-            var allRecords = otherRecords.ToList();
-            var orderIds = allRecords.Select(x => x.ID_DH).Distinct().ToList();
-            var orders = await _repoAccessor.DonHang.FindAll(x => orderIds.Contains(x.ID)).ToDictionaryAsync(x => x.ID);
-            orders[dh.ID] = dh;
-            // ---- Hết phần load ----
-
-            var addedItems = new List<ChiTietDonHang>();
             foreach (var item in items)
             {
                 if (!products.TryGetValue(item.ID_SP, out var sp) || sp == null) continue;
@@ -274,11 +249,8 @@ namespace API._Services.Services
                 item.ID_DH = idDH;
                 item.Updated_Time = now;
                 _repoAccessor.ChiTietDonHang.Add(item);
-                addedItems.Add(item);
-                allRecords.Add(item);
             }
 
-            RecalculateRunningBalanceInMemory(allRecords, orders, products);
             await _repoAccessor.Save();
 
             DonHangO res = new()
@@ -357,7 +329,6 @@ namespace API._Services.Services
             var items = model.ChiTiet.Where(x => x.ID_SP > 0 && x.SoLuong > 0).ToList();
             var itemSpIds = items.Select(x => x.ID_SP).Distinct().ToList();
 
-            // ---- Load dữ liệu cần dùng ----
             var existingCTs = await _repoAccessor.ChiTietDonHang.FindAll(x => x.ID_DH == model.ID).ToListAsync();
             var existingDict = existingCTs.ToDictionary(x => x.ID);
             var incomingIds = items.Where(x => x.ID > 0).Select(x => x.ID).ToHashSet();
@@ -368,23 +339,6 @@ namespace API._Services.Services
                 ? await _repoAccessor.SanPham.FindAll(x => spIds.Contains(x.ID)).ToDictionaryAsync(x => x.ID)
                 : new Dictionary<int, SanPham>();
 
-            var minDate = (dh.Date ?? dh.Create_Time ?? DateTime.Now).Date;
-            var otherRecords = spIds.Any()
-                ? await _repoAccessor.ChiTietDonHang
-                    .FindAll(x => spIds.Contains(x.ID_SP) && x.ID_DH != model.ID)
-                    .Join(_repoAccessor.DonHang.FindAll(), ct => ct.ID_DH, d => d.ID, (ct, d) => new { ct, d })
-                    .Where(x => (x.d.Date ?? x.d.Create_Time ?? DateTime.MinValue).Date >= minDate)
-                    .Select(x => x.ct)
-                    .ToListAsync()
-                : new List<ChiTietDonHang>();
-
-            var allRecords = otherRecords.ToList();
-            var orderIds = allRecords.Select(x => x.ID_DH).Distinct().ToList();
-            var orders = await _repoAccessor.DonHang.FindAll(x => orderIds.Contains(x.ID)).ToDictionaryAsync(x => x.ID);
-            orders[dh.ID] = dh;
-            // ---- Hết phần load ----
-
-            // Hoàn lại tồn kho cho các chi tiết bị xóa
             foreach (var removed in removedCTs)
             {
                 if (products.TryGetValue(removed.ID_SP, out var sp) && sp != null)
@@ -404,7 +358,6 @@ namespace API._Services.Services
                 {
                     if (chiTiet.ID_SP != item.ID_SP)
                     {
-                        // Đổi sang sản phẩm khác: hoàn lại sản phẩm cũ
                         if (products.TryGetValue(chiTiet.ID_SP, out var oldSp) && oldSp != null)
                         {
                             if (model.Loai == 1) oldSp.SoLuong = (oldSp.SoLuong ?? 0) - chiTiet.SoLuong;
@@ -424,7 +377,6 @@ namespace API._Services.Services
                     chiTiet.ThanhTien = item.ThanhTien;
                     chiTiet.Gia = item.Gia;
                     chiTiet.Updated_Time = DateTime.Now;
-                    allRecords.Add(chiTiet);
                 }
                 else
                 {
@@ -433,11 +385,9 @@ namespace API._Services.Services
                     item.ID_DH = model.ID;
                     item.Updated_Time = DateTime.Now;
                     _repoAccessor.ChiTietDonHang.Add(item);
-                    allRecords.Add(item);
                 }
             }
 
-            RecalculateRunningBalanceInMemory(allRecords, orders, products);
             await _repoAccessor.Save();
 
             DonHangO res = new()
@@ -492,7 +442,7 @@ namespace API._Services.Services
         public async Task<bool> Delete(int id)
         {
             // 1. Lấy đơn hàng và chi tiết
-            var dh = await _repoAccessor.DonHang.FindSingle(x => x.ID == id);
+            var dh = await _repoAccessor.DonHang.FirstOrDefaultAsync(x => x.ID == id);
             if (dh == null) return true;
             var listChitiet = await _repoAccessor.ChiTietDonHang.FindAll(x => x.ID_DH == id).ToListAsync();
             bool saved;
@@ -509,18 +459,6 @@ namespace API._Services.Services
                 .FindAll(x => productIds.Contains(x.ID))
                 .ToDictionaryAsync(x => x.ID);
 
-            var minDate = (dh.Date ?? dh.Create_Time ?? DateTime.Now).Date;
-            var otherRecords = await _repoAccessor.ChiTietDonHang
-                .FindAll(x => productIds.Contains(x.ID_SP) && x.ID_DH != id)
-                .Join(_repoAccessor.DonHang.FindAll(), ct => ct.ID_DH, d => d.ID, (ct, d) => new { ct, d })
-                .Where(x => (x.d.Date ?? x.d.Create_Time ?? DateTime.MinValue).Date >= minDate)
-                .Select(x => x.ct)
-                .ToListAsync();
-
-            var allRecords = otherRecords.ToList();
-            var orderIds = allRecords.Select(x => x.ID_DH).Distinct().ToList();
-            var orders = await _repoAccessor.DonHang.FindAll(x => orderIds.Contains(x.ID)).ToDictionaryAsync(x => x.ID);
-
             foreach (var group in listChitiet.GroupBy(x => x.ID_SP))
             {
                 if (!products.TryGetValue(group.Key, out var sp) || sp == null) continue;
@@ -531,7 +469,6 @@ namespace API._Services.Services
             _repoAccessor.ChiTietDonHang.RemoveMultiple(listChitiet);
             _repoAccessor.DonHang.Remove(dh);
 
-            RecalculateRunningBalanceInMemory(allRecords, orders, products);
             try
             {
                 saved = await _repoAccessor.Save();
@@ -582,22 +519,6 @@ namespace API._Services.Services
                 else sp.SoLuong = (sp.SoLuong ?? 0) + chitietDH.SoLuong;
             }
             _repoAccessor.ChiTietDonHang.Remove(chitietDH);
-
-            if (sp != null)
-            {
-                var minDate = (dh.Date ?? dh.Create_Time ?? DateTime.Now).Date;
-                var otherRecords = await _repoAccessor.ChiTietDonHang
-                    .FindAll(x => x.ID_SP == chitietDH.ID_SP && x.ID != chitietDH.ID)
-                    .Join(_repoAccessor.DonHang.FindAll(), ct => ct.ID_DH, d => d.ID, (ct, d) => new { ct, d })
-                    .Where(x => (x.d.Date ?? x.d.Create_Time ?? DateTime.MinValue).Date >= minDate)
-                    .ToListAsync();
-
-                var allRecords = otherRecords.Select(x => (ChiTietDonHang)x.ct).ToList();
-                var orderIds = otherRecords.Select(x => (int)x.d.ID).Distinct().ToList();
-                var orders = await _repoAccessor.DonHang.FindAll(x => orderIds.Contains(x.ID)).ToDictionaryAsync(x => x.ID);
-
-                RecalculateRunningBalanceInMemory(allRecords, orders, new Dictionary<int, SanPham> { { sp.ID, sp } });
-            }
             try
             {
                 var saved = await _repoAccessor.Save();
@@ -660,38 +581,6 @@ namespace API._Services.Services
             });
         }
 
-        private void RecalculateRunningBalanceInMemory(
-            List<ChiTietDonHang> allRecords,
-            Dictionary<int, DonHang> orders,
-            Dictionary<int, SanPham> products)
-        {
-            if (!allRecords.Any() || !products.Any() || !orders.Any()) return;
-
-            var ordered = allRecords
-                .Where(x => products.ContainsKey(x.ID_SP) && orders.ContainsKey(x.ID_DH))
-                .OrderBy(x => orders[x.ID_DH].Date ?? orders[x.ID_DH].Create_Time ?? DateTime.MinValue)
-                .ThenBy(x => orders[x.ID_DH].Create_Time ?? DateTime.MinValue)
-                .ThenBy(x => orders[x.ID_DH].Ma_DH)
-                .ThenBy(x => x.Updated_Time ?? DateTime.MinValue)
-                .ThenBy(x => x.ID)
-                .ToList();
-
-            var totals = ordered
-                .GroupBy(x => x.ID_SP)
-                .ToDictionary(g => g.Key, g => g.Sum(x => (orders[x.ID_DH].Loai == 1 ? 1 : -1) * x.SoLuong));
-
-            var running = new Dictionary<int, int>();
-            foreach (var r in ordered)
-            {
-                if (!running.TryGetValue(r.ID_SP, out var stock))
-                    running[r.ID_SP] = stock = (products[r.ID_SP].SoLuong ?? 0) - totals.GetValueOrDefault(r.ID_SP, 0);
-
-                r.SL_Ton_Dau = stock;
-                stock += (orders[r.ID_DH].Loai == 1 ? 1 : -1) * r.SoLuong;
-                r.SL_Ton_Cuoi = stock;
-                running[r.ID_SP] = stock;
-            }
-        }
     }
     #endregion
 }

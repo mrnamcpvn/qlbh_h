@@ -1,7 +1,6 @@
 using API._Services.Interfaces;
 using API.DTOs.Report;
 using Microsoft.AspNetCore.Mvc;
-using SD3_API.Helpers.Utilities;
 
 namespace API.Controllers
 {

@@ -1,24 +1,18 @@
 using API._Repositories;
 using API._Services.Interfaces;
 using API.DTOs.Maintain;
-using API.Helpers.Params;
-using API.Helpers.Utilities;
 using API.Models;
 using Aspose.Cells;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
-using SD3_API.Helpers.Utilities;
+using API.Data;
 
 namespace API._Services.Services
 {
-    public class S_TheoDoiNhanVienBanHang : I_TheoDoiNhanVienBanHang
+    public class S_TheoDoiNhanVienBanHang : BaseServices, I_TheoDoiNhanVienBanHang
     {
-        private readonly IRepositoryAccessor _repoAccessor;
 
-        public S_TheoDoiNhanVienBanHang(IRepositoryAccessor repoAccessor)
-        {
-            _repoAccessor = repoAccessor;
-        }
+        public S_TheoDoiNhanVienBanHang(DBContext dbContext) : base(dbContext) { }
 
         public async Task<OperationResult> Excel(TheoDoiNhanVienBanHang_Param param)
         {
@@ -280,7 +274,7 @@ namespace API._Services.Services
             return new OperationResult(true, stream.ToArray());
         }
 
-        public async Task<TheoDoiNhanVienBanHang_Data> GetDataPagination(PaginationParams pagination, TheoDoiNhanVienBanHang_Param param)
+        public async Task<TheoDoiNhanVienBanHang_Data> GetDataPagination(PaginationParam pagination, TheoDoiNhanVienBanHang_Param param)
         {
             var data = await GetData(param);
             var dataPagination = PaginationUtility<TheoDoiNhanVienBanHang_NV>.Create(data, pagination.PageNumber, pagination.PageSize);

@@ -1,9 +1,8 @@
-
 using API.Models;
 
 namespace API._Repositories
 {
-    public interface IRepositoryAccessor
+    public interface IRepositoryAccessor : IRepositoryAccessorBase
     {
         IRepository<KhachHang> KhachHang { get; }
         IRepository<SanPham> SanPham { get; }
@@ -13,6 +12,5 @@ namespace API._Repositories
         IRepository<NhanVien> NhanVien { get; }
         IRepository<CuaHang> CuaHang { get; }
         IRepository<NhaCungCap> NhaCungCap { get; }
-        Task<bool> Save();
     }
 }

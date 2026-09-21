@@ -4,23 +4,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using API._Repositories;
 using API._Services.Interfaces;
-using API.Helpers.Params;
 using API.Models;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
-using SD3_API.Helpers.Utilities;
+using API.Data;
 
 namespace API._Services.Services
 {
-    public class S_NhanVien: I_NhanVien
+    public class S_NhanVien: BaseServices, I_NhanVien
     {
-        private readonly IRepositoryAccessor _repoAccessor;
 
-        public S_NhanVien(IRepositoryAccessor repoAccessor)
-        {
-            _repoAccessor = repoAccessor;
-        }
-        public async Task<PaginationUtility<NhanVien>> GetDataPagination(PaginationParams pagination, string name)
+        public S_NhanVien(DBContext dbContext) : base(dbContext) { }
+        public async Task<PaginationUtility<NhanVien>> GetDataPagination(PaginationParam pagination, string name)
         {
             var predicateUser = PredicateBuilder.New<NhanVien>(true);
 
@@ -48,7 +43,7 @@ namespace API._Services.Services
 
         public async Task<bool> Delete(int id)
         {
-            var nv = await _repoAccessor.NhanVien.FindSingle(x => x.ID == id);
+            var nv = await _repoAccessor.NhanVien.FirstOrDefaultAsync(x => x.ID == id);
             if (nv != null)
             {
                 _repoAccessor.NhanVien.Remove(nv);

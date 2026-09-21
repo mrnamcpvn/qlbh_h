@@ -1,8 +1,8 @@
 using API.DTOs.Maintain;
-using SD3_API.Helpers.Utilities;
 
 namespace API._Services.Interfaces
 {
+    [DependencyInjection(ServiceLifetime.Scoped)]
     public interface I_BaoCaoThuChi
     {
         Task<BaoCaoThuChiData> GetData(BaoCaoThuChiParam param);

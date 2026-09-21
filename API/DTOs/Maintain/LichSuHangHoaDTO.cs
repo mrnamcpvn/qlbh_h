@@ -1,4 +1,3 @@
-using static SD3_API.Helpers.Utilities.PaginationUtility<API.DTOs.Maintain.LichSuHangHoaItem>;
 
 namespace API.DTOs.Maintain
 {

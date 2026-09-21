@@ -2,17 +2,14 @@ using API._Repositories;
 using API._Services.Interfaces;
 using API.Models;
 using Microsoft.EntityFrameworkCore;
+using API.Data;
 
 namespace API._Services.Services
 {
-    public class S_CuaHang : I_CuaHang
+    public class S_CuaHang : BaseServices, I_CuaHang
     {
-        private readonly IRepositoryAccessor _repoAccessor;
 
-        public S_CuaHang(IRepositoryAccessor repoAccessor)
-        {
-            _repoAccessor = repoAccessor;
-        }
+        public S_CuaHang(DBContext dbContext) : base(dbContext) { }
 
         public async Task<CuaHang> GetFirst()
         {

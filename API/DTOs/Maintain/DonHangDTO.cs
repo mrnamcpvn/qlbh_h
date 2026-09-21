@@ -1,6 +1,4 @@
-using API.Helpers.Params;
 using API.Models;
-using SD3_API.Helpers.Utilities;
 using System.Collections.Generic;
 
 namespace API.DTOs.Maintain
@@ -20,7 +18,6 @@ namespace API.DTOs.Maintain
         public string DiaChi { get; set; }
         public bool Status { get; set; }
         public string StatusName { get; set; }
-        public int? SoNgayCongNo { get; set; }
     }
     public class DonHangDTO : DonHangO
     {
@@ -29,7 +26,7 @@ namespace API.DTOs.Maintain
 
     public class DonHangRequestDTO
     {
-        public PaginationParams Pagination { get; set; }
+        public PaginationParam Pagination { get; set; }
         public string FromDate { get; set; }
         public string ToDate { get; set; }
         public int Loai { get; set; }
